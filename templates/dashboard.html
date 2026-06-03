@@ -2,152 +2,325 @@
 
 {% block content %}
 
-<h1 class="mb-4">
+<style>
+    .stat-card {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(30, 60, 114, 0.2);
+        border-top: 4px solid #ffc107;
+        transition: all 0.3s ease;
+    }
 
-    Welcome {{ username }}
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(30, 60, 114, 0.3);
+    }
 
-</h1>
+    .stat-card i {
+        font-size: 2.5rem;
+        color: #ffc107;
+        margin-bottom: 15px;
+    }
 
+    .stat-card h5 {
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
+    .stat-card .number {
+        font-size: 2rem;
+        font-weight: 700;
+    }
 
-<!-- LOW ASTOCK ALERT-->
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e3c72;
+        margin-top: 35px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-<h3 class="mt-4 text-danger">Low Stock Alerts</h3>
+    .section-title i {
+        color: #ffc107;
+    }
+
+    .data-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .data-table table {
+        margin-bottom: 0;
+    }
+
+    .data-table thead {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+    }
+
+    .data-table thead th {
+        padding: 15px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .data-table tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background-color: #f5f9ff;
+    }
+
+    .data-table tbody td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #ddd;
+        margin-bottom: 15px;
+    }
+
+    .user-info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-top: 30px;
+    }
+
+    .user-info-card h5 {
+        color: #1e3c72;
+        font-weight: 700;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #1e3c72;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-label i {
+        color: #ffc107;
+    }
+
+    .info-value {
+        color: #666;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Welcome Header -->
+<div style="margin-bottom: 30px;">
+    <h1 style="color: #1e3c72; font-weight: 700; margin-bottom: 5px;">
+        <i class="fas fa-hand-wave" style="color: #ffc107; margin-right: 10px;"></i>
+        Welcome, {{ username }}!
+    </h1>
+    <p style="color: #666; margin: 0;">Here's what's happening with your inventory today</p>
+</div>
+
+<!-- LOW STOCK ALERT -->
+<div class="section-title">
+    <i class="fas fa-exclamation-triangle"></i>
+    Low Stock Alerts
+</div>
 
 {% if low_stock %}
-<table class="table table-bordered table-sm">
-    <thead class="table-danger">
-        <tr>
-            <th>Item Code</th>
-            <th>Description</th>
-            <th>Qty Left</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for item in low_stock %}
-        <tr>
-            <td>{{ item.item_code }}</td>
-            <td>{{ item.description }}</td>
-            <td>
-                <span class="badge bg-danger">
-                    {{ item.qty }}
-                </span>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="data-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-barcode"></i> Item Code</th>
+                <th><i class="fas fa-info-circle"></i> Description</th>
+                <th><i class="fas fa-box"></i> Qty Left</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in low_stock %}
+            <tr>
+                <td><strong>{{ item.item_code }}</strong></td>
+                <td>{{ item.description }}</td>
+                <td>
+                    <span class="badge" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%); color: white;">
+                        <i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i>
+                        {{ item.qty }} units
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
-<p class="text-success">No low stock items </p>
+<div class="empty-state">
+    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+    <p style="color: #4CAF50; font-weight: 600;">✓ All items are in healthy stock levels</p>
+</div>
 {% endif %}
 
-
-
-
-
-<nav>
+<!-- Pagination for Low Stock -->
+{% if total_pages > 1 %}
+<nav class="mt-4">
     <ul class="pagination justify-content-center">
-
         {% if page > 1 %}
         <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('dashboard', page=page-1) }}">
-                Previous
+            <a class="page-link" href="{{ url_for('dashboard', page=page-1) }}">
+                <i class="fas fa-chevron-left"></i> Previous
             </a>
         </li>
         {% endif %}
 
         {% for p in range(1, total_pages + 1) %}
         <li class="page-item {% if p == page %}active{% endif %}">
-            <a class="page-link"
-               href="{{ url_for('dashboard', page=p) }}">
-                {{ p }}
-            </a>
+            <a class="page-link" href="{{ url_for('dashboard', page=p) }}">{{ p }}</a>
         </li>
         {% endfor %}
 
         {% if page < total_pages %}
         <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('dashboard', page=page+1) }}">
-                Next
+            <a class="page-link" href="{{ url_for('dashboard', page=page+1) }}">
+                Next <i class="fas fa-chevron-right"></i>
             </a>
         </li>
         {% endif %}
-
     </ul>
 </nav>
+{% endif %}
 
+<!-- RECENT WITHDRAWALS -->
+<div class="section-title">
+    <i class="fas fa-arrow-alt-circle-out"></i>
+    Recent Withdrawals
+</div>
 
-
-<!-- RECENT WITHDRAWERS -->
-<h3 class="mt-4">Recent Withdrawals</h3>
-
-<table class="table table-sm table-striped">
-    <tr>
-        <th>Item</th>
-        <th>Qty</th>
-        <th>Project</th>
-        <th>Date</th>
-    </tr>
-
-    {% for w in recent_withdrawals %}
-    <tr>
-        <td>{{ w.item_code }}</td>
-        <td>{{ w.qty }}</td>
-        <td>{{ w.project }}</td>
-        <td>{{ w.action_date }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-
-
+{% if recent_withdrawals %}
+<div class="data-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-cube"></i> Item</th>
+                <th><i class="fas fa-weight"></i> Qty</th>
+                <th><i class="fas fa-briefcase"></i> Project</th>
+                <th><i class="fas fa-calendar-alt"></i> Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for w in recent_withdrawals %}
+            <tr>
+                <td><strong>{{ w.item_code }}</strong></td>
+                <td><span class="badge bg-danger">{{ w.qty }}</span></td>
+                <td>{{ w.project }}</td>
+                <td>{{ w.action_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <p>No recent withdrawals</p>
+</div>
+{% endif %}
 
 <!-- RECENT RETURNS -->
+<div class="section-title">
+    <i class="fas fa-arrow-alt-circle-in"></i>
+    Recent Returns
+</div>
 
+{% if recent_returns %}
+<div class="data-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-cube"></i> Item</th>
+                <th><i class="fas fa-weight"></i> Qty</th>
+                <th><i class="fas fa-briefcase"></i> Project</th>
+                <th><i class="fas fa-calendar-alt"></i> Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in recent_returns %}
+            <tr>
+                <td><strong>{{ r.item_code }}</strong></td>
+                <td><span class="badge bg-success">{{ r.qty }}</span></td>
+                <td>{{ r.project }}</td>
+                <td>{{ r.action_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <p>No recent returns</p>
+</div>
+{% endif %}
 
-
-<h3 class="mt-4">Recent Return Items</h3>
-
-<table class="table table-sm table-striped">
-    <tr>
-        <th>Item</th>
-        <th>Qty</th>
-        <th>Project</th>
-        <th>Date</th>
-    </tr>
-
-    {% for r in recent_returns %}
-    <tr>
-        <td>{{ r.item_code }}</td>
-        <td>{{ r.qty }}</td>
-        <td>{{ r.project }}</td>
-        <td>{{ r.action_date }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-
-
-
-<hr>
-
-<h3>User Information</h3>
-
-<table class="table table-bordered">
-
-    <tr>
-        <th>Username</th>
-        <td>{{ username }}</td>
-    </tr>
-
-    <tr>
-        <th>Role</th>
-        <td>{{ role }}</td>
-    </tr>
-
-</table>
+<!-- USER INFORMATION -->
+<div class="user-info-card">
+    <h5>
+        <i class="fas fa-user-circle" style="color: #ffc107; margin-right: 10px;"></i>
+        Your Account Information
+    </h5>
+    <div class="info-row">
+        <span class="info-label">
+            <i class="fas fa-user"></i> Username
+        </span>
+        <span class="info-value">{{ username }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">
+            <i class="fas fa-shield-alt"></i> Role
+        </span>
+        <span class="info-value">
+            <span class="badge" style="{% if role == 'admin' %}background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white;{% else %}background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;{% endif %}">
+                {{ role | upper }}
+            </span>
+        </span>
+    </div>
+</div>
 
 {% endblock %}

@@ -2,42 +2,147 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
+<style>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        max-width: 600px;
+        margin: 0 auto;
+    }
 
-        <div class="card shadow">
+    .form-card h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
 
-            <div class="card-header text-center">
-                <h3>Add Stock</h3>
-            </div>
+    .item-info {
+        background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+        border-left: 4px solid #ffc107;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
 
-            <div class="card-body">
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
 
-                <p><b>Item:</b> {{ item.item_code }} - {{ item.description }}</p>
+    .info-item:last-child {
+        border-bottom: none;
+    }
 
-                <form method="POST">
+    .info-label {
+        font-weight: 600;
+        color: #1e3c72;
+    }
 
-                    <div class="mb-3">
-                        <label>Quantity to Add</label>
-                        <input type="number" name="qty" class="form-control" required>
-                    </div>
+    .info-value {
+        color: #666;
+    }
 
-                     <div class="mb-3">
-                        <label>Remark</label>
-                        <input type="text" name="remark" class="form-control" required>
-                    </div>
+    .form-group label {
+        color: #1e3c72;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
 
-                    <button class="btn btn-primary w-100">
-                        Add Stock
-                    </button>
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
 
-                </form>
+    .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+        outline: none;
+    }
 
-            </div>
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    }
 
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+    }
+
+    .form-hint {
+        color: #999;
+        font-size: 0.85rem;
+        margin-top: -15px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="form-card">
+    <h1><i class="fas fa-plus-square" style="color: #ffc107; margin-right: 10px;"></i> Add Stock</h1>
+    
+    <div class="item-info">
+        <div class="info-item">
+            <span class="info-label"><i class="fas fa-barcode" style="color: #ffc107; margin-right: 8px;"></i> Item Code</span>
+            <span class="info-value"><strong>{{ item.item_code }}</strong></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label"><i class="fas fa-info-circle" style="color: #ffc107; margin-right: 8px;"></i> Description</span>
+            <span class="info-value">{{ item.description }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label"><i class="fas fa-weight" style="color: #ffc107; margin-right: 8px;"></i> Current Qty</span>
+            <span class="info-value">
+                <span class="badge" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 6px 12px;">
+                    {{ item.qty }} units
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <form method="POST" novalidate>
+        <div class="form-group">
+            <label><i class="fas fa-weight" style="color: #ffc107; margin-right: 8px;"></i> Quantity to Add *</label>
+            <input type="number"
+                   name="qty"
+                   class="form-control"
+                   placeholder="Enter quantity to add"
+                   min="1"
+                   required>
+            <div class="form-hint">Number of units being added to inventory</div>
         </div>
 
-    </div>
+        <div class="form-group">
+            <label><i class="fas fa-sticky-note" style="color: #ffc107; margin-right: 8px;"></i> Remark / Reason *</label>
+            <textarea name="remark"
+                      class="form-control"
+                      placeholder="Why is stock being added? (e.g., New Purchase, Restock, etc.)"
+                      rows="3"
+                      required></textarea>
+            <div class="form-hint">Reason for adding this stock</div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-check"></i> Confirm Stock Addition
+        </button>
+    </form>
 </div>
 
 {% endblock %}

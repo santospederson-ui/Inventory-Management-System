@@ -2,131 +2,253 @@
 
 {% block content %}
 
-<h3 class="mb-3">Audit / Transaction History</h3>
+<style>
+    .page-header {
+        margin-bottom: 30px;
+    }
 
+    .page-header h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        font-size: 2rem;
+        margin: 0 0 10px 0;
+    }
 
-<!-- SEARCH -->
-<form method="GET" id="searchForm" action="{{ url_for('audit') }}">
+    .page-header p {
+        color: #666;
+        margin: 0;
+    }
 
+    .search-box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
 
-    <div class="row mb-3">
+    .search-box .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
 
-        <div class="col-md-10">
+    .search-box .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+    }
 
-           <input type="text"
+    .data-table-wrapper {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .data-table-wrapper table {
+        margin-bottom: 0;
+    }
+
+    .data-table-wrapper thead {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+    }
+
+    .data-table-wrapper thead th {
+        padding: 15px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .data-table-wrapper tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+
+    .data-table-wrapper tbody tr:hover {
+        background-color: #f5f9ff;
+    }
+
+    .data-table-wrapper tbody td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+    .action-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        color: white;
+    }
+
+    .action-withdrawal {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+    }
+
+    .action-return {
+        background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
+    }
+
+    .action-stock {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    }
+
+    .pagination {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .pagination .page-link {
+        color: #1e3c72;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        margin: 0 3px;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f5f9ff;
+        color: #ffc107;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        border-color: #ffc107;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1><i class="fas fa-history" style="color: #ffc107; margin-right: 10px;"></i> Audit / Transaction History</h1>
+    <p>Track all inventory transactions and activities</p>
+</div>
+
+<!-- Search Box -->
+<div class="search-box">
+    <form method="GET" id="searchForm" action="{{ url_for('audit') }}" class="d-flex gap-2">
+        <div class="flex-grow-1">
+            <input type="text"
                    id="searchInput"
                    name="search"
                    value="{{ search }}"
                    class="form-control"
-                   placeholder="Search...">
-
-
+                   placeholder="🔍 Search by item code, description, user, or project...">
         </div>
+        <button type="submit" class="btn" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; border: none;">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </form>
+</div>
 
-    </div>
+<!-- Audit History Table -->
+{% if logs %}
+<div class="data-table-wrapper">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-calendar-alt"></i> Date</th>
+                <th><i class="fas fa-cube"></i> Item</th>
+                <th><i class="fas fa-cogs"></i> Action</th>
+                <th><i class="fas fa-weight"></i> Qty</th>
+                <th><i class="fas fa-user"></i> User</th>
+                <th><i class="fas fa-briefcase"></i> Project/Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>
+                    <small>
+                        {% if log.action_date %}
+                            {{ log.action_date }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </small>
+                </td>
+                <td>
+                    <strong>{{ log.item_code }}</strong><br>
+                    <small style="color: #999;">{{ log.description }}</small>
+                </td>
+                <td>
+                    {% if log.action == 'WITHDRAWAL' %}
+                        <span class="action-badge action-withdrawal">
+                            <i class="fas fa-arrow-alt-circle-out"></i> {{ log.action }}
+                        </span>
+                    {% elif log.action == 'RETURN' %}
+                        <span class="action-badge action-return">
+                            <i class="fas fa-arrow-alt-circle-in"></i> {{ log.action }}
+                        </span>
+                    {% else %}
+                        <span class="action-badge action-stock">
+                            <i class="fas fa-plus-square"></i> {{ log.action }}
+                        </span>
+                    {% endif %}
+                </td>
+                <td><strong>{{ log.qty }}</strong></td>
+                <td>{{ log.user }}</td>
+                <td>
+                    {% if log.project %}
+                        {{ log.project }}
+                    {% else %}
+                        <span style="color: #999;">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-</form>
-
-
-
-
-<table class="table table-bordered table-striped">
-
-    <thead class="table-dark">
-
-        <tr>
-            <th>Date</th>
-            <th>Item</th>
-            <th>Action</th>
-            <th>Quantity</th>
-            <th>User</th>
-            <th>Project/Remark</th>
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        {% for log in logs %}
-
-        <tr>
-
-            <td>
-                {% if log.action_date %}
-                    {{ log.action_date }}
-                {% else %}
-                    N/A
-                {% endif %}
-            </td>
-
-            <td>
-                {{ log.item_code }} - {{ log.description }}
-            </td>
-
-            <td>
-                {% if log.action == 'WITHDRAWAL' %}
-                    <span class="badge bg-danger">{{ log.action }}</span>
-                {% elif log.action == 'RETURN' %}
-                    <span class="badge bg-success">{{ log.action }}</span>
-                {% else %}
-                    <span class="badge bg-primary">{{ log.action }}</span>
-                {% endif %}
-            </td>
-
-            <td>{{ log.qty }}</td>
-
-            <td>{{ log.user }}</td>
-
-            <td>
-                {% if log.project %}
-                    {{ log.project }}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
-
-
-<nav>
-    <ul class="pagination justify-content-center">
-
+<!-- Pagination -->
+<nav class="pagination">
+    <ul class="pagination" style="margin-bottom: 0;">
         {% if page > 1 %}
         <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('audit', page=page-1, search=search) }}">
-               Previous
+            <a class="page-link" href="{{ url_for('audit', page=page-1, search=search) }}">
+                <i class="fas fa-chevron-left"></i> Previous
             </a>
         </li>
         {% endif %}
 
         {% for p in range(1, total_pages + 1) %}
         <li class="page-item {% if p == page %}active{% endif %}">
-            <a class="page-link"
-               href="{{ url_for('audit', page=p, search=search) }}">
-               {{ p }}
-            </a>
+            <a class="page-link" href="{{ url_for('audit', page=p, search=search) }}">{{ p }}</a>
         </li>
         {% endfor %}
 
         {% if page < total_pages %}
         <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('audit', page=page+1, search=search) }}">
-               Next
+            <a class="page-link" href="{{ url_for('audit', page=page+1, search=search) }}">
+                Next <i class="fas fa-chevron-right"></i>
             </a>
         </li>
         {% endif %}
-
     </ul>
 </nav>
 
-
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <h4 style="color: #333;">No Transactions Found</h4>
+    <p>Start by making your first inventory transaction</p>
+</div>
+{% endif %}
 
 {% endblock %}

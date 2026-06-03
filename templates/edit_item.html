@@ -2,37 +2,145 @@
 
 {% block content %}
 
-<h3>Edit Item</h3>
+<style>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        max-width: 700px;
+        margin: 0 auto;
+    }
 
-<form method="POST">
+    .form-card h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
 
-<input type="text"
-       name="item_code"
-       value="{{ item.item_code }}"
-       class="form-control mb-2">
+    .form-card .form-subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+    }
 
-<input type="text"
-       name="description"
-       value="{{ item.description }}"
-       class="form-control mb-2">
+    .form-group label {
+        color: #1e3c72;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
 
-<input type="text"
-       name="brand"
-       value="{{ item.brand }}"
-       class="form-control mb-2">
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
 
-<input type="number"
-       name="qty"
-       value="{{ item.qty }}"
-       class="form-control mb-2">
+    .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+        outline: none;
+    }
 
-<textarea name="remark"
-          class="form-control mb-2">{{ item.remark }}</textarea>
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    }
 
-<button class="btn btn-primary">
-    Update Item
-</button>
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+    }
 
-</form>
+    .form-hint {
+        color: #999;
+        font-size: 0.85rem;
+        margin-top: -15px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="form-card">
+    <h1><i class="fas fa-edit" style="color: #ffc107; margin-right: 10px;"></i> Edit Item</h1>
+    <p class="form-subtitle">Update the item details</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" novalidate>
+        <div class="form-group">
+            <label><i class="fas fa-barcode" style="color: #ffc107; margin-right: 8px;"></i> Item Code</label>
+            <input type="text"
+                   name="item_code"
+                   value="{{ item.item_code }}"
+                   class="form-control"
+                   required>
+            <div class="form-hint">Unique identifier for this item</div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-info-circle" style="color: #ffc107; margin-right: 8px;"></i> Description</label>
+            <input type="text"
+                   name="description"
+                   value="{{ item.description }}"
+                   class="form-control"
+                   required>
+            <div class="form-hint">Item description</div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-tag" style="color: #ffc107; margin-right: 8px;"></i> Brand</label>
+            <input type="text"
+                   name="brand"
+                   value="{{ item.brand }}"
+                   class="form-control">
+            <div class="form-hint">Brand or manufacturer name</div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-weight" style="color: #ffc107; margin-right: 8px;"></i> Quantity</label>
+            <input type="number"
+                   name="qty"
+                   value="{{ item.qty }}"
+                   class="form-control"
+                   min="0"
+                   required>
+            <div class="form-hint">Current quantity in stock</div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-sticky-note" style="color: #ffc107; margin-right: 8px;"></i> Remark</label>
+            <textarea name="remark"
+                      class="form-control"
+                      rows="3">{{ item.remark }}</textarea>
+            <div class="form-hint">Additional notes or remarks</div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-check"></i> Update Item
+        </button>
+    </form>
+</div>
 
 {% endblock %}
