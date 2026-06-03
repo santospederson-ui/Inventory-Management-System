@@ -4,39 +4,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Inventory Management System</title>
+    <title>Login - Prestigious Trading & Construction</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
             min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header / Company Info */
+        .company-header {
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 4px solid #ffc107;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .company-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .company-header .tagline {
+            font-size: 1rem;
+            color: #e0e0e0;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .company-header .location {
+            font-size: 0.9rem;
+            color: #ffc107;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            gap: 8px;
+        }
+
+        .company-header .location i {
+            font-size: 1.1rem;
+        }
+
+        /* Main Content Wrapper */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
         }
 
         .login-wrapper {
             width: 100%;
-            max-width: 420px;
-            padding: 15px;
+            max-width: 450px;
+            perspective: 1000px;
         }
 
         .login-box {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            animation: slideUp 0.5s ease-out;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 45px;
+            animation: slideUp 0.6s ease-out;
+            border-top: 5px solid #ffc107;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .login-box > * {
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -44,175 +121,438 @@
             }
         }
 
-        .login-box h2 {
-            color: #333;
-            font-weight: 700;
-            margin-bottom: 10px;
+        .login-icon {
             text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .login-icon i {
+            font-size: 3rem;
+            color: #1e3c72;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .login-box h2 {
+            color: #1e3c72;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+            font-size: 1.8rem;
         }
 
         .login-box p {
             color: #666;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 14px;
+            font-size: 0.95rem;
         }
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-control {
+        .form-label {
+            color: #1e3c72;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control, .form-select {
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 12px 15px;
-            font-size: 14px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .form-control:focus, .form-select:focus {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.15);
             outline: none;
         }
 
-        .form-select {
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px 15px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            outline: none;
+        .form-control::placeholder {
+            color: #999;
         }
 
         button[type="submit"] {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 13px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 20px;
+            margin-top: 25px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
         }
 
         button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
         }
 
         button[type="submit"]:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .alert {
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 20px;
+            border: none;
+        }
+
+        .role-info {
+            background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 8px;
+            border-left: 4px solid #ffc107;
         }
 
         .register-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
             padding-top: 20px;
             border-top: 1px solid #e0e0e0;
         }
 
+        .register-link p {
+            margin: 0 0 12px 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
         .register-link a {
-            color: #667eea;
+            color: #ffc107;
             text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .register-link a:hover {
-            color: #764ba2;
+            color: #ff9800;
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.98) 0%, rgba(42, 82, 152, 0.98) 100%);
+            color: white;
+            padding: 40px 20px 20px;
+            border-top: 4px solid #ffc107;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: auto;
+        }
+
+        footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        footer .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        footer .footer-section h5 {
+            color: #ffc107;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        footer .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        footer .footer-section ul li {
+            margin-bottom: 10px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        footer .footer-section ul li a {
+            color: #ffc107;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer .footer-section ul li a:hover {
+            color: #ff9800;
+        }
+
+        footer .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        footer .contact-info i {
+            color: #ffc107;
+            width: 20px;
+            text-align: center;
+        }
+
+        footer .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        footer .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            border-radius: 50%;
+            color: #ffc107;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        footer .social-links a:hover {
+            background: #ffc107;
+            color: #1e3c72;
+            transform: translateY(-3px);
+        }
+
+        footer .footer-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.3), transparent);
+            margin: 30px 0;
+        }
+
+        footer .footer-bottom {
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        footer .footer-bottom p {
+            margin: 5px 0;
+        }
+
+        footer .footer-bottom a {
+            color: #ffc107;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer .footer-bottom a:hover {
+            color: #ff9800;
             text-decoration: underline;
         }
 
-        .role-info {
-            background: #f5f5f5;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #666;
-            margin-top: 8px;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .company-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .login-box {
+                padding: 30px 20px;
+            }
+
+            footer .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .main-content {
+                padding: 20px 10px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="login-wrapper">
+<!-- Header with Company Info -->
+<div class="company-header">
+    <h1><i class="fas fa-building" style="color: #ffc107; margin-right: 10px;"></i> Prestigious Trading & Construction</h1>
+    <p class="tagline">Excellence in Every Project</p>
+    <div class="location">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>New Salata, Doha, Qatar</span>
+    </div>
+</div>
 
-    <div class="login-box">
+<!-- Main Content -->
+<div class="main-content">
+    <div class="login-wrapper">
+        <div class="login-box">
 
-        <h2>🔒 Welcome Back</h2>
-        <p>Inventory Management System</p>
+            <div class="login-icon">
+                <i class="fas fa-lock"></i>
+            </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <h2>Welcome</h2>
+            <p>Inventory Management System</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" novalidate>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user" style="margin-right: 8px; color: #ffc107;"></i> Username
+                    </label>
+                    <input type="text" 
+                           name="username" 
+                           class="form-control" 
+                           placeholder="Enter your username" 
+                           required
+                           autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key" style="margin-right: 8px; color: #ffc107;"></i> Password
+                    </label>
+                    <input type="password" 
+                           name="password" 
+                           class="form-control" 
+                           placeholder="Enter your password" 
+                           required
+                           autocomplete="current-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="role" class="form-label">
+                        <i class="fas fa-user-shield" style="margin-right: 8px; color: #ffc107;"></i> Select Role
+                    </label>
+                    <select name="role" id="role" class="form-select" required>
+                        <option value="" disabled selected>-- Choose your role --</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
+                    <div class="role-info">
+                        <strong>Admin:</strong> Full access to inventory management<br>
+                        <strong>User:</strong> Limited access to view and manage inventory
                     </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+                </div>
 
-        <form method="POST" novalidate>
+                <button type="submit">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Login Now
+                </button>
 
-            <div class="form-group">
-                <input type="text" 
-                       name="username" 
-                       class="form-control" 
-                       placeholder="Username" 
-                       required
-                       autocomplete="username">
+            </form>
+
+            <div class="register-link">
+                <p>Don't have an account?</p>
+                <a href="{{ url_for('register') }}">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </a>
             </div>
 
-            <div class="form-group">
-                <input type="password" 
-                       name="password" 
-                       class="form-control" 
-                       placeholder="Password" 
-                       required
-                       autocomplete="current-password">
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-grid">
+            <!-- Company Info -->
+            <div class="footer-section">
+                <h5>
+                    <i class="fas fa-building"></i> About Us
+                </h5>
+                <p>Prestigious Trading & Construction Company is committed to delivering excellence in trading and construction services. Our inventory management system ensures efficient operations.</p>
             </div>
 
-            <div class="form-group">
-                <label for="role" class="form-label">Select Role</label>
-                <select name="role" id="role" class="form-select" required>
-                    <option value="" disabled selected>-- Choose your role --</option>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
-                </select>
-                <div class="role-info">
-                    <strong>Admin:</strong> Full access to inventory management<br>
-                    <strong>User:</strong> Limited access to view and manage inventory
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h5>
+                    <i class="fas fa-link"></i> Quick Links
+                </h5>
+                <ul>
+                    <li><a href="#"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Inventory</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Reports</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Support</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="footer-section">
+                <h5>
+                    <i class="fas fa-phone"></i> Contact Us
+                </h5>
+                <div class="contact-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>New Salata, Doha, Qatar</span>
+                </div>
+                <div class="contact-info">
+                    <i class="fas fa-phone"></i>
+                    <span>+974 XXXX XXXX</span>
+                </div>
+                <div class="contact-info">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@prestigious.qa</span>
+                </div>
+                <div class="social-links">
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
-
-            <button type="submit">Login</button>
-
-        </form>
-
-        <div class="register-link">
-            <p style="margin: 0 0 10px 0; color: #666;">Don't have an account?</p>
-            <a href="{{ url_for('register') }}">Create a new account</a>
         </div>
 
-    </div>
+        <div class="footer-divider"></div>
 
-</div>
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2026 Prestigious Trading & Construction Company. All rights reserved.</p>
+            <p>
+                <a href="#">Privacy Policy</a> | 
+                <a href="#">Terms of Service</a> | 
+                <a href="#">Contact Support</a>
+            </p>
+            <p style="color: #ffc107; margin-top: 10px; font-weight: 600;">
+                Inventory Management System v1.0
+            </p>
+        </div>
+    </div>
+</footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
