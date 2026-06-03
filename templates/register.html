@@ -8,64 +8,126 @@
 
         <div class="card shadow">
 
-            <div class="card-header text-center">
+            <div class="card-header text-center bg-primary text-white">
 
-                <h3>Create New User</h3>
+                <h3>🔐 Create New User Account</h3>
+                <p class="mb-0 small">Secure Password Registration</p>
 
             </div>
 
             <div class="card-body">
 
-                <form method="POST">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
+                <form method="POST" id="registerForm" novalidate>
+
+                    <!-- Full Name -->
                     <div class="mb-3">
-
-                        <label>Full Name</label>
-
+                        <label class="form-label fw-bold">Full Name</label>
                         <input type="text"
                                name="fullname"
                                class="form-control"
-                               required>
-
+                               placeholder="Enter full name"
+                               required
+                               minlength="2"
+                               maxlength="100">
+                        <small class="text-muted">Required. 2-100 characters.</small>
                     </div>
 
+                    <!-- Username -->
                     <div class="mb-3">
-
-                        <label>Username</label>
-
+                        <label class="form-label fw-bold">Username</label>
                         <input type="text"
                                name="username"
                                class="form-control"
-                               required>
-
+                               placeholder="Choose a username"
+                               required
+                               minlength="3"
+                               maxlength="50"
+                               pattern="^[a-zA-Z0-9_-]+$"
+                               autocomplete="username">
+                        <small class="text-muted">Required. 3-50 characters. Alphanumeric, underscore, and dash only.</small>
                     </div>
 
+                    <!-- Password -->
                     <div class="mb-3">
-
-                        <label>Password</label>
-
+                        <label class="form-label fw-bold">Password</label>
                         <input type="password"
+                               id="password"
                                name="password"
                                class="form-control"
-                               required>
+                               placeholder="Enter a strong password"
+                               required
+                               minlength="8"
+                               maxlength="128"
+                               autocomplete="new-password">
+                        
+                        <!-- Password Strength Indicator -->
+                        <div class="mt-2">
+                            <label class="form-label small fw-bold">Password Strength:</label>
+                            <div class="progress" style="height: 8px;">
+                                <div id="passwordStrength" class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <small id="strengthText" class="text-danger">Very Weak</small>
+                        </div>
 
+                        <!-- Password Requirements -->
+                        <div class="alert alert-info small mt-2 p-2">
+                            <strong>Password Requirements:</strong>
+                            <ul class="mb-0 mt-2" style="font-size: 12px;">
+                                <li id="req-length"><span class="text-danger">✗</span> At least 8 characters</li>
+                                <li id="req-upper"><span class="text-danger">✗</span> At least one uppercase letter (A-Z)</li>
+                                <li id="req-lower"><span class="text-danger">✗</span> At least one lowercase letter (a-z)</li>
+                                <li id="req-number"><span class="text-danger">✗</span> At least one number (0-9)</li>
+                                <li id="req-special"><span class="text-danger">✗</span> At least one special character (!@#$%^&*)</li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <button class="btn btn-success w-100">
+                    <!-- Confirm Password -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Confirm Password</label>
+                        <input type="password"
+                               id="confirmPassword"
+                               name="confirmPassword"
+                               class="form-control"
+                               placeholder="Re-enter your password"
+                               required
+                               autocomplete="new-password">
+                        <div id="passwordMatch" class="mt-2"></div>
+                    </div>
 
-                        Register
+                    <!-- Agree to Terms -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="agreeTerms"
+                               required>
+                        <label class="form-check-label small" for="agreeTerms">
+                            I understand that I am responsible for keeping my password secure and will not share it with others.
+                        </label>
+                    </div>
 
+                    <!-- Register Button -->
+                    <button type="submit" class="btn btn-success w-100 fw-bold">
+                        ✓ Create Account
                     </button>
 
                 </form>
 
                 <hr>
 
-                <a href="{{ url_for('login') }}"
-                   class="btn btn-secondary w-100">
-
-                    Back To Login
-
+                <a href="{{ url_for('login') }}" class="btn btn-secondary w-100">
+                    ← Back To Login
                 </a>
 
             </div>
@@ -75,5 +137,145 @@
     </div>
 
 </div>
+
+<!-- Password Validation & Strength Script -->
+<script>
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordStrengthBar = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('strengthText');
+    const registerForm = document.getElementById('registerForm');
+
+    const requirements = {
+        length: document.getElementById('req-length'),
+        upper: document.getElementById('req-upper'),
+        lower: document.getElementById('req-lower'),
+        number: document.getElementById('req-number'),
+        special: document.getElementById('req-special')
+    };
+
+    // Password strength checker
+    function checkPasswordStrength() {
+        const password = passwordInput.value;
+        let strength = 0;
+        let strengthLabel = 'Very Weak';
+        let strengthColor = 'bg-danger';
+
+        // Check length (20% per character over 8)
+        if (password.length >= 8) {
+            strength += 20;
+            requirements.length.innerHTML = '<span class="text-success">✓</span> At least 8 characters';
+        } else {
+            requirements.length.innerHTML = '<span class="text-danger">✗</span> At least 8 characters';
+        }
+
+        // Check uppercase
+        if (/[A-Z]/.test(password)) {
+            strength += 20;
+            requirements.upper.innerHTML = '<span class="text-success">✓</span> At least one uppercase letter (A-Z)';
+        } else {
+            requirements.upper.innerHTML = '<span class="text-danger">✗</span> At least one uppercase letter (A-Z)';
+        }
+
+        // Check lowercase
+        if (/[a-z]/.test(password)) {
+            strength += 20;
+            requirements.lower.innerHTML = '<span class="text-success">✓</span> At least one lowercase letter (a-z)';
+        } else {
+            requirements.lower.innerHTML = '<span class="text-danger">✗</span> At least one lowercase letter (a-z)';
+        }
+
+        // Check number
+        if (/[0-9]/.test(password)) {
+            strength += 20;
+            requirements.number.innerHTML = '<span class="text-success">✓</span> At least one number (0-9)';
+        } else {
+            requirements.number.innerHTML = '<span class="text-danger">✗</span> At least one number (0-9)';
+        }
+
+        // Check special characters
+        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+            strength += 20;
+            requirements.special.innerHTML = '<span class="text-success">✓</span> At least one special character (!@#$%^&*)';
+        } else {
+            requirements.special.innerHTML = '<span class="text-danger">✗</span> At least one special character (!@#$%^&*)';
+        }
+
+        // Determine strength label and color
+        if (strength <= 20) {
+            strengthLabel = 'Very Weak';
+            strengthColor = 'bg-danger';
+        } else if (strength <= 40) {
+            strengthLabel = 'Weak';
+            strengthColor = 'bg-warning';
+        } else if (strength <= 60) {
+            strengthLabel = 'Fair';
+            strengthColor = 'bg-info';
+        } else if (strength <= 80) {
+            strengthLabel = 'Strong';
+            strengthColor = 'bg-primary';
+        } else {
+            strengthLabel = 'Very Strong';
+            strengthColor = 'bg-success';
+        }
+
+        // Update UI
+        passwordStrengthBar.style.width = strength + '%';
+        passwordStrengthBar.className = 'progress-bar ' + strengthColor;
+        strengthText.textContent = strengthLabel;
+        strengthText.className = 'small ' + (strengthColor === 'bg-danger' ? 'text-danger' : strengthColor === 'bg-warning' ? 'text-warning' : strengthColor === 'bg-info' ? 'text-info' : strengthColor === 'bg-primary' ? 'text-primary' : 'text-success');
+
+        checkPasswordMatch();
+    }
+
+    // Password match checker
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const matchDiv = document.getElementById('passwordMatch');
+
+        if (confirmPassword === '') {
+            matchDiv.innerHTML = '';
+            return;
+        }
+
+        if (password === confirmPassword && password.length > 0) {
+            matchDiv.innerHTML = '<small class="text-success">✓ Passwords match</small>';
+        } else {
+            matchDiv.innerHTML = '<small class="text-danger">✗ Passwords do not match</small>';
+        }
+    }
+
+    // Event listeners
+    passwordInput.addEventListener('input', checkPasswordStrength);
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    // Form submission validation
+    registerForm.addEventListener('submit', function(e) {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match. Please check and try again.');
+            return false;
+        }
+
+        // Check password strength (all requirements must be met)
+        if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) || password.length < 8) {
+            e.preventDefault();
+            alert('Password does not meet all requirements. Please ensure it contains uppercase, lowercase, numbers, and special characters.');
+            return false;
+        }
+
+        // Check if agree to terms
+        if (!document.getElementById('agreeTerms').checked) {
+            e.preventDefault();
+            alert('You must agree to the terms to create an account.');
+            return false;
+        }
+    });
+</script>
 
 {% endblock %}
