@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import mysql.connector
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "inventory_secret_key"
@@ -57,8 +58,8 @@ def login():
             cursor = conn.cursor(dictionary=True)
 
             cursor.execute(
-                "SELECT * FROM users WHERE username=%s AND password=%s",
-                (username, password)
+                "SELECT * FROM users WHERE username=%s",
+                (username,)
             )
 
             user = cursor.fetchone()
@@ -66,7 +67,7 @@ def login():
             cursor.close()
             conn.close()
 
-            if user:
+            if user and check_password_hash(user['password'], password):
                 session['user'] = username
                 session['role'] = "user"
                 flash("Login Successful", "success")
@@ -178,13 +179,16 @@ def register():
         username = request.form['username']
         password = request.form['password']
 
+        # Hash the password before storing
+        hashed_password = generate_password_hash(password)
+
         conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO users (fullname, username, password)
             VALUES (%s, %s, %s)
-        """, (fullname, username, password))
+        """, (fullname, username, hashed_password))
 
         conn.commit()
 
