@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory System</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="container-fluid">
+
+        <!-- Brand -->
+        <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+            Inventory System
+        </a>
+
+        <!-- Mobile toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto">
+
+                <!-- DASHBOARD -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        Dashboard
+                    </a>
+                </li>
+
+                <!-- INVENTORY -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        Inventory
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('inventory') }}">
+                                Inventory List
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('add_item') }}">
+                                Add Item
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- TRANSACTIONS -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        Transactions
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('withdrawals') }}">
+                                Withdrawals
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('returns') }}">
+                                Returns
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('stock_additions') }}">
+                                Stock Additions
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('audit') }}">
+                                Audit Trail
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- DOCUMENTS (future-ready) -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        Documents
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                Upload Document
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                Document Library
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- ADMIN / ACCOUNT -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        Account
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        {% if session.get('role') == 'admin' %}
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('register') }}">
+                                Register User
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                Logout
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+
+            <!-- USER INFO -->
+            <span class="navbar-text text-white">
+                {{ session.get('user') }} ({{ session.get('role') }})
+            </span>
+
+        </div>
+    </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+</body>
+</html>

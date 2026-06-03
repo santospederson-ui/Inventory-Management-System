@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Add Inventory Item</h3>
+
+<form method="POST">
+
+<input type="text"
+       name="item_code"
+       class="form-control mb-2"
+       placeholder="Item Code"
+       required>
+
+<input type="text"
+       name="description"
+       class="form-control mb-2"
+       placeholder="Description"
+       required>
+
+<input type="text"
+       name="brand"
+       class="form-control mb-2"
+       placeholder="Brand">
+
+<input type="number"
+       name="qty"
+       class="form-control mb-2"
+       placeholder="Quantity">
+
+<textarea name="remark"
+          class="form-control mb-2"
+          placeholder="Remark"></textarea>
+
+<button class="btn btn-success">
+    Save Item
+</button>
+
+</form>
+
+{% endblock %}

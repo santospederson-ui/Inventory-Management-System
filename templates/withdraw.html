@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header text-center">
+                <h3>Withdraw Item</h3>
+            </div>
+
+            <div class="card-body">
+
+                <p><b>Item Code:</b> {{ item.item_code }}</p>
+                <p><b>Description:</b> {{ item.description }}</p>
+                <p><b>Available Qty:</b> {{ item.qty }}</p>
+
+                <form method="POST">
+
+                    <div class="mb-3">
+                        <label>Quantity to Withdraw</label>
+                        <input type="number" name="qty" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Project</label>
+                        <input type="text" name="project" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-danger w-100">
+                        Withdraw
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

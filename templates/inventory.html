@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3 class="mb-3">Inventory List</h3>
+
+<!-- SEARCH FORM -->
+<form method="GET" id="searchForm" action="{{ url_for('inventory') }}">
+
+    <div class="row mb-3">
+
+        <div class="col-md-10">
+
+            <input type="text"
+       id="searchInput"
+       name="search"
+       value="{{ search }}"
+       class="form-control"
+       placeholder="Search...">
+
+        </div>
+
+    </div>
+
+</form>
+
+
+<!-- TABLE -->
+<table class="table table-bordered table-striped">
+
+    <thead class="table-dark">
+
+        <tr>
+            <th>S/N</th>
+            <th>Item Code</th>
+            <th>Description</th>
+            <th>Brand</th>
+            <th>Qty</th>
+            <th>Remark</th>
+            <th>Date Added</th>
+
+            {% if session.get('role') == 'admin' %}
+            <th>Actions</th>
+            {% endif %}
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for item in items %}
+
+        <tr>
+
+            <td>{{ loop.index + ((page - 1) * 2) }}</td>
+
+            <td>{{ item.item_code }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.brand }}</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ item.remark }}</td>
+
+            <td>
+                {% if item.created_at %}
+                    {{ item.created_at }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+
+            {% if session.get('role') == 'admin' %}
+
+            <td>
+
+                <a href="{{ url_for('edit_item', id=item.id) }}" class="btn btn-warning btn-sm mb-1">
+                    Edit
+                </a>
+
+                <a href="{{ url_for('delete_item', id=item.id) }}"
+                   class="btn btn-danger btn-sm mb-1"
+                   onclick="return confirm('Delete Item?')">
+                    Delete
+                </a>
+
+                <br>
+
+                <a href="{{ url_for('withdraw', id=item.id) }}" class="btn btn-danger btn-sm mt-1">
+                    Withdraw
+                </a>
+
+                <a href="{{ url_for('return_item', id=item.id) }}" class="btn btn-success btn-sm mt-1">
+                    Return
+                </a>
+
+                <a href="{{ url_for('add_stock', id=item.id) }}" class="btn btn-primary btn-sm mt-1">
+                    Add Stock
+                </a>
+
+            </td>
+
+            {% endif %}
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+
+<!-- PAGINATION -->
+<nav>
+    <ul class="pagination justify-content-center">
+
+        {% if page > 1 %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('inventory', page=page-1, search=search) }}">
+               Previous
+            </a>
+        </li>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('inventory', page=p, search=search) }}">
+               {{ p }}
+            </a>
+        </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('inventory', page=page+1, search=search) }}">
+               Next
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
+
+
+
+{% endblock %}
+
+
+

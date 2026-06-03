@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Stock Additions</h3>
+
+<!-- SEARCH -->
+<form method="GET" id="searchForm" action="{{ url_for('stock_additions') }}">
+
+    <div class="row mb-3">
+
+        <div class="col-md-10">
+
+             <input type="text"
+                   id="searchInput"
+                   name="search"
+                   value="{{ search }}"
+                   class="form-control"
+                   placeholder="Search Stock Additions">
+
+        </div>
+
+    </div>
+
+</form>
+
+
+
+
+<table class="table table-bordered">
+
+<tr>
+<th>Date</th>
+<th>Item Code</th>
+<th>Description</th>
+<th>Qty</th>
+<th>Remark</th>
+<th>Added By</th>
+</tr>
+
+{% for row in data %}
+<tr>
+<td>{{ row.action_date }}</td>
+<td>{{ row.item_code }}</td>
+<td>{{ row.description }}</td>
+<td>{{ row.qty }}</td>
+<td>{{ row.remark }}</td>
+<td>{{ row.added_by }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+
+<nav>
+    <ul class="pagination justify-content-center">
+
+        {% if page > 1 %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('stock_additions', page=page-1, search=search) }}">
+               Previous
+            </a>
+        </li>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('stock_additions', page=p, search=search) }}">
+               {{ p }}
+            </a>
+        </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('stock_additions', page=page+1, search=search) }}">
+               Next
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
+
+
+{% endblock %}

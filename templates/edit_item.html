@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Edit Item</h3>
+
+<form method="POST">
+
+<input type="text"
+       name="item_code"
+       value="{{ item.item_code }}"
+       class="form-control mb-2">
+
+<input type="text"
+       name="description"
+       value="{{ item.description }}"
+       class="form-control mb-2">
+
+<input type="text"
+       name="brand"
+       value="{{ item.brand }}"
+       class="form-control mb-2">
+
+<input type="number"
+       name="qty"
+       value="{{ item.qty }}"
+       class="form-control mb-2">
+
+<textarea name="remark"
+          class="form-control mb-2">{{ item.remark }}</textarea>
+
+<button class="btn btn-primary">
+    Update Item
+</button>
+
+</form>
+
+{% endblock %}

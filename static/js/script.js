@@ -1,0 +1,1 @@
+console.log("Inventory System Loaded");

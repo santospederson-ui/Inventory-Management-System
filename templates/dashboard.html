@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mb-4">
+
+    Welcome {{ username }}
+
+</h1>
+
+
+
+<!-- LOW ASTOCK ALERT-->
+
+<h3 class="mt-4 text-danger">Low Stock Alerts</h3>
+
+{% if low_stock %}
+<table class="table table-bordered table-sm">
+    <thead class="table-danger">
+        <tr>
+            <th>Item Code</th>
+            <th>Description</th>
+            <th>Qty Left</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in low_stock %}
+        <tr>
+            <td>{{ item.item_code }}</td>
+            <td>{{ item.description }}</td>
+            <td>
+                <span class="badge bg-danger">
+                    {{ item.qty }}
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-success">No low stock items </p>
+{% endif %}
+
+
+
+
+
+<nav>
+    <ul class="pagination justify-content-center">
+
+        {% if page > 1 %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('dashboard', page=page-1) }}">
+                Previous
+            </a>
+        </li>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('dashboard', page=p) }}">
+                {{ p }}
+            </a>
+        </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('dashboard', page=page+1) }}">
+                Next
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
+
+
+<!-- RECENT WITHDRAWERS -->
+<h3 class="mt-4">Recent Withdrawals</h3>
+
+<table class="table table-sm table-striped">
+    <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Project</th>
+        <th>Date</th>
+    </tr>
+
+    {% for w in recent_withdrawals %}
+    <tr>
+        <td>{{ w.item_code }}</td>
+        <td>{{ w.qty }}</td>
+        <td>{{ w.project }}</td>
+        <td>{{ w.action_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+
+<!-- RECENT RETURNS -->
+
+
+
+<h3 class="mt-4">Recent Return Items</h3>
+
+<table class="table table-sm table-striped">
+    <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Project</th>
+        <th>Date</th>
+    </tr>
+
+    {% for r in recent_returns %}
+    <tr>
+        <td>{{ r.item_code }}</td>
+        <td>{{ r.qty }}</td>
+        <td>{{ r.project }}</td>
+        <td>{{ r.action_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+
+<hr>
+
+<h3>User Information</h3>
+
+<table class="table table-bordered">
+
+    <tr>
+        <th>Username</th>
+        <td>{{ username }}</td>
+    </tr>
+
+    <tr>
+        <th>Role</th>
+        <td>{{ role }}</td>
+    </tr>
+
+</table>
+
+{% endblock %}

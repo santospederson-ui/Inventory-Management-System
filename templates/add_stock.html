@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header text-center">
+                <h3>Add Stock</h3>
+            </div>
+
+            <div class="card-body">
+
+                <p><b>Item:</b> {{ item.item_code }} - {{ item.description }}</p>
+
+                <form method="POST">
+
+                    <div class="mb-3">
+                        <label>Quantity to Add</label>
+                        <input type="number" name="qty" class="form-control" required>
+                    </div>
+
+                     <div class="mb-3">
+                        <label>Remark</label>
+                        <input type="text" name="remark" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-primary w-100">
+                        Add Stock
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

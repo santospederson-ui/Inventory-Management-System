@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card shadow">
+
+            <div class="card-header text-center">
+                <h3>Return Item</h3>
+            </div>
+
+            <div class="card-body">
+
+                <p><b>Item:</b> {{ item.item_code }} - {{ item.description }}</p>
+
+                <form method="POST">
+
+    <div class="mb-3">
+        <label>Quantity Returned</label>
+        <input type="number"
+               name="qty"
+               class="form-control"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label>Project</label>
+        <input type="text"
+               name="project"
+               class="form-control"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label>Remark</label>
+        <textarea name="remark"
+                  class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-success">
+        Return Item
+    </button>
+
+</form>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
