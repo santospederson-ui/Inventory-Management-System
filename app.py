@@ -1,0 +1,1057 @@
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+import mysql.connector
+
+app = Flask(__name__)
+app.secret_key = "inventory_secret_key"
+
+
+# =========================
+# DATABASE CONNECTION
+# =========================
+import os
+
+def get_db_connection():
+    return mysql.connector.connect(
+        db=mysql.connector.connect(
+            host=os.environ.get("MYSQLHOST"),
+            user=os.environ.get("MYSQLUSER"),
+            password=os.environ.get("MYSQLPASSWORD"),
+            database=os.environ.get("MYSQLDATABASE"),
+            port=int(os.environ.get("MYSQLPORT") or 3306)
+        )
+    )
+
+# =========================
+# HOME
+# =========================
+@app.route('/')
+def home():
+    if 'user' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+
+# =========================
+# LOGIN
+# =========================
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+
+    if request.method == 'POST':
+
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+
+        # Admin login (hardcoded)
+        if role == "admin":
+            if username == "admin" and password == "admin123":
+                session['user'] = username
+                session['role'] = "admin"
+                flash("Admin Login Successful", "success")
+                return redirect(url_for('dashboard'))
+
+        # User login (DB)
+        if role == "user":
+
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute(
+                "SELECT * FROM users WHERE username=%s AND password=%s",
+                (username, password)
+            )
+
+            user = cursor.fetchone()
+
+            cursor.close()
+            conn.close()
+
+            if user:
+                session['user'] = username
+                session['role'] = "user"
+                flash("Login Successful", "success")
+                return redirect(url_for('dashboard'))
+
+        flash("Invalid Credentials", "danger")
+
+    return render_template('login.html')
+
+
+# =========================
+# DASHBOARD
+# =========================
+@app.route('/dashboard')
+def dashboard():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    page = request.args.get('page', 1, type=int)
+    per_page = 1
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # =========================
+    # LOW STOCK (PAGINATED)
+    # =========================
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM inventory_table
+        WHERE qty <= 5
+    """)
+    total = cursor.fetchone()['total']
+
+    cursor.execute("""
+        SELECT *
+        FROM inventory_table
+        WHERE qty <= 5
+        ORDER BY qty ASC
+        LIMIT %s OFFSET %s
+    """, (per_page, offset))
+
+    low_stock = cursor.fetchall()
+
+    total_pages = (total + per_page - 1) // per_page
+
+
+    # =========================
+    # RECENT WITHDRAWALS (NO PAGINATION)
+    # =========================
+    cursor.execute("""
+        SELECT *
+        FROM withdrawals_table
+        ORDER BY action_date DESC
+        LIMIT 5
+    """)
+    recent_withdrawals = cursor.fetchall()
+
+
+    # =========================
+    # RECENT RETURNS (NO PAGINATION)
+    # =========================
+    cursor.execute("""
+        SELECT *
+        FROM return_tab
+        ORDER BY action_date DESC
+        LIMIT 5
+    """)
+    recent_returns = cursor.fetchall()
+
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        'dashboard.html',
+        username=session['user'],
+        role=session['role'],
+        low_stock=low_stock,
+        recent_withdrawals=recent_withdrawals,
+        recent_returns=recent_returns,
+        page=page,
+        total_pages=total_pages
+    )
+
+
+# =========================
+# LOGOUT
+# =========================
+@app.route('/logout')
+def logout():
+
+    session.clear()
+    flash("Logged Out Successfully", "info")
+    return redirect(url_for('login'))
+
+
+# =========================
+# REGISTER USER
+# =========================
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+
+    if request.method == 'POST':
+
+        fullname = request.form['fullname']
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO users (fullname, username, password)
+            VALUES (%s, %s, %s)
+        """, (fullname, username, password))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("User Registered Successfully", "success")
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+# =========================
+# INVENTORY LIST ROUTE
+# =========================
+@app.route('/inventory')
+def inventory():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 1
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM inventory_table
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR brand LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM inventory_table
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR brand LIKE %s
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        cursor.execute(
+            "SELECT COUNT(*) AS total FROM inventory_table"
+        )
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM inventory_table
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    items = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'inventory.html',
+        items=items,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+# =========================
+# ADD ITEM (ADMIN)
+# =========================
+@app.route('/add_item', methods=['GET', 'POST'])
+def add_item():
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    if request.method == 'POST':
+
+        item_code = request.form['item_code']
+        description = request.form['description']
+        brand = request.form['brand']
+        qty = request.form['qty']
+        remark = request.form['remark']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO inventory_table
+            (item_code, description, brand, qty, remark)
+            VALUES (%s,%s,%s,%s,%s)
+        """, (item_code, description, brand, qty, remark))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Item Added Successfully", "success")
+        return redirect(url_for('inventory'))
+
+    return render_template('add_item.html')
+
+
+# =========================
+# EDIT ITEM (ADMIN)
+# =========================
+@app.route('/edit_item/<int:id>', methods=['GET', 'POST'])
+def edit_item(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+
+        item_code = request.form['item_code']
+        description = request.form['description']
+        brand = request.form['brand']
+        qty = request.form['qty']
+        remark = request.form['remark']
+
+        cursor.execute("""
+            UPDATE inventory_table
+            SET item_code=%s,
+                description=%s,
+                brand=%s,
+                qty=%s,
+                remark=%s
+            WHERE id=%s
+        """, (item_code, description, brand, qty, remark, id))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Item Updated", "success")
+        return redirect(url_for('inventory'))
+
+    cursor.execute("SELECT * FROM inventory_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('edit_item.html', item=item)
+
+
+# =========================
+# DELETE ITEM (ADMIN)
+# =========================
+@app.route('/delete_item/<int:id>')
+def delete_item(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM inventory_table WHERE id=%s", (id,))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    flash("Item Deleted", "warning")
+    return redirect(url_for('inventory'))
+
+
+
+# =========================
+# AUDIT ROUTE
+# =========================
+
+@app.route('/audit')
+def audit():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # SEARCH ACTIVE
+    if search:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM (
+
+                SELECT item_code, description, project,
+                       withdrawn_by AS user
+                FROM withdrawals_table
+
+                UNION ALL
+
+                SELECT item_code, description, project,
+                       returned_by AS user
+                FROM return_tab
+
+                UNION ALL
+
+                SELECT item_code, description,
+                       remark AS project,
+                       added_by AS user
+                FROM stock_addition
+
+            ) AS audit_data
+
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR user LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM (
+
+                SELECT
+                    item_code,
+                    description,
+                    qty,
+                    project,
+                    withdrawn_by AS user,
+                    action_date,
+                    'WITHDRAWAL' AS action
+                FROM withdrawals_table
+
+                UNION ALL
+
+                SELECT
+                    item_code,
+                    description,
+                    qty,
+                    project,
+                    returned_by AS user,
+                    action_date,
+                    'RETURN' AS action
+                FROM return_tab
+
+                UNION ALL
+
+                SELECT
+                    item_code,
+                    description,
+                    qty,
+                    remark AS project,
+                    added_by AS user,
+                    action_date,
+                    'STOCK ADD' AS action
+                FROM stock_addition
+
+            ) AS audit_data
+
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR user LIKE %s
+
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM (
+                SELECT action_date FROM withdrawals_table
+                UNION ALL
+                SELECT action_date FROM return_tab
+                UNION ALL
+                SELECT action_date FROM stock_addition
+            ) AS audit_data
+        """)
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM (
+
+                SELECT
+                    item_code,
+                    description,
+                    qty,
+                    project,
+                    withdrawn_by AS user,
+                    action_date,
+                    'WITHDRAWAL' AS action
+                FROM withdrawals_table
+
+                UNION ALL
+
+                SELECT
+                    item_code,
+                    description,
+                    qty,
+                    project,
+                    returned_by AS user,
+                    action_date,
+                    'RETURN' AS action
+                FROM return_tab
+
+                UNION ALL
+
+                SELECT
+                    item_code,
+                    description,
+                    qty,
+                    remark AS project,
+                    added_by AS user,
+                    action_date,
+                    'STOCK ADD' AS action
+                FROM stock_addition
+
+            ) AS audit_data
+
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    logs = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        "audit.html",
+        logs=logs,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
+# =========================
+# WITHDRAWER ROUTE
+# =========================
+
+
+@app.route('/withdraw/<int:id>', methods=['GET', 'POST'])
+def withdraw(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM inventory_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    if request.method == 'POST':
+
+        qty = int(request.form['qty'])
+        project = request.form['project']
+
+        if qty > item['qty']:
+            flash("Not enough stock", "danger")
+            return redirect(url_for('inventory'))
+
+        # reduce stock
+        cursor.execute("""
+            UPDATE inventory_table
+            SET qty = qty - %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # log withdrawal
+        cursor.execute("""
+            INSERT INTO withdrawals_table
+            (item_id, item_code, description, qty, project, withdrawn_by)
+            VALUES (%s,%s,%s,%s,%s,%s)
+        """, (
+            id,
+            item['item_code'],
+            item['description'],
+            qty,
+            project,
+            session['user']
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Item Withdrawn Successfully", "success")
+        return redirect(url_for('inventory'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('withdraw.html', item=item)
+
+
+
+# =========================
+# RETURN ROUTE
+# =========================
+
+
+@app.route('/return_item/<int:id>', methods=['GET', 'POST'])
+def return_item(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        "SELECT * FROM inventory_table WHERE id=%s",
+        (id,)
+    )
+    item = cursor.fetchone()
+
+    if request.method == 'POST':
+
+        qty = int(request.form['qty'])
+        project = request.form['project']
+        remark = request.form['remark']
+
+        # Increase stock
+        cursor.execute("""
+            UPDATE inventory_table
+            SET qty = qty + %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # Save return record
+        cursor.execute("""
+            INSERT INTO return_tab
+            (
+                item_id,
+                item_code,
+                description,
+                qty,
+                returned_by,
+                project,
+                remark,
+                action_date
+            )
+            VALUES
+            (%s,%s,%s,%s,%s,%s,%s,NOW())
+        """, (
+            id,
+            item['item_code'],
+            item['description'],
+            qty,
+            session['user'],
+            project,
+            remark
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Item Returned Successfully", "success")
+        return redirect(url_for('inventory'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('return.html', item=item)
+
+
+
+# =========================
+# ADD STOCK ROUTE
+# =========================
+
+
+@app.route('/add_stock/<int:id>', methods=['GET', 'POST'])
+def add_stock(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM inventory_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    if request.method == 'POST':
+        qty = int(request.form['qty'])
+        remark = request.form['remark']  # ✅ ADD THIS
+
+        # increase stock
+        cursor.execute("""
+            UPDATE inventory_table
+            SET qty = qty + %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # log into stock_addition table
+        cursor.execute("""
+            INSERT INTO stock_addition
+            (item_id, item_code, description, qty, added_by, remark)
+            VALUES (%s,%s,%s,%s,%s,%s)
+        """, (
+            id,
+            item['item_code'],
+            item['description'],
+            qty,
+            session['user'],
+            remark
+        ))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Stock Added Successfully", "success")
+        return redirect(url_for('inventory'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('add_stock.html', item=item)
+
+
+
+# =========================
+# DISPLAY WITHDRAWAL TABLE
+# =========================
+
+
+
+@app.route('/withdrawals')
+def withdrawals():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        # Count filtered records
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM withdrawals_table
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR withdrawn_by LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        # Get filtered records
+        cursor.execute("""
+            SELECT *
+            FROM withdrawals_table
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR withdrawn_by LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM withdrawals_table
+        """)
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM withdrawals_table
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'withdrawals.html',
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+# =========================
+# DISPLAY RETURN TABLE
+# =========================
+
+
+
+@app.route('/returns')
+def returns():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        # Count matching records
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM return_tab
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        # Get matching records
+        cursor.execute("""
+            SELECT *
+            FROM return_tab
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        # Total rows
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM return_tab
+        """)
+
+        total = cursor.fetchone()['total']
+
+        # Current page rows
+        cursor.execute("""
+            SELECT *
+            FROM return_tab
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'returns.html',
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
+
+# =========================
+# DISPLAY ADD STOCK TABLE
+# =========================
+
+
+
+
+@app.route('/stock_additions')
+def stock_additions():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # SEARCH ACTIVE
+    if search:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM stock_addition
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR added_by LIKE %s
+               OR remark LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM stock_addition
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR added_by LIKE %s
+               OR remark LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    # NO SEARCH
+    else:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM stock_addition
+        """)
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM stock_addition
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'stock_additions.html',
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
+# =========================
+# RUN APP
+# =========================
+if __name__ == '__main__':
+    app.run(debug=True)
