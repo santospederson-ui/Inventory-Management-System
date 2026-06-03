@@ -2,21 +2,243 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory System - Prestigious Trading & Construction</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-bottom: 3px solid #ffc107;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #ffc107 !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: #ffc107 !important;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 8px 12px;
+        }
+
+        .dropdown-menu {
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 100%) !important;
+            border: 1px solid #ffc107;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown-item {
+            color: rgba(255, 255, 255, 0.85) !important;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 193, 7, 0.2) !important;
+            color: #ffc107 !important;
+            padding-left: 20px;
+        }
+
+        .navbar-text {
+            color: white !important;
+            font-weight: 600;
+            background: rgba(255, 193, 7, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ffc107;
+        }
+
+        /* Main Content */
+        .container {
+            flex: 1;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.98) 0%, rgba(42, 82, 152, 0.98) 100%);
+            color: white;
+            padding: 40px 20px 20px;
+            border-top: 4px solid #ffc107;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: auto;
+        }
+
+        footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        footer .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        footer .footer-section h5 {
+            color: #ffc107;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        footer .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        footer .footer-section ul li {
+            margin-bottom: 10px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        footer .footer-section ul li a {
+            color: #ffc107;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer .footer-section ul li a:hover {
+            color: #ff9800;
+        }
+
+        footer .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        footer .contact-info i {
+            color: #ffc107;
+            width: 20px;
+            text-align: center;
+        }
+
+        footer .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        footer .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            border-radius: 50%;
+            color: #ffc107;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        footer .social-links a:hover {
+            background: #ffc107;
+            color: #1e3c72;
+            transform: translateY(-3px);
+        }
+
+        footer .footer-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.3), transparent);
+            margin: 30px 0;
+        }
+
+        footer .footer-bottom {
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        footer .footer-bottom p {
+            margin: 5px 0;
+        }
+
+        footer .footer-bottom a {
+            color: #ffc107;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer .footer-bottom a:hover {
+            color: #ff9800;
+            text-decoration: underline;
+        }
+
+        footer .footer-section p {
+            color: #e0e0e0;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            footer .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark">
 
     <div class="container-fluid">
 
         <!-- Brand -->
         <a class="navbar-brand" href="{{ url_for('dashboard') }}">
-            Inventory System
+            <i class="fas fa-building"></i> Prestigious IMS
         </a>
 
         <!-- Mobile toggle -->
@@ -31,26 +253,26 @@
                 <!-- DASHBOARD -->
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('dashboard') }}">
-                        Dashboard
+                        <i class="fas fa-chart-line"></i> Dashboard
                     </a>
                 </li>
 
                 <!-- INVENTORY -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        Inventory
+                        <i class="fas fa-boxes"></i> Inventory
                     </a>
                     <ul class="dropdown-menu">
 
                         <li>
                             <a class="dropdown-item" href="{{ url_for('inventory') }}">
-                                Inventory List
+                                <i class="fas fa-list"></i> Inventory List
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="{{ url_for('add_item') }}">
-                                Add Item
+                                <i class="fas fa-plus-circle"></i> Add Item
                             </a>
                         </li>
 
@@ -60,31 +282,31 @@
                 <!-- TRANSACTIONS -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        Transactions
+                        <i class="fas fa-exchange-alt"></i> Transactions
                     </a>
                     <ul class="dropdown-menu">
 
                         <li>
                             <a class="dropdown-item" href="{{ url_for('withdrawals') }}">
-                                Withdrawals
+                                <i class="fas fa-arrow-alt-circle-out"></i> Withdrawals
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="{{ url_for('returns') }}">
-                                Returns
+                                <i class="fas fa-arrow-alt-circle-in"></i> Returns
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="{{ url_for('stock_additions') }}">
-                                Stock Additions
+                                <i class="fas fa-plus-square"></i> Stock Additions
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="{{ url_for('audit') }}">
-                                Audit Trail
+                                <i class="fas fa-history"></i> Audit Trail
                             </a>
                         </li>
 
@@ -94,19 +316,19 @@
                 <!-- DOCUMENTS (future-ready) -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        Documents
+                        <i class="fas fa-file-alt"></i> Documents
                     </a>
                     <ul class="dropdown-menu">
 
                         <li>
                             <a class="dropdown-item" href="#">
-                                Upload Document
+                                <i class="fas fa-upload"></i> Upload Document
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="#">
-                                Document Library
+                                <i class="fas fa-folder"></i> Document Library
                             </a>
                         </li>
 
@@ -116,21 +338,21 @@
                 <!-- ADMIN / ACCOUNT -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        Account
+                        <i class="fas fa-user-circle"></i> Account
                     </a>
                     <ul class="dropdown-menu">
 
                         {% if session.get('role') == 'admin' %}
                         <li>
                             <a class="dropdown-item" href="{{ url_for('register') }}">
-                                Register User
+                                <i class="fas fa-user-plus"></i> Register User
                             </a>
                         </li>
                         {% endif %}
 
                         <li>
                             <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
-                                Logout
+                                <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
                         </li>
 
@@ -140,8 +362,8 @@
             </ul>
 
             <!-- USER INFO -->
-            <span class="navbar-text text-white">
-                {{ session.get('user') }} ({{ session.get('role') }})
+            <span class="navbar-text">
+                <i class="fas fa-user"></i> {{ session.get('user') }} ({{ session.get('role') }})
             </span>
 
         </div>
@@ -152,6 +374,66 @@
 <div class="container mt-4">
     {% block content %}{% endblock %}
 </div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-grid">
+            <!-- Company Info -->
+            <div class="footer-section">
+                <h5>
+                    <i class="fas fa-building"></i> About Us
+                </h5>
+                <p>Prestigious Trading & Construction Company is committed to delivering excellence in trading and construction services. Our inventory management system ensures efficient operations.</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h5>
+                    <i class="fas fa-link"></i> Quick Links
+                </h5>
+                <ul>
+                    <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Dashboard</a></li>
+                    <li><a href="{{ url_for('inventory') }}"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Inventory</a></li>
+                    <li><a href="{{ url_for('audit') }}"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Reports</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="footer-section">
+                <h5>
+                    <i class="fas fa-phone"></i> Contact Info
+                </h5>
+                <div class="contact-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>New Salata, Doha, Qatar</span>
+                </div>
+                <div class="contact-info">
+                    <i class="fas fa-phone"></i>
+                    <span>+974 XXXX XXXX</span>
+                </div>
+                <div class="contact-info">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@prestigious.qa</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-divider"></div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2026 Prestigious Trading & Construction Company. All rights reserved.</p>
+            <p>
+                <a href="#">Privacy Policy</a> | 
+                <a href="#">Terms of Service</a>
+            </p>
+            <p style="color: #ffc107; margin-top: 10px; font-weight: 600;">
+                Inventory Management System v1.0
+            </p>
+        </div>
+    </div>
+</footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
