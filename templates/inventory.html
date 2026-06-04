@@ -160,6 +160,50 @@
         color: #ddd;
         margin-bottom: 20px;
     }
+
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    min-width: 1200px;
+}
+
+@media (max-width: 768px) {
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .search-box form {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        width: 100%;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        margin-bottom: 3px;
+    }
+}
+
+
+
+    
 </style>
 
 <!-- Page Header -->
@@ -192,7 +236,8 @@
 <!-- Items Table -->
 {% if items %}
 <div class="data-table-wrapper">
-    <table class="table">
+    <div class="table-responsive">
+        <table class="table">
         <thead>
             <tr>
                 <th>#</th>
@@ -254,8 +299,8 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
-
 <!-- Pagination -->
 <nav class="pagination">
     <ul class="pagination" style="margin-bottom: 0;">
