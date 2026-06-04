@@ -131,6 +131,41 @@
         color: #ddd;
         margin-bottom: 20px;
     }
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.data-table-wrapper table {
+    min-width: 900px;
+}
+
+@media (max-width: 768px) {
+
+    .page-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .search-box form {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .pagination {
+        overflow-x: auto;
+    }
+
+    .pagination ul {
+        flex-wrap: nowrap;
+    }
+}
+
+    
 </style>
 
 <!-- Page Header -->
@@ -159,7 +194,8 @@
 <!-- Audit History Table -->
 {% if logs %}
 <div class="data-table-wrapper">
-    <table class="table">
+    <div class="table-responsive">
+        <table class="table">
         <thead>
             <tr>
                 <th><i class="fas fa-calendar-alt"></i> Date</th>
@@ -213,9 +249,9 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+        </table>
+    </div>
 </div>
-
 <!-- Pagination -->
 <nav class="pagination">
     <ul class="pagination" style="margin-bottom: 0;">
