@@ -148,6 +148,17 @@
         border-radius: 20px;
         font-weight: 600;
     }
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.data-table table {
+    min-width: 700px;
+}
+
+    
 </style>
 
 <!-- Welcome Header -->
@@ -166,7 +177,7 @@
 </div>
 
 {% if low_stock %}
-<div class="data-table">
+<div class="data-table table-responsive">
     <table class="table">
         <thead>
             <tr>
@@ -234,7 +245,7 @@
 </div>
 
 {% if recent_withdrawals %}
-<div class="data-table">
+<div class="data-table table-responsive">
     <table class="table">
         <thead>
             <tr>
@@ -270,7 +281,7 @@
 </div>
 
 {% if recent_returns %}
-<div class="data-table">
+<div class="data-table table-responsive">
     <table class="table">
         <thead>
             <tr>
