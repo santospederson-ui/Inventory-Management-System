@@ -88,7 +88,7 @@ def dashboard():
         return redirect(url_for('login'))
 
     page = request.args.get('page', 1, type=int)
-    per_page = 1
+    per_page = 5
     offset = (page - 1) * per_page
 
     conn = get_db_connection()
@@ -213,7 +213,7 @@ def inventory():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
 
-    per_page = 1
+    per_page = 10
     offset = (page - 1) * per_page
 
     conn = get_db_connection()
