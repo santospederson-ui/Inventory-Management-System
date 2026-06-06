@@ -269,10 +269,10 @@ table {
 
                <td>
                     {% if item.item_code %}
-                   <a href="{{ url_for('static', filename='datasheet/' + item.item_code + '.' + item.file_ext) }}"
+                    <a href="{{ url_for('static', filename='datasheet/' + item.item_code + '.pdf') }}"
                        target="_blank"
                        class="btn btn-info btn-sm">
-                       View Datasheet
+                       <i class="fas fa-file-pdf"></i> View Datasheet
                     </a>
                     {% endif %}
                 </td>
