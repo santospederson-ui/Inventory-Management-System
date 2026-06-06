@@ -268,14 +268,12 @@ table {
                 </td>
 
                <td>
-                    {% if item.file_name %}
-                    <a href="{{ url_for('static', filename='datasheet/' + item.file_name) }}"
+                    {% if item.item_code %}
+                    <a href="{{ url_for('static', filename='datasheet/' + item.item_code + '.pdf') }}"
                        target="_blank"
                        class="btn btn-info btn-sm">
-                       View Datasheet
+                       <i class="fas fa-file-pdf"></i> View Datasheet
                     </a>
-                    {% else %}
-                       No File
                     {% endif %}
                 </td>
          
