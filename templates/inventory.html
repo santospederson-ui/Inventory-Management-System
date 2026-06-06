@@ -242,6 +242,7 @@ table {
                 <th><i class="fas fa-info-circle"></i> Description</th>
                 <th><i class="fas fa-tag"></i> Brand</th>
                 <th><i class="fas fa-weight"></i> Qty</th>
+                <th><i class="fas fa-file-pdf"></i> Datasheet</th>
                 <th><i class="fas fa-sticky-note"></i> Remark</th>
                 <th><i class="fas fa-calendar-alt"></i> Date Added</th>
                 {% if session.get('role') == 'admin' %}
@@ -265,6 +266,16 @@ table {
                     <span class="badge" style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%); color: white;">{{ item.qty }}</span>
                     {% endif %}
                 </td>
+
+                <td>
+                    <a href="{{ url_for('static', filename='datasheetfile1.pdf') }}"
+                       target="_blank"
+                       class="btn btn-info btn-sm">
+                        <i class="fas fa-file-pdf"></i> View Datasheet
+                    </a>
+                </td>
+
+         
                 <td>{{ item.remark or '-' }}</td>
                 <td>{{ item.created_at or 'N/A' }}</td>
 
