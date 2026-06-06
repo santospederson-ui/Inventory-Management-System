@@ -267,14 +267,17 @@ table {
                     {% endif %}
                 </td>
 
-                <td>
-                    <a href="{{ url_for('static', filename='datasheet/file1.pdf') }}"
+               <td>
+                    {% if item.file_name %}
+                    <a href="{{ url_for('static', filename='datasheet/' + item.file_name) }}"
                        target="_blank"
                        class="btn btn-info btn-sm">
-                        <i class="fas fa-file-pdf"></i> View Datasheet
+                       View Datasheet
                     </a>
+                    {% else %}
+                       No File
+                    {% endif %}
                 </td>
-
          
                 <td>{{ item.remark or '-' }}</td>
                 <td>{{ item.created_at or 'N/A' }}</td>
