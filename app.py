@@ -1192,6 +1192,32 @@ def tile_edit_item(id):
     )
 
 
+# =========================
+# DELETE TILE ROUTE (ADMIN)
+# =========================
+@app.route('/delete_tile/<int:id>')
+def delete_tile(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('tile_inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM tile_inventory_table WHERE id=%s",
+        (id,)
+    )
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    flash("Tile Deleted", "warning")
+    return redirect(url_for('tile_inventory'))
+
 
 
 
