@@ -1138,6 +1138,63 @@ def tile_inventory():
 
 
 
+# =========================
+# EDIT TILE ROUTE(ADMIN)
+# =========================
+@app.route('/tile_edit_item/<int:id>', methods=['GET', 'POST'])
+def tile_edit_item(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('tile_inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+
+        size = request.form['size']
+        description = request.form['description']
+        type = request.form['type']
+        qty = request.form['qty']
+        remark = request.form['remark']
+
+        cursor.execute("""
+            UPDATE tile_inventory_table
+            SET size=%s,
+                description=%s,
+                type=%s,
+                qty=%s,
+                remark=%s
+            WHERE id=%s
+        """, (size, description, type, qty, remark, id))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Tile Updated", "success")
+        return redirect(url_for('tile_inventory'))
+
+    cursor.execute(
+        "SELECT * FROM tile_inventory_table WHERE id=%s",
+        (id,)
+    )
+    item = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        'tile_edit_item.html',
+        item=item
+    )
+
+
+
+
+
 
 
 # =========================
