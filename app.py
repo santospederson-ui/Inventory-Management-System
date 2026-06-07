@@ -1252,7 +1252,7 @@ def tile_withdraw(id):
         # log withdrawal
         cursor.execute("""
             INSERT INTO tile_withdrawals_table
-            (tile_id, size, description, qty, project, withdrawn_by)
+            (item_id, size, description, qty, project, withdrawn_by)
             VALUES (%s,%s,%s,%s,%s,%s)
         """, (
             id,
