@@ -1282,9 +1282,8 @@ def tile_withdraw(id):
 
 
 # =========================
-# TILE RETURN ROUTE
+# TILE RETURNS
 # =========================
-
 
 @app.route('/tile_returns')
 def tile_returns():
@@ -1306,8 +1305,8 @@ def tile_returns():
         # Count matching records
         cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM return_tab
-            WHERE item_code LIKE %s
+            FROM tile_return_tab
+            WHERE size LIKE %s
                OR description LIKE %s
                OR project LIKE %s
                OR returned_by LIKE %s
@@ -1326,7 +1325,7 @@ def tile_returns():
         cursor.execute("""
             SELECT *
             FROM tile_return_tab
-            WHERE item_code LIKE %s
+            WHERE size LIKE %s
                OR description LIKE %s
                OR project LIKE %s
                OR returned_by LIKE %s
@@ -1348,7 +1347,7 @@ def tile_returns():
         # Total rows
         cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM return_tab
+            FROM tile_return_tab
         """)
 
         total = cursor.fetchone()['total']
@@ -1356,10 +1355,13 @@ def tile_returns():
         # Current page rows
         cursor.execute("""
             SELECT *
-            FROM return_tab
+            FROM tile_return_tab
             ORDER BY action_date DESC
             LIMIT %s OFFSET %s
-        """, (per_page, offset))
+        """, (
+            per_page,
+            offset
+        ))
 
     data = cursor.fetchall()
 
@@ -1389,7 +1391,7 @@ def tile_add_stock(id):
 
     if session.get('role') != 'admin':
         flash("Access Denied", "danger")
-        return redirect(url_for('inventory'))
+        return redirect(url_for('tile_inventory'))
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -1428,7 +1430,7 @@ def tile_add_stock(id):
         conn.close()
 
         flash("Tile Stock Added Successfully", "success")
-        return redirect(url_for('inventory'))
+        return redirect(url_for('tile_inventory'))
 
     cursor.close()
     conn.close()
