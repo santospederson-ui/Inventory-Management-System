@@ -1,10 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>add tile</h2>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-card h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
+
+    .form-card .form-subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+    }
+
+    .form-group label {
+        color: #1e3c72;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+        outline: none;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+    }
+
+    .form-hint {
+        color: #999;
+        font-size: 0.85rem;
+        margin-top: -15px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="form-card">
+
+    <h1>
+        <i class="fas fa-th-large" style="color: #ffc107; margin-right: 10px;"></i>
+        Add New Tile
+    </h1>
+
+    <p class="form-subtitle">
+        Add a new tile item to your inventory system
+    </p>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>
+                <i class="fas fa-ruler-combined" style="color: #ffc107; margin-right: 8px;"></i>
+                Tile Size *
+            </label>
+
+            <input type="text"
+                   name="size"
+                   class="form-control"
+                   placeholder="Example: 60x60, 30x60, 120x60"
+                   required>
+
+            <div class="form-hint">
+                Enter the tile dimensions.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <i class="fas fa-layer-group" style="color: #ffc107; margin-right: 8px;"></i>
+                Tile Type *
+            </label>
+
+            <input type="text"
+                   name="type"
+                   class="form-control"
+                   placeholder="Porcelain, Ceramic, Marble Finish, etc."
+                   required>
+
+            <div class="form-hint">
+                Enter the tile category or type.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <i class="fas fa-info-circle" style="color: #ffc107; margin-right: 8px;"></i>
+                Description *
+            </label>
+
+            <input type="text"
+                   name="description"
+                   class="form-control"
+                   placeholder="Enter tile description"
+                   required>
+
+            <div class="form-hint">
+                Provide a clear description of the tile.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <i class="fas fa-boxes" style="color: #ffc107; margin-right: 8px;"></i>
+                Initial Quantity *
+            </label>
+
+            <input type="number"
+                   name="qty"
+                   class="form-control"
+                   min="0"
+                   placeholder="Enter quantity"
+                   required>
+
+            <div class="form-hint">
+                Starting quantity available in stock.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <i class="fas fa-sticky-note" style="color: #ffc107; margin-right: 8px;"></i>
+                Remark
+            </label>
+
+            <textarea name="remark"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Optional remarks"></textarea>
+
+            <div class="form-hint">
+                Additional notes about the tile.
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-save"></i>
+            Save Tile
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
