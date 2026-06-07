@@ -1219,6 +1219,222 @@ def delete_tile(id):
     return redirect(url_for('tile_inventory'))
 
 
+# =========================
+# TILE WITHDRAW ROUTE
+# =========================
+
+@app.route('/tile_withdraw/<int:id>', methods=['GET', 'POST'])
+def tile_withdraw(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('tile_inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM tile_inventory_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    if request.method == 'POST':
+
+        qty = int(request.form['qty'])
+        project = request.form['project']
+
+        if qty > item['qty']:
+            flash("Not enough stock", "danger")
+            return redirect(url_for('tile_inventory'))
+
+        # reduce stock
+        cursor.execute("""
+            UPDATE tile_inventory_table
+            SET qty = qty - %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # log withdrawal
+        cursor.execute("""
+            INSERT INTO tile_withdrawals_table
+            (tile_id, size, description, qty, project, withdrawn_by)
+            VALUES (%s,%s,%s,%s,%s,%s)
+        """, (
+            id,
+            item['size'],
+            item['description'],
+            qty,
+            project,
+            session['user']
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Tile Withdrawn Successfully", "success")
+        return redirect(url_for('tile_inventory'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('tile_withdraw.html', item=item)
+
+
+
+# =========================
+# TILE RETURN ROUTE
+# =========================
+
+
+@app.route('/tile_returns')
+def tile_returns():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        # Count matching records
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM return_tab
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        # Get matching records
+        cursor.execute("""
+            SELECT *
+            FROM tile_return_tab
+            WHERE item_code LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        # Total rows
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM return_tab
+        """)
+
+        total = cursor.fetchone()['total']
+
+        # Current page rows
+        cursor.execute("""
+            SELECT *
+            FROM return_tab
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'tile_returns.html',
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
+
+# =========================
+# ADD STILE STOCK ROUTE
+# =========================
+
+
+
+@app.route('/tile_add_stock/<int:id>', methods=['GET', 'POST'])
+def tile_add_stock(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('inventory'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM tile_inventory_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    if request.method == 'POST':
+        qty = int(request.form['qty'])
+        remark = request.form['remark']
+
+        # increase stock
+        cursor.execute("""
+            UPDATE tile_inventory_table
+            SET qty = qty + %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # log stock addition
+        cursor.execute("""
+            INSERT INTO tile_stock_addition
+            (item_id, size, description, qty, added_by, remark)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            id,
+            item['size'],
+            item['description'],
+            qty,
+            session['user'],
+            remark
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Tile Stock Added Successfully", "success")
+        return redirect(url_for('inventory'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('tile_add_stock.html', item=item)
+
 
 
 
