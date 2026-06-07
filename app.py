@@ -966,9 +966,6 @@ def returns():
 # DISPLAY ADD STOCK TABLE
 # =========================
 
-
-
-
 @app.route('/stock_additions')
 def stock_additions():
 
@@ -1156,7 +1153,7 @@ def tile_edit_item(id):
         size = request.form['size']
         description = request.form['description']
         type = request.form['type']
-        qty = request.form['qty']
+        qty = float(request.form['qty'])
         remark = request.form['remark']
 
         cursor.execute("""
@@ -1238,7 +1235,7 @@ def tile_withdraw(id):
 
     if request.method == 'POST':
 
-        qty = int(request.form['qty'])
+        qty = float(request.form['qty'])
         project = request.form['project']
 
         if qty > item['qty']:
@@ -1400,7 +1397,7 @@ def tile_add_stock(id):
     item = cursor.fetchone()
 
     if request.method == 'POST':
-        qty = int(request.form['qty'])
+        qty = float(request.form['qty'])
         remark = request.form['remark']
 
         # increase stock
@@ -1457,7 +1454,7 @@ def tile_add_item():
         size = request.form['size']
         description = request.form['description']
         tile_type = request.form['type']
-        qty = request.form['qty']
+        qty = float(request.form['qty'])
         remark = request.form['remark']
 
         conn = get_db_connection()
