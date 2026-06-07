@@ -78,6 +78,41 @@
         vertical-align: middle;
     }
 
+
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* IMPORTANT: remove forced width issues */
+table {
+    width: 100%;
+    min-width: 900px; /* reduce from 1200px */
+}
+
+/* MOBILE IMPROVEMENT */
+@media (max-width: 768px) {
+
+    table {
+        min-width: 700px; /* still scrollable but cleaner */
+    }
+
+    /* make buttons stack better */
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 6px;
+    }
+}
+
+
+    
+
     /* ===== ACTION BUTTONS ===== */
     .action-buttons {
         display: flex;
