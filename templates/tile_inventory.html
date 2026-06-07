@@ -2,7 +2,16 @@
 
 {% block content %}
 
-<!-- Keep ALL your existing CSS exactly as it is -->
+<style>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+</style>
 
 <!-- Page Header -->
 <div class="page-header">
@@ -12,221 +21,144 @@
     </h1>
 
     {% if session.get('role') == 'admin' %}
-   <!-- Add New Tile Button -->
-        <a href="{{ url_for('tile_add_item') }}"
-           class="btn"
-           style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
-                  color: white;
-                  padding: 10px 20px;
-                  border-radius: 8px;
-                  font-weight: 600;">
-            <i class="fas fa-plus-circle"></i> Add New Tile
-        </a>
-    {% endif %}
-</div>
-
-<!-- Search Box -->
-<div class="search-box">
-    <form method="GET"
-          id="searchForm"
-          action="{{ url_for('tile_inventory') }}"
-          class="d-flex gap-2">
-
-        <div class="flex-grow-1">
-            <input type="text"
-                   id="searchInput"
-                   name="search"
-                   value="{{ search }}"
-                   class="form-control"
-                   placeholder="🔍 Search by size, description, or type...">
-        </div>
-
-    </form>
-</div>
-
-<!-- Tile Table -->
-{% if items %}
-<div class="data-table-wrapper">
-    <div class="table-responsive">
-        <table class="table">
-
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th><i class="fas fa-ruler-combined"></i> Size</th>
-                    <th><i class="fas fa-info-circle"></i> Description</th>
-                    <th><i class="fas fa-th-large"></i> Type</th>
-                    <th><i class="fas fa-weight"></i> Qty</th>
-                    <th><i class="fas fa-sticky-note"></i> Remark</th>
-                    <th><i class="fas fa-calendar-alt"></i> Date Added</th>
-
-                    {% if session.get('role') == 'admin' %}
-                    <th><i class="fas fa-cogs"></i> Actions</th>
-                    {% endif %}
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for item in items %}
-                <tr>
-
-                    <td>
-                        <strong>#{{ loop.index + ((page - 1) * 2) }}</strong>
-                    </td>
-
-                    <td>
-                        <strong>{{ item.size }}</strong>
-                    </td>
-
-                    <td>
-                        {{ item.description }}
-                    </td>
-
-                    <td>
-                        {{ item.type }}
-                    </td>
-
-                    <td>
-                        {% if item.qty <= 5 %}
-                        <span class="badge"
-                              style="background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-                                     color: white;">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ item.qty }}
-                        </span>
-                        {% else %}
-                        <span class="badge"
-                              style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
-                                     color: white;">
-                            {{ item.qty }}
-                        </span>
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {{ item.remark or '-' }}
-                    </td>
-
-                    <td>
-                        {{ item.created_at or 'N/A' }}
-                    </td>
-
-                    {% if session.get('role') == 'admin' %}
-                    <td>
-
-                        <div class="action-buttons">
-
-                           <!-- Edit -->
-                            <a href="{{ url_for('tile_edit_item', id=item.id) }}"
-                               class="btn btn-edit">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-
-                           <!-- Delete -->
-                            <a href="{{ url_for('delete_tile', id=item.id) }}"
-                               class="btn btn-delete"
-                               onclick="return confirm('Delete Tile?')">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                            <!-- Withdraw -->
-                            <a href="{{ url_for('tile_withdraw', id=item.id) }}"
-                               class="btn btn-withdraw">
-                                <i class="fas fa-arrow-alt-circle-out"></i>
-                                Withdraw
-                            </a>
-
-                            <a href="{{ url_for('tile_return_item', id=item.id) }}"
-                               class="btn btn-return">
-                                <i class="fas fa-arrow-alt-circle-in"></i>
-                                Return
-                            </a>
-
-                           <!-- Stock -->
-                            <a href="{{ url_for('tile_add_stock', id=item.id) }}"
-                               class="btn btn-stock">
-                                <i class="fas fa-plus-square"></i>
-                                Stock
-                            </a>
-
-                        </div>
-
-                    </td>
-                    {% endif %}
-
-                </tr>
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-    </div>
-</div>
-
-<!-- Pagination -->
-<nav class="pagination">
-
-    <ul class="pagination" style="margin-bottom: 0;">
-
-        {% if page > 1 %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('tile_inventory', page=page-1, search=search) }}">
-                <i class="fas fa-chevron-left"></i> Previous
-            </a>
-        </li>
-        {% endif %}
-
-        {% for p in range(1, total_pages + 1) %}
-        <li class="page-item {% if p == page %}active{% endif %}">
-            <a class="page-link"
-               href="{{ url_for('tile_inventory', page=p, search=search) }}">
-                {{ p }}
-            </a>
-        </li>
-        {% endfor %}
-
-        {% if page < total_pages %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('tile_inventory', page=page+1, search=search) }}">
-                Next <i class="fas fa-chevron-right"></i>
-            </a>
-        </li>
-        {% endif %}
-
-    </ul>
-
-</nav>
-
-{% else %}
-
-<div class="empty-state">
-
-    <i class="fas fa-inbox"></i>
-
-    <h4 style="color: #333;">
-        No Tiles Found
-    </h4>
-
-    <p>
-        Start by adding your first tile item
-    </p>
-
-    {% if session.get('role') == 'admin' %}
-    <a href="{{ url_for('add_tile') }}"
+    <a href="{{ url_for('tile_add_item') }}"
        class="btn"
        style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
               color: white;
               padding: 10px 20px;
               border-radius: 8px;
-              font-weight: 600;
-              margin-top: 15px;">
-        <i class="fas fa-plus-circle"></i>
+              font-weight: 600;">
+        <i class="fas fa-plus-circle"></i> Add New Tile
+    </a>
+    {% endif %}
+</div>
+
+<!-- Search -->
+<div class="search-box">
+    <form method="GET" action="{{ url_for('tile_inventory') }}" class="d-flex gap-2">
+        <input type="text"
+               name="search"
+               value="{{ search }}"
+               class="form-control"
+               placeholder="Search by size, description, or type...">
+    </form>
+</div>
+
+<!-- Table -->
+{% if items %}
+<div class="table-responsive">
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Qty</th>
+                <th>Remark</th>
+                <th>Date</th>
+
+                {% if session.get('role') == 'admin' %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in items %}
+        <tr>
+
+            <td>
+                {{ loop.index + ((page - 1) * 10) }}
+            </td>
+
+            <td><strong>{{ item.size }}</strong></td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.type }}</td>
+
+            <td>
+                {% if item.qty <= 5 %}
+                    <span style="color:red; font-weight:bold;">
+                        {{ item.qty }}
+                    </span>
+                {% else %}
+                    {{ item.qty }}
+                {% endif %}
+            </td>
+
+            <td>{{ item.remark or '-' }}</td>
+            <td>{{ item.created_at or 'N/A' }}</td>
+
+            {% if session.get('role') == 'admin' %}
+            <td>
+
+                <a href="{{ url_for('tile_edit_item', id=item.id) }}" class="btn btn-sm btn-primary">Edit</a>
+
+                <a href="{{ url_for('delete_tile', id=item.id) }}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Delete Tile?')">
+                    Delete
+                </a>
+
+                <a href="{{ url_for('tile_withdraw', id=item.id) }}" class="btn btn-sm btn-warning">
+                    Withdraw
+                </a>
+
+                <a href="{{ url_for('tile_returns_item') }}" class="btn btn-sm btn-info">
+                    Return
+                </a>
+
+                <a href="{{ url_for('tile_add_stock', id=item.id) }}" class="btn btn-sm btn-success">
+                    Stock
+                </a>
+
+            </td>
+            {% endif %}
+
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+<!-- Pagination -->
+<nav>
+    <ul class="pagination">
+
+        {% if page > 1 %}
+        <li>
+            <a href="{{ url_for('tile_inventory', page=page-1, search=search) }}">Prev</a>
+        </li>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+        <li {% if p == page %}style="font-weight:bold"{% endif %}>
+            <a href="{{ url_for('tile_inventory', page=p, search=search) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <li>
+            <a href="{{ url_for('tile_inventory', page=page+1, search=search) }}">Next</a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
+{% else %}
+
+<div style="text-align:center; padding:40px;">
+    <h3>No Tiles Found</h3>
+
+    {% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('tile_add_item') }}"
+       class="btn btn-success">
         Add New Tile
     </a>
     {% endif %}
-
 </div>
 
 {% endif %}
