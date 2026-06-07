@@ -3,218 +3,166 @@
 {% block content %}
 
 <style>
-    /* ===== HEADER ===== */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
+/* ================= HEADER ================= */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 
-    .page-header h1 {
-        color: #1e3c72;
-        font-weight: 700;
-        font-size: 2rem;
-        margin: 0;
-    }
+.page-header h1 {
+    color: #1e3c72;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0;
+}
 
-    /* ===== SEARCH BOX ===== */
-    .search-box {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
+/* ================= SEARCH ================= */
+.search-box {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
 
-    .search-box .form-control {
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-    }
+.search-box .form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
 
-    .search-box .form-control:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
-    }
-
-    /* ===== TABLE ===== */
-    .data-table-wrapper {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .data-table-wrapper table {
-        margin-bottom: 0;
-    }
-
-    .data-table-wrapper thead {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-    }
-
-    .data-table-wrapper thead th {
-        padding: 15px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .data-table-wrapper tbody tr {
-        border-bottom: 1px solid #e0e0e0;
-        transition: all 0.3s ease;
-    }
-
-    .data-table-wrapper tbody tr:hover {
-        background-color: #f5f9ff;
-    }
-
-    .data-table-wrapper tbody td {
-        padding: 12px 15px;
-        vertical-align: middle;
-    }
-
-
-
-.table-responsive {
-    overflow-x: auto;
+/* ================= TABLE WRAPPER (IMPORTANT FIX) ================= */
+.data-table-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    overflow-x: auto;   /* KEY FIX */
     -webkit-overflow-scrolling: touch;
 }
 
-/* IMPORTANT: remove forced width issues */
+/* TABLE */
 table {
     width: 100%;
-    min-width: 900px; /* reduce from 1200px */
+    min-width: 850px; /* IMPORTANT: keeps scroll instead of breaking layout */
+    border-collapse: collapse;
 }
 
-/* MOBILE IMPROVEMENT */
+thead {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap; /* prevents ugly wrapping */
+}
+
+tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+tbody tr:hover {
+    background: #f5f9ff;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    color: white;
+    border: none;
+    text-decoration: none;
+}
+
+/* COLORS */
+.btn-edit { background: linear-gradient(135deg,#FFA500,#FF8C00); }
+.btn-delete { background: linear-gradient(135deg,#ff6b6b,#ff4757); }
+.btn-withdraw { background: linear-gradient(135deg,#FF6B6B,#EE5A6F); }
+.btn-return { background: linear-gradient(135deg,#51CF66,#40C057); }
+.btn-stock { background: linear-gradient(135deg,#1e3c72,#2a5298); }
+
+/* ================= PAGINATION ================= */
+.pagination {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    padding: 15px;
+    flex-wrap: wrap;
+}
+
+.pagination li a {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #1e3c72;
+}
+
+/* ================= MOBILE FIX ================= */
 @media (max-width: 768px) {
 
-    table {
-        min-width: 700px; /* still scrollable but cleaner */
+    .page-header h1 {
+        font-size: 1.3rem;
     }
 
-    /* make buttons stack better */
+    table {
+        min-width: 700px; /* smaller scroll width for mobile */
+    }
+
     .action-buttons {
         flex-direction: column;
     }
 
     .action-buttons .btn {
         width: 100%;
-        font-size: 0.75rem;
-        padding: 6px;
+        text-align: center;
     }
 }
-
-
-    
-
-    /* ===== ACTION BUTTONS ===== */
-    .action-buttons {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-
-    .action-buttons .btn {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        border: none;
-    }
-
-    .action-buttons .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .btn-edit { background: linear-gradient(135deg, #FFA500, #FF8C00); color: white; }
-    .btn-delete { background: linear-gradient(135deg, #ff6b6b, #ff4757); color: white; }
-    .btn-withdraw { background: linear-gradient(135deg, #FF6B6B, #EE5A6F); color: white; }
-    .btn-return { background: linear-gradient(135deg, #51CF66, #40C057); color: white; }
-    .btn-stock { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; }
-
-    /* ===== PAGINATION ===== */
-    .pagination {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-top: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        display: flex;
-        gap: 8px;
-        list-style: none;
-    }
-
-    .pagination li a {
-        padding: 8px 12px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
-        text-decoration: none;
-        color: #1e3c72;
-    }
-
-    .pagination li a:hover {
-        background: #f5f9ff;
-    }
-
-    .pagination li[style] a {
-        font-weight: bold;
-        background: #ffc107;
-        color: white;
-        border: none;
-    }
-
-    /* ===== EMPTY STATE ===== */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    .empty-state i {
-        font-size: 4rem;
-        color: #ddd;
-        margin-bottom: 20px;
-    }
-
 </style>
 
 <!-- HEADER -->
 <div class="page-header">
     <h1>
-        <i class="fas fa-th-large" style="color:#ffc107; margin-right:10px;"></i>
-        Tile Inventory Management
+        <i class="fas fa-th-large" style="color:#ffc107;"></i>
+        Tile Inventory
     </h1>
 
     {% if session.get('role') == 'admin' %}
     <a href="{{ url_for('tile_add_item') }}"
        class="btn"
-       style="background: linear-gradient(135deg,#51CF66,#40C057); color:white; padding:10px 20px; border-radius:8px;">
-        <i class="fas fa-plus-circle"></i> Add New Tile
+       style="background:linear-gradient(135deg,#51CF66,#40C057);
+              color:white; padding:10px 15px; border-radius:8px;">
+        Add Tile
     </a>
     {% endif %}
 </div>
 
 <!-- SEARCH -->
 <div class="search-box">
-    <form method="GET" action="{{ url_for('tile_inventory') }}" class="d-flex gap-2">
-        <input type="text"
+    <form method="GET" action="{{ url_for('tile_inventory') }}">
+        <input class="form-control"
                name="search"
                value="{{ search }}"
-               class="form-control"
-               placeholder="Search by size, description, or type...">
+               placeholder="Search size, description, type...">
     </form>
 </div>
 
 <!-- TABLE -->
 {% if items %}
 <div class="data-table-wrapper">
-    <table class="table">
+    <table>
 
         <thead>
             <tr>
@@ -236,14 +184,13 @@ table {
         <tr>
 
             <td>{{ loop.index + ((page - 1) * 10) }}</td>
-
             <td><strong>{{ item.size }}</strong></td>
             <td>{{ item.description }}</td>
             <td>{{ item.type }}</td>
 
             <td>
                 {% if item.qty <= 5 %}
-                    <span style="color:red; font-weight:bold;">{{ item.qty }}</span>
+                    <span style="color:red;font-weight:bold;">{{ item.qty }}</span>
                 {% else %}
                     {{ item.qty }}
                 {% endif %}
@@ -256,16 +203,21 @@ table {
             <td>
                 <div class="action-buttons">
 
-                    <a href="{{ url_for('tile_edit_item', id=item.id) }}" class="btn btn-edit">Edit</a>
+                    <a class="btn btn-edit"
+                       href="{{ url_for('tile_edit_item', id=item.id) }}">Edit</a>
 
-                    <a href="{{ url_for('delete_tile', id=item.id) }}" class="btn btn-delete"
-                       onclick="return confirm('Delete Tile?')">Delete</a>
+                    <a class="btn btn-delete"
+                       onclick="return confirm('Delete?')"
+                       href="{{ url_for('delete_tile', id=item.id) }}">Del</a>
 
-                    <a href="{{ url_for('tile_withdraw', id=item.id) }}" class="btn btn-withdraw">Withdraw</a>
+                    <a class="btn btn-withdraw"
+                       href="{{ url_for('tile_withdraw', id=item.id) }}">Out</a>
 
-                    <a href="{{ url_for('tile_return_item', id=item.id) }}" class="btn btn-return">Return</a>
+                    <a class="btn btn-return"
+                       href="{{ url_for('tile_return_item', id=item.id) }}">In</a>
 
-                    <a href="{{ url_for('tile_add_stock', id=item.id) }}" class="btn btn-stock">Stock</a>
+                    <a class="btn btn-stock"
+                       href="{{ url_for('tile_add_stock', id=item.id) }}">Stock</a>
 
                 </div>
             </td>
@@ -279,38 +231,24 @@ table {
 </div>
 
 <!-- PAGINATION -->
-<nav>
-    <ul class="pagination">
+<ul class="pagination">
+    {% if page > 1 %}
+    <li><a href="{{ url_for('tile_inventory', page=page-1, search=search) }}">Prev</a></li>
+    {% endif %}
 
-        {% if page > 1 %}
-        <li><a href="{{ url_for('tile_inventory', page=page-1, search=search) }}">Prev</a></li>
-        {% endif %}
+    {% for p in range(1, total_pages + 1) %}
+    <li><a href="{{ url_for('tile_inventory', page=p, search=search) }}">{{ p }}</a></li>
+    {% endfor %}
 
-        {% for p in range(1, total_pages + 1) %}
-        <li>
-            <a href="{{ url_for('tile_inventory', page=p, search=search) }}">{{ p }}</a>
-        </li>
-        {% endfor %}
-
-        {% if page < total_pages %}
-        <li><a href="{{ url_for('tile_inventory', page=page+1, search=search) }}">Next</a></li>
-        {% endif %}
-
-    </ul>
-</nav>
+    {% if page < total_pages %}
+    <li><a href="{{ url_for('tile_inventory', page=page+1, search=search) }}">Next</a></li>
+    {% endif %}
+</ul>
 
 {% else %}
-
-<div class="empty-state">
+<div style="text-align:center;padding:40px;">
     <h3>No Tiles Found</h3>
-
-    {% if session.get('role') == 'admin' %}
-    <a href="{{ url_for('tile_add_item') }}" class="btn btn-success">
-        Add New Tile
-    </a>
-    {% endif %}
 </div>
-
 {% endif %}
 
 {% endblock %}
