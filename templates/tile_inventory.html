@@ -98,10 +98,6 @@ table {
         min-width: 700px; /* still scrollable but cleaner */
     }
 
-    .data-table-wrapper {
-        border-radius: 10px;
-    }
-
     /* make buttons stack better */
     .action-buttons {
         flex-direction: column;
@@ -112,13 +108,25 @@ table {
         font-size: 0.75rem;
         padding: 6px;
     }
-
-    /* reduce padding for mobile */
-    .data-table-wrapper tbody td {
-        padding: 10px;
-        font-size: 0.85rem;
-    }
 }
+
+
+    
+
+    /* ===== ACTION BUTTONS ===== */
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        border: none;
+    }
 
     .action-buttons .btn:hover {
         transform: translateY(-2px);
