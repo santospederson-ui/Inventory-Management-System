@@ -1440,6 +1440,54 @@ def tile_add_stock(id):
 
 
 # =========================
+# ADD TILE ITEM (ADMIN)
+# =========================
+
+@app.route('/tile_add_item', methods=['GET', 'POST'])
+def tile_add_item():
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('tile_inventory'))
+
+    if request.method == 'POST':
+
+        size = request.form['size']
+        description = request.form['description']
+        tile_type = request.form['type']
+        qty = request.form['qty']
+        remark = request.form['remark']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO tile_inventory_table
+            (size, description, type, qty, remark)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            size,
+            description,
+            tile_type,
+            qty,
+            remark
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Tile Added Successfully", "success")
+        return redirect(url_for('tile_inventory'))
+
+    return render_template('tile_add_item.html')
+
+
+
+
+
+# =========================
 # RUN APP
 # =========================
 if __name__ == '__main__':
