@@ -1279,106 +1279,88 @@ def tile_withdraw(id):
 
 
 # =========================
-# TILE RETURNS
+# TILE RETURN ROUTE
 # =========================
 
-@app.route('/tile_return_item')
-def tile_return_item():
+@app.route('/tile_return_item/<int:id>', methods=['GET', 'POST'])
+def tile_return_item(id):
 
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
-    search = request.args.get('search', '')
-    page = request.args.get('page', 1, type=int)
-
-    per_page = 10
-    offset = (page - 1) * per_page
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('tile_inventory'))
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    if search:
+    # Get tile item
+    cursor.execute(
+        "SELECT * FROM tile_inventory_table WHERE id=%s",
+        (id,)
+    )
+    item = cursor.fetchone()
 
-        # Count matching records
+    if not item:
+        cursor.close()
+        conn.close()
+        flash("Tile not found", "danger")
+        return redirect(url_for('tile_inventory'))
+
+    if request.method == 'POST':
+
+        qty = float(request.form['qty'])
+        project = request.form['project']
+        remark = request.form['remark']
+
+        # Add quantity back to inventory
         cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM tile_return_tab
-            WHERE size LIKE %s
-               OR description LIKE %s
-               OR project LIKE %s
-               OR returned_by LIKE %s
-               OR remark LIKE %s
+            UPDATE tile_inventory_table
+            SET qty = qty + %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # Log return
+        cursor.execute("""
+            INSERT INTO tile_return_tab
+            (
+                tile_id,
+                size,
+                description,
+                qty,
+                project,
+                returned_by,
+                remark
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%"
+            id,
+            item['size'],
+            item['description'],
+            qty,
+            project,
+            session['user'],
+            remark
         ))
 
-        total = cursor.fetchone()['total']
+        conn.commit()
 
-        # Get matching records
-        cursor.execute("""
-            SELECT *
-            FROM tile_return_tab
-            WHERE size LIKE %s
-               OR description LIKE %s
-               OR project LIKE %s
-               OR returned_by LIKE %s
-               OR remark LIKE %s
-            ORDER BY action_date DESC
-            LIMIT %s OFFSET %s
-        """, (
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            per_page,
-            offset
-        ))
+        cursor.close()
+        conn.close()
 
-    else:
-
-        # Total rows
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM tile_return_tab
-        """)
-
-        total = cursor.fetchone()['total']
-
-        # Current page rows
-        cursor.execute("""
-            SELECT *
-            FROM tile_return_tab
-            ORDER BY action_date DESC
-            LIMIT %s OFFSET %s
-        """, (
-            per_page,
-            offset
-        ))
-
-    data = cursor.fetchall()
+        flash("Tile Returned Successfully", "success")
+        return redirect(url_for('tile_inventory'))
 
     cursor.close()
     conn.close()
 
-    total_pages = (total + per_page - 1) // per_page
-
     return render_template(
         'tile_return_item.html',
-        data=data,
-        page=page,
-        total_pages=total_pages,
-        search=search
+        item=item
     )
 
 
 
 # =========================
-# ADD STILE STOCK ROUTE
+# ADD TILE STOCK ROUTE
 # =========================
 
 
