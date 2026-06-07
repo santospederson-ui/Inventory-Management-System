@@ -3,153 +3,163 @@
 {% block content %}
 
 <style>
+    /* ===== HEADER ===== */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
 
-/* =========================
-   PAGE HEADER
-========================= */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    gap: 15px;
-}
+    .page-header h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        font-size: 2rem;
+        margin: 0;
+    }
 
-.page-header h1 {
-    color: #1e3c72;
-    font-weight: 700;
-    font-size: 2rem;
-    margin: 0;
-}
+    /* ===== SEARCH BOX ===== */
+    .search-box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
 
-/* =========================
-   SEARCH BOX
-========================= */
-.search-box {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
+    .search-box .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
 
-.search-box .form-control {
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 12px 15px;
-    transition: 0.3s;
-}
+    .search-box .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+    }
 
-.search-box .form-control:focus {
-    border-color: #ffc107;
-    box-shadow: 0 0 0 3px rgba(255,193,7,0.15);
-}
+    /* ===== TABLE ===== */
+    .data-table-wrapper {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
 
-/* =========================
-   TABLE
-========================= */
-.data-table-wrapper {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
+    .data-table-wrapper table {
+        margin-bottom: 0;
+    }
 
-.data-table-wrapper table {
-    margin-bottom: 0;
-}
+    .data-table-wrapper thead {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+    }
 
-.data-table-wrapper thead {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: white;
-}
+    .data-table-wrapper thead th {
+        padding: 15px;
+        font-weight: 600;
+        border: none;
+    }
 
-.data-table-wrapper th {
-    padding: 15px;
-    font-weight: 600;
-}
+    .data-table-wrapper tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
 
-.data-table-wrapper td {
-    padding: 12px 15px;
-    vertical-align: middle;
-}
+    .data-table-wrapper tbody tr:hover {
+        background-color: #f5f9ff;
+    }
 
-/* =========================
-   ACTION BUTTONS
-========================= */
-.action-buttons {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-}
+    .data-table-wrapper tbody td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
 
-.action-buttons .btn {
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    border-radius: 6px;
-    border: none;
-    transition: 0.3s;
-}
+    /* ===== ACTION BUTTONS ===== */
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
 
-.action-buttons .btn:hover {
-    transform: translateY(-2px);
-}
+    .action-buttons .btn {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        border: none;
+    }
 
-.btn-edit { background: linear-gradient(135deg,#FFA500,#FF8C00); color: white; }
-.btn-delete { background: linear-gradient(135deg,#ff6b6b,#ff4757); color: white; }
-.btn-withdraw { background: linear-gradient(135deg,#FF6B6B,#EE5A6F); color: white; }
-.btn-return { background: linear-gradient(135deg,#51CF66,#40C057); color: white; }
-.btn-stock { background: linear-gradient(135deg,#1e3c72,#2a5298); color: white; }
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
 
-/* =========================
-   PAGINATION
-========================= */
-.pagination {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-    list-style: none;
-}
+    .btn-edit { background: linear-gradient(135deg, #FFA500, #FF8C00); color: white; }
+    .btn-delete { background: linear-gradient(135deg, #ff6b6b, #ff4757); color: white; }
+    .btn-withdraw { background: linear-gradient(135deg, #FF6B6B, #EE5A6F); color: white; }
+    .btn-return { background: linear-gradient(135deg, #51CF66, #40C057); color: white; }
+    .btn-stock { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; }
 
-.pagination a {
-    padding: 8px 12px;
-    border-radius: 6px;
-    background: #f5f5f5;
-    text-decoration: none;
-    color: #1e3c72;
-}
+    /* ===== PAGINATION ===== */
+    .pagination {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        display: flex;
+        gap: 8px;
+        list-style: none;
+    }
 
-.pagination a:hover {
-    background: #ffc107;
-    color: white;
-}
+    .pagination li a {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        text-decoration: none;
+        color: #1e3c72;
+    }
 
-/* =========================
-   EMPTY STATE
-========================= */
-.empty-state {
-    text-align: center;
-    padding: 50px;
-    color: #888;
-}
+    .pagination li a:hover {
+        background: #f5f9ff;
+    }
+
+    .pagination li[style] a {
+        font-weight: bold;
+        background: #ffc107;
+        color: white;
+        border: none;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
 
 </style>
 
 <!-- HEADER -->
 <div class="page-header">
     <h1>
-        <i class="fas fa-th-large" style="color:#ffc107;"></i>
+        <i class="fas fa-th-large" style="color:#ffc107; margin-right:10px;"></i>
         Tile Inventory Management
     </h1>
 
     {% if session.get('role') == 'admin' %}
     <a href="{{ url_for('tile_add_item') }}"
        class="btn"
-       style="background:linear-gradient(135deg,#51CF66,#40C057);
-              color:white;
-              padding:10px 20px;
-              border-radius:8px;">
+       style="background: linear-gradient(135deg,#51CF66,#40C057); color:white; padding:10px 20px; border-radius:8px;">
         <i class="fas fa-plus-circle"></i> Add New Tile
     </a>
     {% endif %}
@@ -157,112 +167,101 @@
 
 <!-- SEARCH -->
 <div class="search-box">
-    <form method="GET" action="{{ url_for('tile_inventory') }}">
+    <form method="GET" action="{{ url_for('tile_inventory') }}" class="d-flex gap-2">
         <input type="text"
                name="search"
                value="{{ search }}"
                class="form-control"
-               placeholder="Search size, description, type...">
+               placeholder="Search by size, description, or type...">
     </form>
 </div>
 
 <!-- TABLE -->
 {% if items %}
 <div class="data-table-wrapper">
-<div class="table-responsive">
+    <table class="table">
 
-<table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Size</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Qty</th>
+                <th>Remark</th>
+                <th>Date</th>
+                {% if session.get('role') == 'admin' %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
 
-<thead>
-<tr>
-    <th>#</th>
-    <th>Size</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Qty</th>
-    <th>Remark</th>
-    <th>Date</th>
+        <tbody>
+        {% for item in items %}
+        <tr>
 
-    {% if session.get('role') == 'admin' %}
-    <th>Actions</th>
-    {% endif %}
-</tr>
-</thead>
+            <td>{{ loop.index + ((page - 1) * 10) }}</td>
 
-<tbody>
+            <td><strong>{{ item.size }}</strong></td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.type }}</td>
 
-{% for item in items %}
-<tr>
+            <td>
+                {% if item.qty <= 5 %}
+                    <span style="color:red; font-weight:bold;">{{ item.qty }}</span>
+                {% else %}
+                    {{ item.qty }}
+                {% endif %}
+            </td>
 
-    <td>{{ loop.index + ((page - 1) * 10) }}</td>
-    <td><strong>{{ item.size }}</strong></td>
-    <td>{{ item.description }}</td>
-    <td>{{ item.type }}</td>
+            <td>{{ item.remark or '-' }}</td>
+            <td>{{ item.created_at or 'N/A' }}</td>
 
-    <td>
-        {% if item.qty <= 5 %}
-        <span style="color:red;font-weight:bold;">
-            {{ item.qty }}
-        </span>
-        {% else %}
-        {{ item.qty }}
-        {% endif %}
-    </td>
+            {% if session.get('role') == 'admin' %}
+            <td>
+                <div class="action-buttons">
 
-    <td>{{ item.remark or '-' }}</td>
-    <td>{{ item.created_at or 'N/A' }}</td>
+                    <a href="{{ url_for('tile_edit_item', id=item.id) }}" class="btn btn-edit">Edit</a>
 
-    {% if session.get('role') == 'admin' %}
-    <td>
+                    <a href="{{ url_for('delete_tile', id=item.id) }}" class="btn btn-delete"
+                       onclick="return confirm('Delete Tile?')">Delete</a>
 
-        <div class="action-buttons">
+                    <a href="{{ url_for('tile_withdraw', id=item.id) }}" class="btn btn-withdraw">Withdraw</a>
 
-            <a href="{{ url_for('tile_edit_item', id=item.id) }}"
-               class="btn btn-edit">Edit</a>
+                    <a href="{{ url_for('tile_return_item', id=item.id) }}" class="btn btn-return">Return</a>
 
-            <a href="{{ url_for('delete_tile', id=item.id) }}"
-               class="btn btn-delete"
-               onclick="return confirm('Delete Tile?')">Delete</a>
+                    <a href="{{ url_for('tile_add_stock', id=item.id) }}" class="btn btn-stock">Stock</a>
 
-            <a href="{{ url_for('tile_withdraw', id=item.id) }}"
-               class="btn btn-withdraw">Withdraw</a>
+                </div>
+            </td>
+            {% endif %}
 
-            <a href="{{ url_for('tile_return', id=item.id) }}"
-               class="btn btn-return">Return</a>
+        </tr>
+        {% endfor %}
+        </tbody>
 
-            <a href="{{ url_for('tile_add_stock', id=item.id) }}"
-               class="btn btn-stock">Stock</a>
-
-        </div>
-
-    </td>
-    {% endif %}
-
-</tr>
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
+    </table>
 </div>
 
 <!-- PAGINATION -->
-<nav class="pagination">
-    {% if page > 1 %}
-    <a href="{{ url_for('tile_inventory', page=page-1, search=search) }}">Prev</a>
-    {% endif %}
+<nav>
+    <ul class="pagination">
 
-    {% for p in range(1, total_pages + 1) %}
-    <a href="{{ url_for('tile_inventory', page=p, search=search) }}">
-        {{ p }}
-    </a>
-    {% endfor %}
+        {% if page > 1 %}
+        <li><a href="{{ url_for('tile_inventory', page=page-1, search=search) }}">Prev</a></li>
+        {% endif %}
 
-    {% if page < total_pages %}
-    <a href="{{ url_for('tile_inventory', page=page+1, search=search) }}">Next</a>
-    {% endif %}
+        {% for p in range(1, total_pages + 1) %}
+        <li>
+            <a href="{{ url_for('tile_inventory', page=p, search=search) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <li><a href="{{ url_for('tile_inventory', page=page+1, search=search) }}">Next</a></li>
+        {% endif %}
+
+    </ul>
 </nav>
 
 {% else %}
@@ -271,8 +270,7 @@
     <h3>No Tiles Found</h3>
 
     {% if session.get('role') == 'admin' %}
-    <a href="{{ url_for('tile_add_item') }}"
-       class="btn btn-success">
+    <a href="{{ url_for('tile_add_item') }}" class="btn btn-success">
         Add New Tile
     </a>
     {% endif %}
