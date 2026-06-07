@@ -1065,7 +1065,7 @@ def tile_inventory():
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
 
-    per_page = 1
+    per_page = 10
     offset = (page - 1) * per_page
 
     conn = get_db_connection()
@@ -1285,8 +1285,8 @@ def tile_withdraw(id):
 # TILE RETURNS
 # =========================
 
-@app.route('/tile_returns')
-def tile_returns():
+@app.route('/tile_return_item')
+def tile_returns_item():
 
     if 'user' not in session:
         return redirect(url_for('login'))
@@ -1371,7 +1371,7 @@ def tile_returns():
     total_pages = (total + per_page - 1) // per_page
 
     return render_template(
-        'tile_returns.html',
+        'tile_return_item.html',
         data=data,
         page=page,
         total_pages=total_pages,
