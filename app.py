@@ -1283,7 +1283,7 @@ def tile_withdraw(id):
 # =========================
 
 @app.route('/tile_return_item')
-def tile_returns_item():
+def tile_return_item():
 
     if 'user' not in session:
         return redirect(url_for('login'))
