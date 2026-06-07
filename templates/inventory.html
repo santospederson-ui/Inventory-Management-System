@@ -253,7 +253,7 @@ table {
         <tbody>
             {% for item in items %}
             <tr>
-                <td><strong>#{{ loop.index + ((page - 1) * 2) }}</strong></td>
+                <td><strong>#{{ loop.index + ((page - 1) * 10) }}</strong></td>
                 <td><strong>{{ item.item_code }}</strong></td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.brand }}</td>
