@@ -86,6 +86,33 @@
             border: 1px solid #ffc107;
         }
 
+
+        /* Multi-level dropdown */
+        .dropdown-submenu {
+            position: relative;
+        }
+        
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -1px;
+            display: none;
+        }
+        
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+        
+        /* Arrow */
+        .submenu-toggle::after {
+            content: "▶";
+            float: right;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+
+        
+
         /* Main Content */
         .container {
             flex: 1;
@@ -273,38 +300,82 @@
                 </li>
 
                 <!-- TRANSACTIONS -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <i class="fas fa-exchange-alt"></i> Transactions
+                <!-- TRANSACTIONS -->
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+        <i class="fas fa-exchange-alt"></i> Transactions
+    </a>
+
+    <ul class="dropdown-menu">
+
+        <!-- SANITARY -->
+        <li class="dropdown-submenu">
+            <a class="dropdown-item submenu-toggle" href="#">
+                <i class="fas fa-sink"></i> Sanitary
+            </a>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('withdrawals') }}">
+                        <i class="fas fa-arrow-alt-circle-out"></i> Withdrawals
                     </a>
-                    <ul class="dropdown-menu">
-
-                        <li>
-                            <a class="dropdown-item" href="{{ url_for('withdrawals') }}">
-                                <i class="fas fa-arrow-alt-circle-out"></i> Withdrawals
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="{{ url_for('returns') }}">
-                                <i class="fas fa-arrow-alt-circle-in"></i> Returns
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="{{ url_for('stock_additions') }}">
-                                <i class="fas fa-plus-square"></i> Stock Additions
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="{{ url_for('audit') }}">
-                                <i class="fas fa-history"></i> Audit Trail
-                            </a>
-                        </li>
-
-                    </ul>
                 </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('returns') }}">
+                        <i class="fas fa-arrow-alt-circle-in"></i> Returns
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('stock_additions') }}">
+                        <i class="fas fa-plus-square"></i> Stock Additions
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('audit') }}">
+                        <i class="fas fa-history"></i> Audit Trail
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- TILES -->
+        <li class="dropdown-submenu">
+            <a class="dropdown-item submenu-toggle" href="#">
+                <i class="fas fa-th-large"></i> Tiles
+            </a>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('#') }}">
+                        <i class="fas fa-arrow-alt-circle-out"></i> Withdrawals
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('#') }}">
+                        <i class="fas fa-arrow-alt-circle-in"></i> Returns
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('#') }}">
+                        <i class="fas fa-plus-square"></i> Stock Additions
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('#') }}">
+                        <i class="fas fa-history"></i> Audit Trail
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+    </ul>
+</li>
 
                 <!-- DOCUMENTS (future-ready) -->
                 <li class="nav-item dropdown">
