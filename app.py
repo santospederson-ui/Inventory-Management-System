@@ -1550,7 +1550,7 @@ def tile_withdrawals():
     total_pages = (total + per_page - 1) // per_page
 
     return render_template(
-        'tiles_withdrawals.html',
+        'tile_withdrawals.html',
         data=data,
         page=page,
         total_pages=total_pages,
