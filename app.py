@@ -1466,6 +1466,99 @@ def tile_add_item():
 
 
 
+# =========================
+# TILE WITHDRAWAL HISTORY
+# =========================
+
+@app.route('/tile_withdrawals')
+def tile_withdrawals():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        # Count filtered records
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM tile_withdrawals_table
+            WHERE size LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR withdrawn_by LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        # Get filtered records
+        cursor.execute("""
+            SELECT *
+            FROM tile_withdrawals_table
+            WHERE size LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR withdrawn_by LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM tile_withdrawals_table
+        """)
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM tile_withdrawals_table
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            per_page,
+            offset
+        ))
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'tiles_withdrawals.html',
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
+
 
 
 # =========================
