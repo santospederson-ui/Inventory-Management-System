@@ -1559,6 +1559,102 @@ def tile_withdrawals():
 
 
 
+# =========================
+# DISPLAY TILE RETURN TABLE
+# =========================
+
+@app.route('/tile_returns')
+def tile_returns():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        # Count matching records
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM tile_return_tab
+            WHERE size LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        # Get matching records
+        cursor.execute("""
+            SELECT *
+            FROM tile_return_tab
+            WHERE size LIKE %s
+               OR description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        # Total rows
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM tile_return_tab
+        """)
+
+        total = cursor.fetchone()['total']
+
+        # Current page rows
+        cursor.execute("""
+            SELECT *
+            FROM tile_return_tab
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'tile_returns.html',
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
+
 
 
 # =========================
