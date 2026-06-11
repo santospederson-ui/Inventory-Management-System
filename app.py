@@ -1661,19 +1661,26 @@ def tile_returns():
 # =========================
 
 import os
-import time
 from werkzeug.utils import secure_filename
-from flask import request, redirect, url_for, render_template, session, flash
+from flask import request, redirect, render_template, url_for, session, flash
 
-UPLOAD_FOLDER = "static/uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # ensures folder exists
-
+# =========================
+# UPLOAD CONFIG (IMPORTANT)
+# =========================
+UPLOAD_FOLDER = os.path.join("static", "uploads")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+# auto-create folder if missing
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
+# =========================
+# UPLOAD ROUTE
+# =========================
 @app.route('/upload_file', methods=['GET', 'POST'])
 def upload_file():
 
+    # login check
     if 'user' not in session:
         return redirect(url_for('login'))
 
@@ -1686,24 +1693,21 @@ def upload_file():
         remark = request.form.get('remark')
         file = request.files.get('file')
 
-        # handle file safely
-        filename = None
-        filepath = None
-        filetype = None
+        # validate file
+        if file is None or file.filename == "":
+            flash("Please select a file", "danger")
+            return redirect(url_for('upload_file'))
 
-        if file and file.filename != "":
+        # secure filename
+        filename = secure_filename(file.filename)
 
-            # prevent duplicate filenames
-            filename = str(int(time.time())) + "_" + secure_filename(file.filename)
+        # save path
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        # save file
+        file.save(filepath)
 
-            file.save(filepath)
-
-            filetype = file.content_type
-
-            # store relative path (better for web use)
-            filepath = "uploads/" + filename
+        filetype = file.content_type
 
         # insert into DB
         cursor.execute("""
@@ -1730,8 +1734,6 @@ def upload_file():
     conn.close()
 
     return render_template("upload_file.html")
-    return render_template("upload_file.html")
-
 
 
 
