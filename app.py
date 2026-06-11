@@ -1662,13 +1662,14 @@ def tile_returns():
 
 import os
 from werkzeug.utils import secure_filename
+from flask import request, redirect, url_for, render_template, flash, session
 
-UPLOAD_FOLDER = "static/uploads"
-
+# ABSOLUTE UPLOAD PATH (VERY IMPORTANT FIX)
+UPLOAD_FOLDER = os.path.join(app.root_path, "static/uploads")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Create folder automatically if it doesn't exist
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+# ensure folder exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @app.route('/upload_image', methods=['GET', 'POST'])
@@ -1682,38 +1683,35 @@ def upload_image():
         description = request.form.get('description')
         remark = request.form.get('remark')
 
-        # MUST match name="file" in your HTML
         file = request.files.get('file')
 
-        filename = None
-        filepath = None
-        filetype = None
+        # STEP 1: Validate file
+        if not file or file.filename == "":
+            flash("No file selected", "danger")
+            return redirect(url_for('upload_image'))
 
-        if file and file.filename:
+        # STEP 2: Secure filename
+        filename = secure_filename(file.filename)
 
-            filename = secure_filename(file.filename)
+        # STEP 3: Save path
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-            filepath = os.path.join(
-                app.config["UPLOAD_FOLDER"],
-                filename
-            )
-
+        try:
             file.save(filepath)
+        except Exception as e:
+            flash(f"File upload failed: {str(e)}", "danger")
+            return redirect(url_for('upload_image'))
 
-            filetype = file.content_type
+        # STEP 4: file type
+        filetype = file.content_type
 
+        # STEP 5: Save to DB
         conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO upload_table
-            (
-                full_description,
-                filename,
-                filepath,
-                filetype,
-                remark
-            )
+            (full_description, filename, filepath, filetype, remark)
             VALUES (%s, %s, %s, %s, %s)
         """, (
             description,
@@ -1724,10 +1722,11 @@ def upload_image():
         ))
 
         conn.commit()
-        flash("Document Uploaded Successfully", "success")
         cursor.close()
         conn.close()
-        
+
+        flash("File uploaded successfully", "success")
+
         return redirect(url_for('upload_image'))
 
     return render_template('upload_image.html')
