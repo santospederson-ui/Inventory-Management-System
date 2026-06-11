@@ -1724,11 +1724,10 @@ def upload_image():
         ))
 
         conn.commit()
-
+        flash("Document Uploaded Successfully", "success")
         cursor.close()
         conn.close()
         
-        flash("Document Uploaded Successfully", "success")
         return redirect(url_for('upload_image'))
 
     return render_template('upload_image.html')
