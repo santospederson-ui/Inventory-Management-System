@@ -136,10 +136,8 @@
                     <td>
                         {% if row.filename %}
                         <button class="view-btn"
-                                onclick="openPreview(
-                                    '{{ url_for('static', filename='uploads/' ~ row.filename) }}',
-                                    '{{ row.filetype or '' }}'
-                                )">
+                                 onclick="openPreview('{{ url_for('static', filename='uploads/' ~ row.filename) }}',
+                                                     '{{ row.filetype or '' }}')">
                             View
                         </button>
                         {% else %}
