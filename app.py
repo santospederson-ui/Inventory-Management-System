@@ -1677,63 +1677,52 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # =========================
 # UPLOAD ROUTE
 # =========================
-@app.route('/upload_file', methods=['GET', 'POST'])
-def upload_file():
+import os
+from werkzeug.utils import secure_filename
 
-    # login check
+UPLOAD_FOLDER = "static/uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
+@app.route('/upload_image', methods=['GET', 'POST'])
+def upload_image():
+
     if 'user' not in session:
         return redirect(url_for('login'))
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
 
     if request.method == 'POST':
 
-        description = request.form.get('description')
-        remark = request.form.get('remark')
-        file = request.files.get('file')
+        description = request.form['description']
+        remark = request.form['remark']
 
-        # validate file
-        if file is None or file.filename == "":
-            flash("Please select a file", "danger")
-            return redirect(url_for('upload_file'))
+        file = request.files['image']
 
-        # secure filename
-        filename = secure_filename(file.filename)
+        filename = None
 
-        # save path
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        if file and file.filename != "":
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        # save file
-        file.save(filepath)
-
-        filetype = file.content_type
-
-        # insert into DB
         cursor.execute("""
             INSERT INTO upload_table
-            (full_description, filename, filepath, filetype, remark)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (
-            description,
-            filename,
-            filepath,
-            filetype,
-            remark
-        ))
+            (full_description, image, remark)
+            VALUES (%s, %s, %s)
+        """, (description, filename, remark))
 
         conn.commit()
 
         cursor.close()
         conn.close()
 
-        flash("File uploaded successfully", "success")
-        return redirect(url_for('upload_file'))
+        return redirect(url_for('upload_image'))
 
     cursor.close()
     conn.close()
 
-    return render_template("upload_file.html")
+    return render_template("upload_image.html")
 
 
 
