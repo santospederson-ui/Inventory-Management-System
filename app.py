@@ -1661,9 +1661,13 @@ def tile_returns():
 # =========================
 
 import os
+import time
 from werkzeug.utils import secure_filename
+from flask import request, redirect, url_for, render_template, session, flash
 
 UPLOAD_FOLDER = "static/uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # ensures folder exists
+
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
@@ -1678,32 +1682,54 @@ def upload_file():
 
     if request.method == 'POST':
 
-        description = request.form['description']
-        remark = request.form['remark']
-        file = request.files['file']
+        description = request.form.get('description')
+        remark = request.form.get('remark')
+        file = request.files.get('file')
+
+        # handle file safely
+        filename = None
+        filepath = None
+        filetype = None
 
         if file and file.filename != "":
 
-            filename = secure_filename(file.filename)
+            # prevent duplicate filenames
+            filename = str(int(time.time())) + "_" + secure_filename(file.filename)
+
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
             file.save(filepath)
 
             filetype = file.content_type
 
-            cursor.execute("""
-                INSERT INTO upload_table
-                (full_description, filename, filepath, filetype, remark)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (description, filename, filepath, filetype, remark))
+            # store relative path (better for web use)
+            filepath = "uploads/" + filename
 
-            conn.commit()
+        # insert into DB
+        cursor.execute("""
+            INSERT INTO upload_table
+            (full_description, filename, filepath, filetype, remark)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            description,
+            filename,
+            filepath,
+            filetype,
+            remark
+        ))
 
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("File uploaded successfully", "success")
         return redirect(url_for('upload_file'))
 
     cursor.close()
     conn.close()
 
+    return render_template("upload_file.html")
     return render_template("upload_file.html")
 
 
