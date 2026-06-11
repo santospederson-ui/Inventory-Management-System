@@ -1,0 +1,30 @@
+<table class="table table-bordered">
+
+<tr>
+    <th>ID</th>
+    <th>Description</th>
+    <th>File</th>
+    <th>Type</th>
+    <th>Remark</th>
+    <th>Date</th>
+</tr>
+
+{% for row in data %}
+<tr>
+    <td>{{ row.id }}</td>
+    <td>{{ row.full_description }}</td>
+
+    <td>
+        <a href="{{ url_for('static', filename='uploads/' + row.filename) }}"
+           target="_blank">
+            View File
+        </a>
+    </td>
+
+    <td>{{ row.filetype }}</td>
+    <td>{{ row.remark }}</td>
+    <td>{{ row.action_date }}</td>
+</tr>
+{% endfor %}
+
+</table>
