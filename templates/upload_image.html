@@ -2,48 +2,107 @@
 
 {% block content %}
 
-<h3>Upload Record</h3>
+<style>
+.upload-card {
+    max-width: 750px;
+    margin: auto;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
 
-<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
+.upload-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
 
-    <!-- DESCRIPTION -->
-    <div class="form-group">
-        <label>Full Description</label>
-        <textarea name="description" class="form-control" rows="3" required></textarea>
+.upload-box {
+    border: 2px dashed #cbd5e0;
+    border-radius: 10px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #f8fafc;
+}
+
+.upload-box:hover {
+    border-color: #1e3c72;
+    background: #f1f5f9;
+}
+
+.upload-box i {
+    font-size: 40px;
+    color: #1e3c72;
+    margin-bottom: 10px;
+}
+
+.preview-area {
+    margin-top: 15px;
+}
+
+.preview-img {
+    max-width: 220px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.pdf-badge {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 6px;
+    margin-top: 10px;
+    text-decoration: none;
+}
+</style>
+
+<div class="upload-card">
+
+    <div class="upload-title">
+        📤 Upload Document
     </div>
 
-    <!-- IMAGE -->
-    <div class="form-group">
-        <label>Image</label><br>
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
 
+        <!-- DESCRIPTION -->
+        <label>Full Description</label>
+        <textarea name="description" class="form-control mb-3" rows="3" required></textarea>
+
+        <!-- UPLOAD AREA -->
         <input type="file"
                id="fileInput"
-               name="image"
-               accept="image/*"
-               style="display:none;"
+               name="file"
+               accept="image/*,application/pdf"
+               hidden
                onchange="previewFile(event)">
 
-        <label for="fileInput" class="btn btn-primary">
-            Choose Image
+        <label for="fileInput" class="upload-box">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <div><strong>Click to Upload</strong> or Drag & Drop</div>
+            <small>Supports Images & PDF</small>
         </label>
 
-        <span id="fileName" style="margin-left:10px;">No file selected</span>
+        <div id="fileName" style="margin-top:10px;color:#555;"></div>
 
-        <div id="previewBox" style="margin-top:15px;"></div>
-    </div>
+        <!-- PREVIEW -->
+        <div id="previewBox" class="preview-area"></div>
 
-    <!-- REMARK -->
-    <div class="form-group">
-        <label>Remark</label>
-        <input type="text" name="remark" class="form-control">
-    </div>
+        <!-- REMARK -->
+        <label class="mt-3">Remark</label>
+        <input type="text" name="remark" class="form-control mb-3">
 
-    <!-- SUBMIT -->
-    <button type="submit" class="btn btn-success">
-        Save Record
-    </button>
+        <!-- BUTTON -->
+        <button type="submit" class="btn btn-success w-100">
+            Save Record
+        </button>
 
-</form>
+    </form>
+</div>
 
 <script>
 function previewFile(event) {
@@ -55,15 +114,24 @@ function previewFile(event) {
 
     if (!file) return;
 
-    fileName.innerText = file.name;
+    fileName.innerText = "Selected: " + file.name;
 
+    // IMAGE PREVIEW
     if (file.type.startsWith("image/")) {
         let img = document.createElement("img");
         img.src = URL.createObjectURL(file);
-        img.style.maxWidth = "250px";
-        img.style.border = "2px solid #ddd";
-        img.style.borderRadius = "8px";
+        img.className = "preview-img";
         previewBox.appendChild(img);
+    }
+
+    // PDF PREVIEW
+    else if (file.type === "application/pdf") {
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(file);
+        link.target = "_blank";
+        link.className = "pdf-badge";
+        link.innerText = "📄 Click to Preview PDF";
+        previewBox.appendChild(link);
     }
 }
 </script>
