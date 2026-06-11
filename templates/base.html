@@ -384,11 +384,7 @@
                     </a>
                     <ul class="dropdown-menu">
 
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-upload"></i> Upload Document
-                            </a>
-                        </li>
+                    
 
                         <li>
                             <a class="dropdown-item" href="#">
@@ -407,6 +403,12 @@
                     <ul class="dropdown-menu">
 
                         {% if session.get('role') == 'admin' %}
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-upload"></i> Upload Document
+                            </a>
+                        </li>
+                        
                         <li>
                             <a class="dropdown-item" href="{{ url_for('register') }}">
                                 <i class="fas fa-user-plus"></i> Register User
