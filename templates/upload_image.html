@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Upload Image</h3>
+
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
+
+    <!-- Hidden file input -->
+    <input type="file"
+           id="image"
+           name="image"
+           accept="image/*"
+           style="display:none;"
+           onchange="document.getElementById('fileName').innerText = this.files[0].name">
+
+    <!-- Button that opens file dialog -->
+    <label for="image" class="btn btn-primary">
+        Choose Image
+    </label>
+
+    <!-- Show selected file name -->
+    <span id="fileName" style="margin-left:10px; color:#666;">
+        No file selected
+    </span>
+
+    <br><br>
+
+    <!-- Submit button -->
+    <button type="submit" class="btn btn-success">
+        Save Image
+    </button>
+
+</form>
+
+{% endblock %}
