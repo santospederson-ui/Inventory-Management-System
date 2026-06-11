@@ -1693,18 +1693,22 @@ def upload_image():
             return redirect(url_for('upload_image'))
 
         # ==============================
-        # DETECT FILE TYPE FROM NAME
+        # SAFE FILE EXTENSION CHECK
         # ==============================
-        file_ext = file.filename.rsplit(".", 1)[-1].lower()
+        filename = file.filename
+        file_ext = filename.rsplit(".", 1)[-1].lower()
+
+        image_exts = ["jpg", "jpeg", "png", "webp", "gif"]
+        doc_exts = ["pdf", "doc", "docx", "xls", "xlsx"]
 
         # ==============================
-        # UPLOAD TO CLOUDINARY
+        # CLOUDINARY UPLOAD
         # ==============================
-        # PDF/Docs must be RAW, images can be auto
-        if file_ext in ["pdf", "doc", "docx", "xls", "xlsx"]:
+        if file_ext in doc_exts:
             upload_result = cloudinary.uploader.upload(
                 file,
                 resource_type="raw",
+                type="upload",
                 use_filename=True,
                 unique_filename=True
             )
@@ -1712,13 +1716,16 @@ def upload_image():
             upload_result = cloudinary.uploader.upload(
                 file,
                 resource_type="image",
+                type="upload",
                 use_filename=True,
                 unique_filename=True
             )
 
         file_url = upload_result.get("secure_url")
 
-        # IMPORTANT: store extension, NOT cloudinary resource_type
+        # ==============================
+        # IMPORTANT: STORE EXTENSION ONLY
+        # ==============================
         filetype = file_ext
 
         # ==============================
@@ -1748,7 +1755,6 @@ def upload_image():
         return redirect(url_for('upload_image'))
 
     return render_template('upload_image.html')
-
 # =========================
 # UPLOAD LIST ROUTE
 # =========================
