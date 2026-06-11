@@ -1673,6 +1673,7 @@ def tile_returns():
 
 from flask import request, redirect, url_for, flash, render_template, session
 import cloudinary.uploader
+import os
 
 
 @app.route('/upload_image', methods=['GET', 'POST'])
@@ -1691,13 +1692,38 @@ def upload_image():
             flash("No file selected", "danger")
             return redirect(url_for('upload_image'))
 
-        # 🔥 UPLOAD TO CLOUDINARY
-        upload_result = cloudinary.uploader.upload(file)
+        # ==============================
+        # DETECT FILE TYPE FROM NAME
+        # ==============================
+        file_ext = file.filename.rsplit(".", 1)[-1].lower()
+
+        # ==============================
+        # UPLOAD TO CLOUDINARY
+        # ==============================
+        # PDF/Docs must be RAW, images can be auto
+        if file_ext in ["pdf", "doc", "docx", "xls", "xlsx"]:
+            upload_result = cloudinary.uploader.upload(
+                file,
+                resource_type="raw",
+                use_filename=True,
+                unique_filename=True
+            )
+        else:
+            upload_result = cloudinary.uploader.upload(
+                file,
+                resource_type="image",
+                use_filename=True,
+                unique_filename=True
+            )
 
         file_url = upload_result.get("secure_url")
-        filetype = upload_result.get("resource_type")
 
-        # SAVE ONLY URL TO DATABASE
+        # IMPORTANT: store extension, NOT cloudinary resource_type
+        filetype = file_ext
+
+        # ==============================
+        # SAVE TO DATABASE
+        # ==============================
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -1717,7 +1743,7 @@ def upload_image():
         cursor.close()
         conn.close()
 
-        flash("Upload successful (Cloud)", "success")
+        flash("Upload successful", "success")
 
         return redirect(url_for('upload_image'))
 
