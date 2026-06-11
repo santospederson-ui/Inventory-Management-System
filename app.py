@@ -1756,11 +1756,7 @@ def upload_list():
     cursor.close()
     conn.close()
 
-  return render_template(
-    "upload_list.html",
-    data=data,
-    search="search"
-)
+    return render_template("upload_list.html", data=data)
 
 
 
