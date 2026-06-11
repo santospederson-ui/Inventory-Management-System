@@ -2,66 +2,68 @@
 
 {% block content %}
 
-<h3>Upload Any File</h3>
+<h3>Upload Record</h3>
 
-<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
 
     <!-- DESCRIPTION -->
-    <textarea name="description"
-              class="form-control"
-              placeholder="Full description"
-              required></textarea>
+    <div class="form-group">
+        <label>Full Description</label>
+        <textarea name="description" class="form-control" rows="3" required></textarea>
+    </div>
 
-    <br>
+    <!-- IMAGE -->
+    <div class="form-group">
+        <label>Image</label><br>
 
-    <!-- FILE INPUT (hidden) -->
-    <input type="file"
-           id="fileInput"
-           name="file"
-           accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xlsx"
-           style="display:none;"
-           onchange="showName(this)">
+        <input type="file"
+               id="fileInput"
+               name="image"
+               accept="image/*"
+               style="display:none;"
+               onchange="previewFile(event)">
 
-    <!-- BUTTON TO OPEN FILE -->
-    <label for="fileInput" class="btn btn-primary">
-        Choose File
-    </label>
+        <label for="fileInput" class="btn btn-primary">
+            Choose Image
+        </label>
 
-    <!-- FILE NAME DISPLAY -->
-    <span id="fileName" style="margin-left:10px; color:#666;">
-        No file selected
-    </span>
+        <span id="fileName" style="margin-left:10px;">No file selected</span>
 
-    <br><br>
+        <div id="previewBox" style="margin-top:15px;"></div>
+    </div>
 
     <!-- REMARK -->
-    <input type="text"
-           name="remark"
-           class="form-control"
-           placeholder="Remark">
+    <div class="form-group">
+        <label>Remark</label>
+        <input type="text" name="remark" class="form-control">
+    </div>
 
-    <br>
-
-    <!-- SUBMIT BUTTON -->
-    <button type="submit" class="btn btn-success" id="submitBtn" disabled>
-        Upload
+    <!-- SUBMIT -->
+    <button type="submit" class="btn btn-success">
+        Save Record
     </button>
 
 </form>
 
 <script>
-function showName(input) {
-    let file = input.files[0];
-
+function previewFile(event) {
+    let file = event.target.files[0];
+    let previewBox = document.getElementById("previewBox");
     let fileName = document.getElementById("fileName");
-    let submitBtn = document.getElementById("submitBtn");
 
-    if (file) {
-        fileName.innerText = file.name;
-        submitBtn.disabled = false;
-    } else {
-        fileName.innerText = "No file selected";
-        submitBtn.disabled = true;
+    previewBox.innerHTML = "";
+
+    if (!file) return;
+
+    fileName.innerText = file.name;
+
+    if (file.type.startsWith("image/")) {
+        let img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = "250px";
+        img.style.border = "2px solid #ddd";
+        img.style.borderRadius = "8px";
+        previewBox.appendChild(img);
     }
 }
 </script>
