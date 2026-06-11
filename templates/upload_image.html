@@ -2,35 +2,82 @@
 
 {% block content %}
 
-<h3>Upload Image</h3>
+<h3>Upload Document / Image</h3>
 
 <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
 
     <!-- Hidden file input -->
     <input type="file"
-           id="image"
+           id="fileInput"
            name="image"
-           accept="image/*"
+           accept="image/*,.pdf,.doc,.docx"
            style="display:none;"
-           onchange="document.getElementById('fileName').innerText = this.files[0].name">
+           onchange="previewFile(event)">
 
-    <!-- Button that opens file dialog -->
-    <label for="image" class="btn btn-primary">
-        Choose Image
+    <!-- Choose file button -->
+    <label for="fileInput" class="btn btn-primary">
+        Choose File
     </label>
 
-    <!-- Show selected file name -->
     <span id="fileName" style="margin-left:10px; color:#666;">
         No file selected
     </span>
 
     <br><br>
 
-    <!-- Submit button -->
+    <!-- IMAGE PREVIEW BOX -->
+    <div id="previewBox" style="margin-top:15px;"></div>
+
+    <br>
+
+    <!-- Submit -->
     <button type="submit" class="btn btn-success">
-        Save Image
+        Upload
     </button>
 
 </form>
+
+<script>
+function previewFile(event) {
+    let file = event.target.files[0];
+    let previewBox = document.getElementById("previewBox");
+    let fileName = document.getElementById("fileName");
+
+    previewBox.innerHTML = "";
+
+    if (!file) return;
+
+    fileName.innerText = file.name;
+
+    let fileType = file.type;
+
+    // IMAGE PREVIEW
+    if (fileType.startsWith("image/")) {
+        let img = document.createElement("img");
+        img.style.maxWidth = "300px";
+        img.style.border = "2px solid #ddd";
+        img.style.borderRadius = "8px";
+        img.style.padding = "5px";
+
+        img.src = URL.createObjectURL(file);
+
+        previewBox.appendChild(img);
+    }
+
+    // PDF or DOCUMENT PREVIEW (icon only)
+    else {
+        let box = document.createElement("div");
+        box.style.padding = "15px";
+        box.style.border = "1px solid #ccc";
+        box.style.borderRadius = "8px";
+        box.style.display = "inline-block";
+        box.style.background = "#f8f9fa";
+
+        box.innerHTML = "📄 " + file.name;
+
+        previewBox.appendChild(box);
+    }
+}
+</script>
 
 {% endblock %}
