@@ -10,28 +10,8 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.header h3 {
-    color: #1e3c72;
-    font-weight: 700;
-    margin: 0;
-}
-
-/* SEARCH */
 .search-box {
     margin-bottom: 15px;
-}
-
-/* TABLE */
-.table thead {
-    background: #1e3c72;
-    color: white;
 }
 
 .view-btn {
@@ -40,14 +20,12 @@
     border: none;
     padding: 6px 12px;
     border-radius: 6px;
-    cursor: pointer;
 }
 
 .view-btn:hover {
     background: #2a5298;
 }
 
-/* MODAL */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0;
@@ -85,34 +63,25 @@
 
 <div class="container-box">
 
-    <!-- HEADER -->
-    <div class="header">
-        <h3>Uploaded Documents</h3>
-    </div>
+    <h3>Uploaded Documents</h3>
 
-    <!-- SEARCH (MATCHES YOUR BASE.HTML JS) -->
-    <form method="GET"
-          action="{{ url_for('upload_list') }}"
-          id="searchForm"
-          class="search-box d-flex gap-2">
+    <!-- SEARCH -->
+    <form method="GET" action="{{ url_for('upload_list') }}" class="search-box d-flex gap-2">
 
         <input type="text"
                name="search"
-               id="searchInput"
                value="{{ search }}"
                class="form-control"
                placeholder="Search documents...">
 
-        <button class="btn btn-primary">
-            Search
-        </button>
+        <button class="btn btn-primary">Search</button>
 
     </form>
 
     <!-- TABLE -->
     <div class="table-responsive">
 
-        <table class="table table-striped table-hover">
+        <table class="table table-striped">
 
             <thead>
                 <tr>
@@ -136,10 +105,8 @@
                     <td>
                         {% if row.filename %}
                         <button class="view-btn"
-                                onclick="openPreview(
-                                    '{{ url_for('static', filename='uploads/' ~ row.filename) }}',
-                                    '{{ row.filetype or '' }}'
-                                )">
+                                onclick="openPreview('{{ url_for('static', filename='uploads/' ~ row.filename) }}',
+                                                     '{{ row.filetype or '' }}')">
                             View
                         </button>
                         {% else %}
