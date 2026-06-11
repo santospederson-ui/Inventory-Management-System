@@ -1742,21 +1742,68 @@ def upload_list():
     if 'user' not in session:
         return redirect(url_for('login'))
 
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT *
-        FROM upload_table
-        ORDER BY id DESC
-    """)
+    if search:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM upload_table
+            WHERE full_description LIKE %s
+               OR remark LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%"
+        ))
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM upload_table
+            WHERE full_description LIKE %s
+               OR remark LIKE %s
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        cursor.execute("SELECT COUNT(*) AS total FROM upload_table")
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM upload_table
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
 
     data = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return render_template("upload_list.html", data=data)
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        "upload_list.html",
+        data=data,
+        search=search,
+        page=page,
+        total_pages=total_pages
+    )
 
 
 
