@@ -1724,6 +1724,32 @@ def upload_image():
 
     return render_template("upload_image.html")
 
+# =========================
+# UPLOAD LIST ROUTE
+# =========================
+
+@app.route('/upload_list')
+def upload_list():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT *
+        FROM upload_table
+        ORDER BY id DESC
+    """)
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("upload_list.html", data=data)
+
 
 
 # =========================
