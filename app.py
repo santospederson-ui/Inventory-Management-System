@@ -1667,46 +1667,44 @@ UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
-@app.route('/upload_image', methods=['GET', 'POST'])
-def upload_image():
+@app.route('/upload_file', methods=['GET', 'POST'])
+def upload_file():
 
     if 'user' not in session:
         return redirect(url_for('login'))
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     if request.method == 'POST':
 
         description = request.form['description']
         remark = request.form['remark']
-
-        file = request.files['image']
-
-        filename = None
+        file = request.files['file']
 
         if file and file.filename != "":
+
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-        cursor.execute("""
-            INSERT INTO upload_table
-            (full_description, image, remark)
-            VALUES (%s, %s, %s)
-        """, (description, filename, remark))
+            file.save(filepath)
 
-        conn.commit()
+            filetype = file.content_type
 
-        cursor.close()
-        conn.close()
+            cursor.execute("""
+                INSERT INTO upload_table
+                (full_description, filename, filepath, filetype, remark)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (description, filename, filepath, filetype, remark))
 
-        return redirect(url_for('upload_image'))
+            conn.commit()
+
+        return redirect(url_for('upload_file'))
 
     cursor.close()
     conn.close()
 
-    return render_template("upload_image.html")
-
+    return render_template("upload_file.html")
 
 
 
