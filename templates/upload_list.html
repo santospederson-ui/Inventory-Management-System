@@ -23,12 +23,10 @@
     margin: 0;
 }
 
-/* SEARCH */
 .search-box {
     margin-bottom: 15px;
 }
 
-/* TABLE */
 .table thead {
     background: #1e3c72;
     color: white;
@@ -85,12 +83,11 @@
 
 <div class="container-box">
 
-    <!-- HEADER -->
     <div class="header">
         <h3>Uploaded Documents</h3>
     </div>
 
-    <!-- SEARCH (MATCHES YOUR BASE.HTML JS) -->
+    <!-- SEARCH -->
     <form method="GET"
           action="{{ url_for('upload_list') }}"
           id="searchForm"
@@ -103,9 +100,7 @@
                class="form-control"
                placeholder="Search documents...">
 
-        <button class="btn btn-primary">
-            Search
-        </button>
+        <button class="btn btn-primary">Search</button>
 
     </form>
 
@@ -127,7 +122,7 @@
 
             <tbody>
 
-                {% for row in data %}
+            {% for row in data %}
                 <tr>
 
                     <td>{{ row.id }}</td>
@@ -136,10 +131,8 @@
                     <td>
                         {% if row.filename %}
                         <button class="view-btn"
-                                onclick="openPreview(
-                                    '{{ url_for('static', filename='uploads/' ~ row.filename) }}',
-                                    '{{ row.filetype or '' }}'
-                                )">
+                                onclick="openPreview('{{ row.filepath }}',
+                                '{{ row.filetype or '' }}')">
                             View
                         </button>
                         {% else %}
@@ -152,7 +145,7 @@
                     <td>{{ row.action_date or '-' }}</td>
 
                 </tr>
-                {% endfor %}
+            {% endfor %}
 
             </tbody>
 
@@ -209,8 +202,15 @@ function openPreview(url, type) {
 
     let box = document.getElementById("previewContainer");
 
-    if (type.startsWith("image/")) {
+    // ✅ FIX: robust image detection (Cloudinary safe)
+    if (url.includes(".jpg") ||
+        url.includes(".png") ||
+        url.includes(".jpeg") ||
+        url.includes(".webp") ||
+        (type && type.includes("image"))) {
+
         box.innerHTML = `<img src="${url}">`;
+
     } else {
         box.innerHTML = `<iframe src="${url}"></iframe>`;
     }
