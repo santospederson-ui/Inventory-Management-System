@@ -1733,7 +1733,7 @@ def upload_list():
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    search = request.args.get('search', '')
+    search = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
 
     per_page = 10
@@ -1742,44 +1742,29 @@ def upload_list():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    base_query = "FROM upload_table"
+    where_clause = ""
+    params = []
+
     if search:
-
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM upload_table
+        where_clause = """
             WHERE full_description LIKE %s
                OR remark LIKE %s
-        """, (
-            f"%{search}%",
-            f"%{search}%"
-        ))
-        total = cursor.fetchone()['total']
+        """
+        params.extend([f"%{search}%", f"%{search}%"])
 
-        cursor.execute("""
-            SELECT *
-            FROM upload_table
-            WHERE full_description LIKE %s
-               OR remark LIKE %s
-            ORDER BY id DESC
-            LIMIT %s OFFSET %s
-        """, (
-            f"%{search}%",
-            f"%{search}%",
-            per_page,
-            offset
-        ))
+    # COUNT
+    cursor.execute(f"SELECT COUNT(*) AS total {base_query} {where_clause}", params)
+    total = cursor.fetchone()['total']
 
-    else:
-
-        cursor.execute("SELECT COUNT(*) AS total FROM upload_table")
-        total = cursor.fetchone()['total']
-
-        cursor.execute("""
-            SELECT *
-            FROM upload_table
-            ORDER BY id DESC
-            LIMIT %s OFFSET %s
-        """, (per_page, offset))
+    # DATA
+    cursor.execute(f"""
+        SELECT *
+        {base_query}
+        {where_clause}
+        ORDER BY id DESC
+        LIMIT %s OFFSET %s
+    """, params + [per_page, offset])
 
     data = cursor.fetchall()
 
