@@ -1656,6 +1656,53 @@ def tile_returns():
 
 
 
+# =========================
+# UPLOAD ROUTE TABLE
+# =========================
+
+@app.route('/upload_image', methods=['GET', 'POST'])
+def upload_image():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+
+        file = request.files['image']
+
+        if file and file.filename != "":
+
+            filename = secure_filename(file.filename)
+
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            file.save(filepath)
+
+            # save to DB
+            cursor.execute("""
+                INSERT INTO upload_table (filename, filepath)
+                VALUES (%s, %s)
+            """, (filename, filepath))
+
+            conn.commit()
+
+            cursor.close()
+            conn.close()
+
+            flash("Image uploaded successfully", "success")
+            return redirect(url_for('upload_image'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template("upload_image.html")
+
+
+
+
 
 # =========================
 # RUN APP
