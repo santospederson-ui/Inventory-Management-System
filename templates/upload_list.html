@@ -202,17 +202,37 @@ function openPreview(url, type) {
 
     let box = document.getElementById("previewContainer");
 
-    // ✅ FIX: robust image detection (Cloudinary safe)
-    if (url.includes(".jpg") ||
-        url.includes(".png") ||
-        url.includes(".jpeg") ||
-        url.includes(".webp") ||
-        (type && type.includes("image"))) {
+    // normalize
+    type = (type || "").toLowerCase();
 
+    // ✅ IMAGE
+    if (
+        url.match(/\.(jpg|jpeg|png|webp|gif)/i) ||
+        type.includes("image")
+    ) {
         box.innerHTML = `<img src="${url}">`;
+    }
 
-    } else {
-        box.innerHTML = `<iframe src="${url}"></iframe>`;
+    // ✅ PDF (FIXED)
+    else if (
+        url.match(/\.pdf/i) ||
+        type.includes("pdf") ||
+        type === "raw"
+    ) {
+        box.innerHTML = `
+            <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0"></iframe>
+            <br>
+            <a href="${url}" target="_blank" style="display:inline-block;margin-top:10px;color:white;background:#1e3c72;padding:8px 12px;border-radius:6px;text-decoration:none;">
+                Open PDF in new tab
+            </a>
+        `;
+    }
+
+    // fallback
+    else {
+        box.innerHTML = `
+            <a href="${url}" target="_blank">Open File</a>
+        `;
     }
 
     document.getElementById("modal").style.display = "flex";
