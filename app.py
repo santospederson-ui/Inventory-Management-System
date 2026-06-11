@@ -1662,23 +1662,6 @@ def tile_returns():
 
 import os
 from werkzeug.utils import secure_filename
-from flask import request, redirect, render_template, url_for, session, flash
-
-# =========================
-# UPLOAD CONFIG (IMPORTANT)
-# =========================
-UPLOAD_FOLDER = os.path.join("static", "uploads")
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
-# auto-create folder if missing
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-
-# =========================
-# UPLOAD ROUTE
-# =========================
-import os
-from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -1695,20 +1678,23 @@ def upload_image():
 
     if request.method == 'POST':
 
-        description = request.form['description']
-        remark = request.form['remark']
+        description = request.form.get('description')
+        remark = request.form.get('remark')
 
-        file = request.files['image']
+        file = request.files.get('image')
 
         filename = None
 
         if file and file.filename != "":
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
+            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(upload_path)
+
+        # IMPORTANT: match your real table columns
         cursor.execute("""
             INSERT INTO upload_table
-            (full_description, image, remark)
+            (full_description, filename, remark)
             VALUES (%s, %s, %s)
         """, (description, filename, remark))
 
