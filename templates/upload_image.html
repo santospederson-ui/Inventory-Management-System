@@ -2,69 +2,45 @@
 
 {% block content %}
 
-<h3>Upload Record</h3>
+<h3>Upload Any File</h3>
 
-<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
 
     <!-- DESCRIPTION -->
-    <div class="form-group">
-        <label>Full Description</label>
-        <textarea name="description" class="form-control" rows="3" required></textarea>
-    </div>
+    <textarea name="description" class="form-control" placeholder="Full description" required></textarea>
 
-    <!-- IMAGE -->
-    <div class="form-group">
-        <label>Image</label><br>
+    <br>
 
-        <input type="file"
-               id="fileInput"
-               name="image"
-               accept="image/*"
-               style="display:none;"
-               onchange="previewFile(event)">
+    <!-- FILE INPUT -->
+    <input type="file"
+           id="fileInput"
+           name="file"
+           style="display:none;"
+           onchange="showName(this)">
 
-        <label for="fileInput" class="btn btn-primary">
-            Choose Image
-        </label>
+    <label for="fileInput" class="btn btn-primary">
+        Choose File
+    </label>
 
-        <span id="fileName" style="margin-left:10px;">No file selected</span>
+    <span id="fileName" style="margin-left:10px;">No file selected</span>
 
-        <div id="previewBox" style="margin-top:15px;"></div>
-    </div>
+    <br><br>
 
     <!-- REMARK -->
-    <div class="form-group">
-        <label>Remark</label>
-        <input type="text" name="remark" class="form-control">
-    </div>
+    <input type="text" name="remark" class="form-control" placeholder="Remark">
 
-    <!-- SUBMIT -->
+    <br>
+
     <button type="submit" class="btn btn-success">
-        Save Record
+        Upload
     </button>
 
 </form>
 
 <script>
-function previewFile(event) {
-    let file = event.target.files[0];
-    let previewBox = document.getElementById("previewBox");
-    let fileName = document.getElementById("fileName");
-
-    previewBox.innerHTML = "";
-
-    if (!file) return;
-
-    fileName.innerText = file.name;
-
-    if (file.type.startsWith("image/")) {
-        let img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-        img.style.maxWidth = "250px";
-        img.style.border = "2px solid #ddd";
-        img.style.borderRadius = "8px";
-        previewBox.appendChild(img);
-    }
+function showName(input) {
+    let file = input.files[0];
+    document.getElementById("fileName").innerText = file ? file.name : "No file selected";
 }
 </script>
 
