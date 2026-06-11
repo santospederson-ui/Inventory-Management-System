@@ -2,37 +2,45 @@
 
 {% block content %}
 
-<h3>Upload Document / Image</h3>
+<h3>Upload Record</h3>
 
 <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
 
-    <!-- Hidden file input -->
-    <input type="file"
-           id="fileInput"
-           name="image"
-           accept="image/*,.pdf,.doc,.docx"
-           style="display:none;"
-           onchange="previewFile(event)">
+    <!-- DESCRIPTION -->
+    <div class="form-group">
+        <label>Full Description</label>
+        <textarea name="description" class="form-control" rows="3" required></textarea>
+    </div>
 
-    <!-- Choose file button -->
-    <label for="fileInput" class="btn btn-primary">
-        Choose File
-    </label>
+    <!-- IMAGE -->
+    <div class="form-group">
+        <label>Image</label><br>
 
-    <span id="fileName" style="margin-left:10px; color:#666;">
-        No file selected
-    </span>
+        <input type="file"
+               id="fileInput"
+               name="image"
+               accept="image/*"
+               style="display:none;"
+               onchange="previewFile(event)">
 
-    <br><br>
+        <label for="fileInput" class="btn btn-primary">
+            Choose Image
+        </label>
 
-    <!-- IMAGE PREVIEW BOX -->
-    <div id="previewBox" style="margin-top:15px;"></div>
+        <span id="fileName" style="margin-left:10px;">No file selected</span>
 
-    <br>
+        <div id="previewBox" style="margin-top:15px;"></div>
+    </div>
 
-    <!-- Submit -->
+    <!-- REMARK -->
+    <div class="form-group">
+        <label>Remark</label>
+        <input type="text" name="remark" class="form-control">
+    </div>
+
+    <!-- SUBMIT -->
     <button type="submit" class="btn btn-success">
-        Upload
+        Save Record
     </button>
 
 </form>
@@ -49,33 +57,13 @@ function previewFile(event) {
 
     fileName.innerText = file.name;
 
-    let fileType = file.type;
-
-    // IMAGE PREVIEW
-    if (fileType.startsWith("image/")) {
+    if (file.type.startsWith("image/")) {
         let img = document.createElement("img");
-        img.style.maxWidth = "300px";
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = "250px";
         img.style.border = "2px solid #ddd";
         img.style.borderRadius = "8px";
-        img.style.padding = "5px";
-
-        img.src = URL.createObjectURL(file);
-
         previewBox.appendChild(img);
-    }
-
-    // PDF or DOCUMENT PREVIEW (icon only)
-    else {
-        let box = document.createElement("div");
-        box.style.padding = "15px";
-        box.style.border = "1px solid #ccc";
-        box.style.borderRadius = "8px";
-        box.style.display = "inline-block";
-        box.style.background = "#f8f9fa";
-
-        box.innerHTML = "📄 " + file.name;
-
-        previewBox.appendChild(box);
     }
 }
 </script>
