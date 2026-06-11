@@ -7,31 +7,43 @@
 <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
 
     <!-- DESCRIPTION -->
-    <textarea name="description" class="form-control" placeholder="Full description" required></textarea>
+    <textarea name="description"
+              class="form-control"
+              placeholder="Full description"
+              required></textarea>
 
     <br>
 
-    <!-- FILE INPUT -->
+    <!-- FILE INPUT (hidden) -->
     <input type="file"
            id="fileInput"
            name="file"
+           accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xlsx"
            style="display:none;"
            onchange="showName(this)">
 
+    <!-- BUTTON TO OPEN FILE -->
     <label for="fileInput" class="btn btn-primary">
         Choose File
     </label>
 
-    <span id="fileName" style="margin-left:10px;">No file selected</span>
+    <!-- FILE NAME DISPLAY -->
+    <span id="fileName" style="margin-left:10px; color:#666;">
+        No file selected
+    </span>
 
     <br><br>
 
     <!-- REMARK -->
-    <input type="text" name="remark" class="form-control" placeholder="Remark">
+    <input type="text"
+           name="remark"
+           class="form-control"
+           placeholder="Remark">
 
     <br>
 
-    <button type="submit" class="btn btn-success">
+    <!-- SUBMIT BUTTON -->
+    <button type="submit" class="btn btn-success" id="submitBtn" disabled>
         Upload
     </button>
 
@@ -40,7 +52,17 @@
 <script>
 function showName(input) {
     let file = input.files[0];
-    document.getElementById("fileName").innerText = file ? file.name : "No file selected";
+
+    let fileName = document.getElementById("fileName");
+    let submitBtn = document.getElementById("submitBtn");
+
+    if (file) {
+        fileName.innerText = file.name;
+        submitBtn.disabled = false;
+    } else {
+        fileName.innerText = "No file selected";
+        submitBtn.disabled = true;
+    }
 }
 </script>
 
