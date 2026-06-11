@@ -1660,6 +1660,13 @@ def tile_returns():
 # UPLOAD ROUTE TABLE
 # =========================
 
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = "static/uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
 @app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
 
@@ -1671,29 +1678,29 @@ def upload_image():
 
     if request.method == 'POST':
 
+        description = request.form['description']
+        remark = request.form['remark']
+
         file = request.files['image']
 
+        filename = None
+
         if file and file.filename != "":
-
             filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        cursor.execute("""
+            INSERT INTO upload_table
+            (full_description, image, remark)
+            VALUES (%s, %s, %s)
+        """, (description, filename, remark))
 
-            file.save(filepath)
+        conn.commit()
 
-            # save to DB
-            cursor.execute("""
-                INSERT INTO upload_table (filename, filepath)
-                VALUES (%s, %s)
-            """, (filename, filepath))
+        cursor.close()
+        conn.close()
 
-            conn.commit()
-
-            cursor.close()
-            conn.close()
-
-            flash("Image uploaded successfully", "success")
-            return redirect(url_for('upload_image'))
+        return redirect(url_for('upload_image'))
 
     cursor.close()
     conn.close()
