@@ -3,193 +3,192 @@
 {% block content %}
 
 <style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
+.container-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
 
-    .page-header h3 {
-        color: #1e3c72;
-        font-weight: 700;
-        margin: 0;
-    }
+.search-box {
+    margin-bottom: 15px;
+}
 
-    .table-wrapper {
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    }
+.view-btn {
+    background: #1e3c72;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
 
-    .table thead {
-        background: #1e3c72;
-        color: white;
-    }
+.view-btn:hover {
+    background: #2a5298;
+}
 
-    .view-btn {
-        background: #1e3c72;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-    }
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
 
-    .view-btn:hover {
-        background: #2a5298;
-    }
+.modal-box {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    border-radius: 10px;
+    padding: 10px;
+}
 
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,.7);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
+.modal-box img,
+.modal-box iframe {
+    width: 100%;
+    height: 80vh;
+}
 
-    .modal-box {
-        background: white;
-        width: 90%;
-        max-width: 1000px;
-        border-radius: 10px;
-        padding: 15px;
-    }
-
-    .modal-box iframe,
-    .modal-box img {
-        width: 100%;
-        height: 80vh;
-        border: none;
-    }
-
-    .close-btn {
-        background: red;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 5px;
-        float: right;
-        cursor: pointer;
-        margin-bottom: 10px;
-    }
+.close-btn {
+    float: right;
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
 </style>
 
-<div class="page-header">
-    <h3>
-        <i class="fas fa-folder-open"></i>
-        Uploaded Documents
-    </h3>
-</div>
+<div class="container-box">
 
-<div class="table-wrapper">
+    <h3>Uploaded Documents</h3>
 
-    <table class="table table-striped table-hover mb-0">
+    <!-- SEARCH -->
+    <form method="GET" action="{{ url_for('upload_list') }}" class="search-box d-flex gap-2">
 
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Description</th>
-                <th>File</th>
-                <th>Type</th>
-                <th>Remark</th>
-                <th>Date</th>
-            </tr>
-        </thead>
+        <input type="text"
+               name="search"
+               value="{{ search }}"
+               class="form-control"
+               placeholder="Search documents...">
 
-        <tbody>
+        <button class="btn btn-primary">Search</button>
 
-            {% for row in data %}
-            <tr>
+    </form>
 
-                <td>{{ row.id }}</td>
+    <!-- TABLE -->
+    <div class="table-responsive">
 
-                <td>{{ row.full_description }}</td>
+        <table class="table table-striped">
 
-                <td>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Remark</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
 
-                    {% if row.filename %}
+            <tbody>
 
-                    <button class="view-btn"
-                            onclick="openPreview('{{ url_for('static', filename='uploads/' ~ row.filename) }}',
-                                                 '{{ row.filetype or '' }}')">
-                        View
-                    </button>
+                {% for row in data %}
+                <tr>
 
-                    {% else %}
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.full_description }}</td>
 
-                    <span class="text-danger">
+                    <td>
+                        {% if row.filename %}
+                        <button class="view-btn"
+                                onclick="openPreview('{{ url_for('static', filename='uploads/' ~ row.filename) }}',
+                                                     '{{ row.filetype or '' }}')">
+                            View
+                        </button>
+                        {% else %}
                         No File
-                    </span>
+                        {% endif %}
+                    </td>
 
-                    {% endif %}
+                    <td>{{ row.filetype or '-' }}</td>
+                    <td>{{ row.remark or '-' }}</td>
+                    <td>{{ row.action_date or '-' }}</td>
 
-                </td>
+                </tr>
+                {% endfor %}
 
-                <td>{{ row.filetype or '-' }}</td>
+            </tbody>
 
-                <td>{{ row.remark or '-' }}</td>
-
-                <td>{{ row.action_date or '-' }}</td>
-
-            </tr>
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-</div>
-
-<!-- Preview Modal -->
-<div class="modal-overlay" id="modal">
-
-    <div class="modal-box">
-
-        <button class="close-btn" onclick="closeModal()">
-            X
-        </button>
-
-        <div id="previewContainer"></div>
+        </table>
 
     </div>
 
+    <!-- PAGINATION -->
+    <nav>
+        <ul class="pagination justify-content-center">
+
+            {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('upload_list', page=page-1, search=search) }}">
+                    Prev
+                </a>
+            </li>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('upload_list', page=p, search=search) }}">
+                    {{ p }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('upload_list', page=page+1, search=search) }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+        <button class="close-btn" onclick="closeModal()">X</button>
+        <div id="previewContainer"></div>
+    </div>
 </div>
 
 <script>
-
 function openPreview(url, type) {
 
-    let container = document.getElementById("previewContainer");
+    let box = document.getElementById("previewContainer");
 
-    if (type && type.startsWith("image/")) {
-
-        container.innerHTML =
-            `<img src="${url}" alt="Preview">`;
-
+    if (type.startsWith("image/")) {
+        box.innerHTML = `<img src="${url}">`;
     } else {
-
-        container.innerHTML =
-            `<iframe src="${url}"></iframe>`;
-
+        box.innerHTML = `<iframe src="${url}"></iframe>`;
     }
 
     document.getElementById("modal").style.display = "flex";
 }
 
 function closeModal() {
-
     document.getElementById("modal").style.display = "none";
-
     document.getElementById("previewContainer").innerHTML = "";
 }
-
 </script>
 
 {% endblock %}
