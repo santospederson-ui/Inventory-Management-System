@@ -3,119 +3,253 @@
 {% block content %}
 
 <style>
-.upload-card {
-    max-width: 750px;
-    margin: auto;
+.container-box {
     background: white;
+    padding: 20px;
     border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-.upload-title {
-    font-size: 1.6rem;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.header h3 {
+    color: #1e3c72;
     font-weight: 700;
-    color: #1e3c72;
-    margin-bottom: 20px;
+    margin: 0;
 }
 
-.upload-box {
-    border: 2px dashed #cbd5e0;
-    border-radius: 10px;
-    padding: 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
-    background: #f8fafc;
+.search-box {
+    margin-bottom: 15px;
 }
 
-.upload-box:hover {
-    border-color: #1e3c72;
-    background: #f1f5f9;
-}
-
-.upload-box i {
-    font-size: 40px;
-    color: #1e3c72;
-    margin-bottom: 10px;
-}
-
-.preview-area {
-    margin-top: 15px;
-}
-
-.preview-img {
-    max-width: 220px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-.pdf-badge {
-    display: inline-block;
-    padding: 8px 12px;
-    background: #ff6b6b;
+.table thead {
+    background: #1e3c72;
     color: white;
+}
+
+.view-btn {
+    background: #1e3c72;
+    color: white;
+    border: none;
+    padding: 6px 12px;
     border-radius: 6px;
-    margin-top: 10px;
-    text-decoration: none;
+    cursor: pointer;
+}
+
+.view-btn:hover {
+    background: #2a5298;
+}
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-box {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.modal-box img,
+.modal-box iframe {
+    width: 100%;
+    height: 80vh;
+}
+
+.close-btn {
+    float: right;
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 </style>
 
-<div class="upload-card">
+<div class="container-box">
 
-    <div class="upload-title">
-        📤 Upload Document
+    <div class="header">
+        <h3>Uploaded Documents</h3>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
+    <!-- SEARCH -->
+    <form method="GET"
+          action="{{ url_for('upload_list') }}"
+          id="searchForm"
+          class="search-box d-flex gap-2">
 
-        <!-- DESCRIPTION -->
-        <label>Full Description</label>
-        <textarea name="description" class="form-control mb-3" rows="3" required></textarea>
+        <input type="text"
+               name="search"
+               id="searchInput"
+               value="{{ search }}"
+               class="form-control"
+               placeholder="Search documents...">
 
-        <!-- UPLOAD AREA -->
-        <input type="file"
-               id="fileInput"
-               name="file"
-               accept="image/*,application/pdf"
-               hidden
-               onchange="previewFile(event)">
-
-        <label for="fileInput" class="upload-box">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <div><strong>Click to Upload</strong> or Drag & Drop</div>
-            <small>Supports Images & PDF</small>
-        </label>
-
-        <div id="fileName" style="margin-top:10px;color:#555;"></div>
-
-        <!-- PREVIEW -->
-        <div id="previewBox" class="preview-area"></div>
-
-        <!-- REMARK -->
-        <label class="mt-3">Remark</label>
-        <input type="text" name="remark" class="form-control mb-3">
-
-        <!-- BUTTON -->
-        <button type="submit" class="btn btn-success w-100">
-            Save Record
-        </button>
+        <button class="btn btn-primary">Search</button>
 
     </form>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+
+        <table class="table table-striped table-hover">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Remark</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for row in data %}
+                <tr>
+
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.full_description }}</td>
+
+                    <td>
+                        {% if row.filename %}
+                        <button class="view-btn"
+                                onclick="openPreview('{{ row.filepath }}',
+                                '{{ row.filetype or '' }}')">
+                            View
+                        </button>
+                    
+                        <br>
+                        <small>{{ row.filepath }}</small>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ row.filetype or '-' }}</td>
+                    <td>{{ row.remark or '-' }}</td>
+                    <td>{{ row.action_date or '-' }}</td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <nav>
+        <ul class="pagination justify-content-center">
+
+            {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('upload_list', page=page-1, search=search) }}">
+                    Prev
+                </a>
+            </li>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('upload_list', page=p, search=search) }}">
+                    {{ p }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('upload_list', page=page+1, search=search) }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+        <button class="close-btn" onclick="closeModal()">X</button>
+        <div id="previewContainer"></div>
+    </div>
 </div>
 
 <script>
-function openPreview(url) {
+function openPreview(url, type) {
 
     let box = document.getElementById("previewContainer");
 
-    // ⭐ Force original quality (no compression)
-    let highQualityUrl = url.replace("/upload/", "/upload/f_auto,q_auto:best/");
+    type = (type || "").toLowerCase();
 
-    box.innerHTML = `
-        <img src="${highQualityUrl}"
-             style="width:100%;height:auto;border-radius:8px;">
-    `;
+    // CLEAN URL (important for Cloudinary PDFs)
+    let cleanUrl = url.split("?")[0];
+
+    // =========================
+    // IMAGE FILES
+    // =========================
+    if (
+        cleanUrl.match(/\.(jpg|jpeg|png|webp|gif)$/i) ||
+        type === "image"
+    ) {
+        box.innerHTML = `<img src="${url}">`;
+    }
+
+    // =========================
+    // PDF FILES (FIXED)
+    // =========================
+    else if (
+        cleanUrl.match(/\.pdf$/i) ||
+        type === "pdf" ||
+        type === "raw"
+    ) {
+        box.innerHTML = `
+            <iframe 
+                src="${url}" 
+                style="width:100%;height:80vh;border:none;background:white;">
+            </iframe>
+
+            <div style="text-align:center;margin-top:10px;">
+                <a href="${url}" target="_blank"
+                   style="background:#1e3c72;color:white;padding:8px 12px;
+                          border-radius:6px;text-decoration:none;">
+                    Open PDF in New Tab
+                </a>
+            </div>
+        `;
+    }
+
+    // =========================
+    // FALLBACK
+    // =========================
+    else {
+        box.innerHTML = `
+            <a href="${url}" target="_blank">Open File</a>
+        `;
+    }
 
     document.getElementById("modal").style.display = "flex";
 }
