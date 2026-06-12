@@ -131,11 +131,10 @@
                     <td>
                         {% if row.filename %}
                         <button class="view-btn"
-                                onclick="openPreview('{{ row.filepath }}',
-                                '{{ row.filetype or '' }}')">
+                                onclick="window.open('{{ row.filepath.replace('/upload/', '/upload/f_auto,q_auto:best/') }}', '_blank')">
                             View
                         </button>
-                    
+                                            
                         {% endif %}
                     </td>
 
