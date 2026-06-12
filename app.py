@@ -1675,7 +1675,6 @@ from flask import request, redirect, url_for, flash, render_template, session
 import cloudinary.uploader
 import os
 
-
 @app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
 
@@ -1692,45 +1691,39 @@ def upload_image():
             flash("No file selected", "danger")
             return redirect(url_for('upload_image'))
 
-        # ==============================
-        # SAFE FILE EXTENSION CHECK
-        # ==============================
         filename = file.filename
         file_ext = filename.rsplit(".", 1)[-1].lower()
 
         image_exts = ["jpg", "jpeg", "png", "webp", "gif"]
         doc_exts = ["pdf", "doc", "docx", "xls", "xlsx"]
 
-        # ==============================
-        # CLOUDINARY UPLOAD
-        # ==============================
         if file_ext in doc_exts:
+
             upload_result = cloudinary.uploader.upload(
                 file,
                 resource_type="raw",
-                type="upload",
                 use_filename=True,
-                unique_filename=True
+                unique_filename=False
             )
+
+            public_id = upload_result.get("public_id")
+
+            file_url = (
+                f"https://res.cloudinary.com/da8y4zqz5/"
+                f"raw/upload/{public_id}.{file_ext}"
+            )
+
         else:
+
             upload_result = cloudinary.uploader.upload(
                 file,
                 resource_type="image",
-                type="upload",
                 use_filename=True,
                 unique_filename=True
             )
 
-        file_url = upload_result.get("secure_url")
+            file_url = upload_result.get("secure_url")
 
-        # ==============================
-        # IMPORTANT: STORE EXTENSION ONLY
-        # ==============================
-        filetype = file_ext
-
-        # ==============================
-        # SAVE TO DATABASE
-        # ==============================
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -1742,7 +1735,7 @@ def upload_image():
             description,
             file_url,
             file_url,
-            filetype,
+            file_ext,
             remark
         ))
 
@@ -1751,7 +1744,6 @@ def upload_image():
         conn.close()
 
         flash("Upload successful", "success")
-
         return redirect(url_for('upload_image'))
 
     return render_template('upload_image.html')
