@@ -105,34 +105,42 @@
 </div>
 
 <script>
-function previewFile(event) {
-    let file = event.target.files[0];
-    let previewBox = document.getElementById("previewBox");
-    let fileName = document.getElementById("fileName");
+function openPreview(url, type) {
 
-    previewBox.innerHTML = "";
+    let box = document.getElementById("previewContainer");
+    type = (type || "").toLowerCase();
 
-    if (!file) return;
+    // clean URL (important for cloudinary)
+    url = url.split("?")[0];
 
-    fileName.innerText = "Selected: " + file.name;
-
-    // IMAGE PREVIEW
-    if (file.type.startsWith("image/")) {
-        let img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-        img.className = "preview-img";
-        previewBox.appendChild(img);
+    // IMAGE
+    if (type.includes("jpg") || type.includes("jpeg") || type.includes("png") || type.includes("webp") || type.includes("gif")) {
+        box.innerHTML = `<img src="${url}" style="width:100%">`;
     }
 
-    // PDF PREVIEW
-    else if (file.type === "application/pdf") {
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(file);
-        link.target = "_blank";
-        link.className = "pdf-badge";
-        link.innerText = "📄 Click to Preview PDF";
-        previewBox.appendChild(link);
+    // PDF (MOST IMPORTANT FIX)
+    else if (type.includes("pdf")) {
+        box.innerHTML = `
+            <iframe src="${url}" 
+                    style="width:100%;height:80vh;border:none;">
+            </iframe>
+
+            <br><br>
+
+            <a href="${url}" target="_blank"
+               style="background:#1e3c72;color:white;padding:10px;
+                      border-radius:6px;text-decoration:none;">
+                Open PDF in New Tab
+            </a>
+        `;
     }
+
+    // fallback
+    else {
+        box.innerHTML = `<a href="${url}" target="_blank">Open File</a>`;
+    }
+
+    document.getElementById("modal").style.display = "flex";
 }
 </script>
 
