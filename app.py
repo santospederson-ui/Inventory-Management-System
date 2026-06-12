@@ -1697,9 +1697,9 @@ def upload_image():
         # ==========================
         # CLOUDINARY UPLOAD (FIXED)
         # ==========================
-        upload_result = cloudinary.uploader.upload(
+       upload_result = cloudinary.uploader.upload(
             file,
-            resource_type="auto",
+            resource_type="raw" if file_ext == "pdf" else "image",
             use_filename=True,
             unique_filename=False,
             overwrite=True
