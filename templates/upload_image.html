@@ -105,36 +105,24 @@
 </div>
 
 <script>
-function previewFile(event) {
-    let file = event.target.files[0];
-    let previewBox = document.getElementById("previewBox");
-    let fileName = document.getElementById("fileName");
+function openPreview(url) {
 
-    previewBox.innerHTML = "";
+    let box = document.getElementById("previewContainer");
 
-    if (!file) return;
+    // ⭐ Force original quality (no compression)
+    let highQualityUrl = url.replace("/upload/", "/upload/f_auto,q_auto:best/");
 
-    fileName.innerText = "Selected: " + file.name;
+    box.innerHTML = `
+        <img src="${highQualityUrl}"
+             style="width:100%;height:auto;border-radius:8px;">
+    `;
 
-    let fileType = file.type.toLowerCase();
+    document.getElementById("modal").style.display = "flex";
+}
 
-    // ✅ IMAGE (SAFE CHECK)
-    if (fileType.includes("image")) {
-        let img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-        img.className = "preview-img";
-        previewBox.appendChild(img);
-    }
-
-    // ✅ PDF PREVIEW
-    else if (fileType.includes("pdf")) {
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(file);
-        link.target = "_blank";
-        link.className = "pdf-badge";
-        link.innerText = "📄 Click to Preview PDF";
-        previewBox.appendChild(link);
-    }
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+    document.getElementById("previewContainer").innerHTML = "";
 }
 </script>
 
