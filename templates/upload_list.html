@@ -135,8 +135,9 @@
                                 '{{ row.filetype or '' }}')">
                             View
                         </button>
-                        {% else %}
-                        No File
+                    
+                        <br>
+                        <small>{{ row.filepath }}</small>
                         {% endif %}
                     </td>
 
