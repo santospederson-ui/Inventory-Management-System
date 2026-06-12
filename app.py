@@ -1666,14 +1666,11 @@ def tile_returns():
 
 
 
-
 # =========================
-# UPLOAD ROUTE TABLE
+# UPLOAD IMAGE ROUTE
 # =========================
-
 from flask import request, redirect, url_for, flash, render_template, session
 import cloudinary.uploader
-import os
 
 @app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
@@ -1691,40 +1688,31 @@ def upload_image():
             flash("No file selected", "danger")
             return redirect(url_for('upload_image'))
 
+        # ==========================
+        # FILE INFO
+        # ==========================
         filename = file.filename
         file_ext = filename.rsplit(".", 1)[-1].lower()
 
-        image_exts = ["jpg", "jpeg", "png", "webp", "gif"]
-        doc_exts = ["pdf", "doc", "docx", "xls", "xlsx"]
+        # ==========================
+        # CLOUDINARY UPLOAD (FIXED)
+        # ==========================
+        upload_result = cloudinary.uploader.upload(
+            file,
+            resource_type="auto",
+            use_filename=True,
+            unique_filename=False,
+            overwrite=True
+        )
 
-        if file_ext in doc_exts:
+        file_url = upload_result["secure_url"]
+        public_id = upload_result.get("public_id")
 
-            upload_result = cloudinary.uploader.upload(
-                file,
-                resource_type="raw",
-                use_filename=True,
-                unique_filename=False
-            )
-            
-            print(upload_result)
-            public_id = upload_result.get("public_id")
+        print(upload_result)  # for debugging
 
-            file_url = (
-                f"https://res.cloudinary.com/da8y4zqz5/"
-                f"raw/upload/{public_id}.{file_ext}"
-            )
-
-        else:
-
-            upload_result = cloudinary.uploader.upload(
-                file,
-                resource_type="image",
-                use_filename=True,
-                unique_filename=True
-            )
-
-            file_url = upload_result.get("secure_url")
-
+        # ==========================
+        # SAVE TO DATABASE
+        # ==========================
         conn = get_db_connection()
         cursor = conn.cursor()
 
