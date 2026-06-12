@@ -1688,27 +1688,30 @@ def upload_image():
             flash("No file selected", "danger")
             return redirect(url_for('upload_image'))
 
-        # ==========================
-        # FILE INFO
-        # ==========================
         filename = file.filename
         file_ext = filename.rsplit(".", 1)[-1].lower()
 
+        # ❌ ONLY ALLOW IMAGES
+        allowed = ["jpg", "jpeg", "png", "webp", "gif"]
+
+        if file_ext not in allowed:
+            flash("Only image files are allowed", "danger")
+            return redirect(url_for('upload_image'))
+
         # ==========================
-        # CLOUDINARY UPLOAD (FIXED)
+        # CLOUDINARY UPLOAD (HIGH QUALITY)
         # ==========================
-       upload_result = cloudinary.uploader.upload(
+        upload_result = cloudinary.uploader.upload(
             file,
-            resource_type="raw" if file_ext == "pdf" else "image",
+            resource_type="image",
             use_filename=True,
             unique_filename=False,
-            overwrite=True
+            overwrite=True,
+            quality="auto:best",   # ⭐ best quality
+            fetch_format="auto"    # ⭐ modern format (webp/avif when possible)
         )
 
         file_url = upload_result["secure_url"]
-        public_id = upload_result.get("public_id")
-
-        print(upload_result)  # for debugging
 
         # ==========================
         # SAVE TO DATABASE
@@ -1732,7 +1735,7 @@ def upload_image():
         cursor.close()
         conn.close()
 
-        flash("Upload successful", "success")
+        flash("Image uploaded successfully", "success")
         return redirect(url_for('upload_image'))
 
     return render_template('upload_image.html')
