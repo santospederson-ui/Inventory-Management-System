@@ -1705,7 +1705,8 @@ def upload_image():
                 use_filename=True,
                 unique_filename=False
             )
-
+            
+            print(upload_result)
             public_id = upload_result.get("public_id")
 
             file_url = (
