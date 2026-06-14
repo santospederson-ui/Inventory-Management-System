@@ -95,22 +95,21 @@
     <div class="page-title">📦 Withdrawal History</div>
 
     <!-- SEARCH -->
-    <div class="search-card">
-        <form method="GET"
-              action="{{ url_for('withdrawals') }}"
-              class="d-flex gap-2">
+  <div class="search-card">
+    <form method="GET"
+          action="{{ url_for('withdrawals') }}"
+          id="searchForm"
+          class="d-flex gap-2">
 
-            <input type="text"
-                   name="search"
-                   value="{{ search }}"
-                   class="form-control"
-                   placeholder="Search withdrawals...">
+        <input type="text"
+               name="search"
+               id="searchInput"
+               value="{{ search }}"
+               class="form-control"
+               placeholder="Search withdrawals...">
 
-            <button class="btn btn-primary">
-                Search
-            </button>
-        </form>
-    </div>
+    </form>
+</div>
 
     <!-- TABLE -->
     <div class="table-card">
