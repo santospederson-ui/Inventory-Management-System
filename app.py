@@ -816,6 +816,8 @@ def withdrawals():
                OR description LIKE %s
                OR project LIKE %s
                OR withdrawn_by LIKE %s
+
+             
         """, (
             f"%{search}%",
             f"%{search}%",
@@ -833,7 +835,7 @@ def withdrawals():
                OR description LIKE %s
                OR project LIKE %s
                OR withdrawn_by LIKE %s
-            ORDER BY action_date DESC
+           ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (
             f"%{search}%",
@@ -856,7 +858,7 @@ def withdrawals():
         cursor.execute("""
             SELECT *
             FROM withdrawals_table
-            ORDER BY action_date DESC
+            ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (per_page, offset))
 
@@ -926,7 +928,7 @@ def returns():
                OR project LIKE %s
                OR returned_by LIKE %s
                OR remark LIKE %s
-            ORDER BY action_date DESC
+            ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (
             f"%{search}%",
@@ -952,7 +954,7 @@ def returns():
         cursor.execute("""
             SELECT *
             FROM return_tab
-            ORDER BY action_date DESC
+            ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (per_page, offset))
 
@@ -1018,7 +1020,7 @@ def stock_additions():
                OR description LIKE %s
                OR added_by LIKE %s
                OR remark LIKE %s
-            ORDER BY action_date DESC
+            ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (
             f"%{search}%",
