@@ -1554,7 +1554,7 @@ def tile_withdrawals():
         ))
 
     data = cursor.fetchall()
-
+    
     cursor.close()
     conn.close()
 
