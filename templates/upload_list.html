@@ -3,35 +3,53 @@
 {% block content %}
 
 <style>
-.container-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-}
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.header h3 {
-    color: #1e3c72;
+/* PAGE TITLE */
+.page-title {
+    font-size: 1.8rem;
     font-weight: 700;
-    margin: 0;
+    color: #1e3c72;
+    margin-bottom: 20px;
 }
 
-.search-box {
-    margin-bottom: 15px;
+/* SEARCH CARD */
+.search-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
 }
 
+/* TABLE CARD */
+.table-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* TABLE */
 .table thead {
-    background: #1e3c72;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: white;
 }
 
+.table thead th {
+    border: none;
+    padding: 14px;
+}
+
+.table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #f4f8ff;
+}
+
+/* VIEW BUTTON */
 .view-btn {
     background: #1e3c72;
     color: white;
@@ -43,6 +61,23 @@
 
 .view-btn:hover {
     background: #2a5298;
+}
+
+/* PAGINATION */
+.pagination {
+    margin-top: 20px;
+}
+
+.page-link {
+    border-radius: 6px;
+    margin: 0 3px;
+    color: #1e3c72;
+}
+
+.page-item.active .page-link {
+    background: #1e3c72;
+    border-color: #1e3c72;
+    color: white;
 }
 
 /* MODAL */
@@ -79,78 +114,83 @@
     padding: 5px 10px;
     border-radius: 5px;
 }
+
 </style>
 
-<div class="container-box">
+<div class="container">
 
-    <div class="header">
-        <h3>Uploaded Documents</h3>
-    </div>
+    <!-- TITLE -->
+    <div class="page-title">📄 Uploaded Documents</div>
 
     <!-- SEARCH -->
-    <form method="GET"
-          action="{{ url_for('upload_list') }}"
-          id="searchForm"
-          class="search-box d-flex gap-2">
+    <div class="search-card">
+        <form method="GET"
+              action="{{ url_for('upload_list') }}"
+              id="searchForm"
+              class="d-flex gap-2">
 
-        <input type="text"
-               name="search"
-               id="searchInput"
-               value="{{ search }}"
-               class="form-control"
-               placeholder="Search documents...">
+            <input type="text"
+                   name="search"
+                   id="searchInput"
+                   value="{{ search }}"
+                   class="form-control"
+                   placeholder="Search documents...">
 
-        <button class="btn btn-primary">Search</button>
-
-    </form>
+            <button class="btn btn-primary">Search</button>
+        </form>
+    </div>
 
     <!-- TABLE -->
-    <div class="table-responsive">
+    <div class="table-card">
+        <div class="table-responsive">
 
-        <table class="table table-striped table-hover">
+            <table class="table mb-0 table-hover">
 
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Description</th>
-                    <th>File</th>
-                    <th>Type</th>
-                    <th>Remark</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Description</th>
+                        <th>File</th>
+                        <th>Type</th>
+                        <th>Remark</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
 
-            <tbody>
+                <tbody>
+                {% for row in data %}
+                    <tr>
 
-            {% for row in data %}
-                <tr>
+                        <td><strong>{{ loop.index + ((page - 1) * 10) }}</strong></td>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.full_description }}</td>
 
-                    <td>{{ row.id }}</td>
-                    <td>{{ row.full_description }}</td>
+                        <td>
+                            {% if row.filename %}
+                                <button class="view-btn"
+                                        onclick="openPreview(
+                                            '{{ url_for('static', filename='pdfs/' ~ row.filename) }}',
+                                            '{{ row.filetype }}'
+                                        )">
+                                    View
+                                </button>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
 
-                    <td>
-                        {% if row.filename %}
-                        
-                     <a href="{{ url_for('static', filename='pdfs/' ~ row.filename) }}"
-                       target="_blank"
-                       class="btn btn-primary btn-sm">
-                        View PDF
-                    </a>
-                                            
-                        {% endif %}
-                    </td>
+                        <td>{{ row.filetype or '-' }}</td>
+                        <td>{{ row.remark or '-' }}</td>
+                        <td>{{ row.action_date or '-' }}</td>
 
-                    <td>{{ row.filetype or '-' }}</td>
-                    <td>{{ row.remark or '-' }}</td>
-                    <td>{{ row.action_date or '-' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
 
-                </tr>
-            {% endfor %}
+            </table>
 
-            </tbody>
-
-        </table>
-
+        </div>
     </div>
 
     <!-- PAGINATION -->
@@ -198,56 +238,37 @@
 </div>
 
 <script>
+
+let timer;
+const input = document.getElementById("searchInput");
+const form = document.getElementById("searchForm");
+
+input.addEventListener("input", function () {
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+        form.submit();
+    }, 400);
+});
+
+// PREVIEW FUNCTION
 function openPreview(url, type) {
 
     let box = document.getElementById("previewContainer");
 
     type = (type || "").toLowerCase();
-
-    // CLEAN URL (important for Cloudinary PDFs)
     let cleanUrl = url.split("?")[0];
 
-    // =========================
-    // IMAGE FILES
-    // =========================
-    if (
-        cleanUrl.match(/\.(jpg|jpeg|png|webp|gif)$/i) ||
-        type === "image"
-    ) {
+    if (cleanUrl.match(/\.(jpg|jpeg|png|webp|gif)$/i) || type === "image") {
         box.innerHTML = `<img src="${url}">`;
     }
-
-    // =========================
-    // PDF FILES (FIXED)
-    // =========================
-    else if (
-        cleanUrl.match(/\.pdf$/i) ||
-        type === "pdf" ||
-        type === "raw"
-    ) {
+    else if (cleanUrl.match(/\.pdf$/i) || type === "pdf" || type === "raw") {
         box.innerHTML = `
-            <iframe 
-                src="${url}" 
-                style="width:100%;height:80vh;border:none;background:white;">
-            </iframe>
-
-            <div style="text-align:center;margin-top:10px;">
-                <a href="${url}" target="_blank"
-                   style="background:#1e3c72;color:white;padding:8px 12px;
-                          border-radius:6px;text-decoration:none;">
-                    Open PDF in New Tab
-                </a>
-            </div>
+            <iframe src="${url}" style="width:100%;height:80vh;border:none;"></iframe>
         `;
     }
-
-    // =========================
-    // FALLBACK
-    // =========================
     else {
-        box.innerHTML = `
-            <a href="${url}" target="_blank">Open File</a>
-        `;
+        box.innerHTML = `<a href="${url}" target="_blank">Open File</a>`;
     }
 
     document.getElementById("modal").style.display = "flex";
@@ -257,6 +278,7 @@ function closeModal() {
     document.getElementById("modal").style.display = "none";
     document.getElementById("previewContainer").innerHTML = "";
 }
+
 </script>
 
 {% endblock %}
