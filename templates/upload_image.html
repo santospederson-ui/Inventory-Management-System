@@ -18,93 +18,50 @@
     color: #1e3c72;
     margin-bottom: 20px;
 }
-
-.upload-box {
-    border: 2px dashed #cbd5e0;
-    border-radius: 10px;
-    padding: 25px;
-    text-align: center;
-    cursor: pointer;
-    background: #f8fafc;
-    transition: 0.3s;
-}
-
-.upload-box:hover {
-    border-color: #1e3c72;
-}
-
-.preview-img {
-    max-width: 100%;
-    margin-top: 15px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-}
-
-.file-name {
-    margin-top: 10px;
-    color: #555;
-}
 </style>
 
 <div class="upload-card">
 
-    <div class="upload-title">📤 Upload Image</div>
+    <div class="upload-title">📄 Add PDF Record</div>
 
-    <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
+    <form method="POST" action="{{ url_for('upload_image') }}">
 
         <!-- DESCRIPTION -->
         <label>Description</label>
-        <textarea name="description" class="form-control mb-3" rows="3" required></textarea>
+        <textarea
+            name="description"
+            class="form-control mb-3"
+            rows="3"
+            required></textarea>
 
-        <!-- FILE INPUT -->
-        <input type="file"
-               id="fileInput"
-               name="file"
-               accept="image/*"
-               hidden
-               onchange="previewImage(event)">
+        <!-- PDF FILE NAME -->
+        <label>PDF Filename</label>
+        <input
+            type="text"
+            name="filename"
+            class="form-control mb-3"
+            placeholder="example.pdf"
+            required>
 
-        <label for="fileInput" class="upload-box">
-            <div><strong>Click to Upload Image</strong></div>
-            <small>JPG, PNG, WEBP, GIF</small>
-        </label>
-
-        <!-- FILE NAME -->
-        <div id="fileName" class="file-name"></div>
-
-        <!-- IMAGE PREVIEW -->
-        <div id="previewBox"></div>
+        <small class="text-muted">
+            Place the PDF file inside:
+            <strong>static/pdfs/</strong>
+        </small>
 
         <!-- REMARK -->
         <label class="mt-3">Remark</label>
-        <input type="text" name="remark" class="form-control mb-3">
+        <input
+            type="text"
+            name="remark"
+            class="form-control mb-3">
 
+        <!-- SAVE BUTTON -->
         <button type="submit" class="btn btn-success w-100">
-            Upload Image
+            Save Record
         </button>
 
     </form>
+
 </div>
-
-<script>
-function previewImage(event) {
-    let file = event.target.files[0];
-    let previewBox = document.getElementById("previewBox");
-    let fileName = document.getElementById("fileName");
-
-    previewBox.innerHTML = "";
-
-    if (!file) return;
-
-    fileName.innerText = "Selected: " + file.name;
-
-    // IMAGE PREVIEW (LOCAL BEFORE UPLOAD)
-    let img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
-    img.className = "preview-img";
-
-    previewBox.appendChild(img);
-}
-</script>
 
 {% endblock %}
