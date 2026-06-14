@@ -1696,13 +1696,11 @@ def upload_image():
 
         cursor.execute("""
             INSERT INTO upload_table
-            (full_description, filename, filepath, filetype, remark)
-            VALUES (%s, %s, %s, %s, %s)
+            (full_description, filename, remark)
+            VALUES (%s, %s, %s)
         """, (
             description,
-            filename,      # example: manual.pdf
-            filename,      # same value
-            "pdf",
+            filename,
             remark
         ))
 
