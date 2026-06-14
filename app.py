@@ -1554,7 +1554,7 @@ def tile_withdrawals():
         ))
 
     data = cursor.fetchall()
-    
+
     cursor.close()
     conn.close()
 
@@ -1694,13 +1694,15 @@ def upload_image():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-       cursor.execute("""
+        cursor.execute("""
             INSERT INTO upload_table
-            (full_description, filename, remark)
-            VALUES (%s, %s, %s)
+            (full_description, filename, filepath, filetype, remark)
+            VALUES (%s, %s, %s, %s, %s)
         """, (
             description,
-            filename,
+            filename,      # example: manual.pdf
+            filename,      # same value
+            "pdf",
             remark
         ))
 
