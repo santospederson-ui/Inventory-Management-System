@@ -835,7 +835,7 @@ def withdrawals():
                OR description LIKE %s
                OR project LIKE %s
                OR withdrawn_by LIKE %s
-           ORDER BY id ASC
+           ORDER BY action_date ASC
             LIMIT %s OFFSET %s
         """, (
             f"%{search}%",
@@ -858,7 +858,7 @@ def withdrawals():
         cursor.execute("""
             SELECT *
             FROM withdrawals_table
-            ORDER BY id ASC
+            ORDER BY action_date ASC
             LIMIT %s OFFSET %s
         """, (per_page, offset))
 
