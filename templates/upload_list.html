@@ -130,10 +130,12 @@
 
                     <td>
                         {% if row.filename %}
-                        <button class="view-btn"
-                                onclick="window.open('{{ row.filepath.replace('/upload/', '/upload/f_auto,q_auto:best/') }}', '_blank')">
-                            View
-                        </button>
+                        
+                     <a href="{{ url_for('static', filename='pdfs/' ~ row.filename) }}"
+                       target="_blank"
+                       class="btn btn-primary btn-sm">
+                        View PDF
+                    </a>
                                             
                         {% endif %}
                     </td>
