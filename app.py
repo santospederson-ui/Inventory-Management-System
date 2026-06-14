@@ -1669,8 +1669,11 @@ def tile_returns():
 # =========================
 # UPLOAD IMAGE ROUTE
 # =========================
+# =========================
+# PDF RECORD ROUTE
+# =========================
+
 from flask import request, redirect, url_for, flash, render_template, session
-import cloudinary.uploader
 
 @app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
@@ -1681,41 +1684,13 @@ def upload_image():
     if request.method == 'POST':
 
         description = request.form.get('description')
+        filename = request.form.get('filename')
         remark = request.form.get('remark')
-        file = request.files.get('file')
 
-        if not file or file.filename == "":
-            flash("No file selected", "danger")
+        if not filename:
+            flash("Please enter a PDF filename", "danger")
             return redirect(url_for('upload_image'))
 
-        filename = file.filename
-        file_ext = filename.rsplit(".", 1)[-1].lower()
-
-        # ❌ ONLY ALLOW IMAGES
-        allowed = ["jpg", "jpeg", "png", "webp", "gif"]
-
-        if file_ext not in allowed:
-            flash("Only image files are allowed", "danger")
-            return redirect(url_for('upload_image'))
-
-        # ==========================
-        # CLOUDINARY UPLOAD (HIGH QUALITY)
-        # ==========================
-        upload_result = cloudinary.uploader.upload(
-            file,
-            resource_type="image",
-            use_filename=True,
-            unique_filename=False,
-            overwrite=True,
-            quality="auto:best",   # ⭐ best quality
-            fetch_format="auto"    # ⭐ modern format (webp/avif when possible)
-        )
-
-        file_url = upload_result["secure_url"]
-
-        # ==========================
-        # SAVE TO DATABASE
-        # ==========================
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -1725,9 +1700,9 @@ def upload_image():
             VALUES (%s, %s, %s, %s, %s)
         """, (
             description,
-            file_url,
-            file_url,
-            file_ext,
+            filename,      # example: manual.pdf
+            filename,      # same value
+            "pdf",
             remark
         ))
 
@@ -1735,7 +1710,7 @@ def upload_image():
         cursor.close()
         conn.close()
 
-        flash("Image uploaded successfully", "success")
+        flash("Record saved successfully", "success")
         return redirect(url_for('upload_image'))
 
     return render_template('upload_image.html')
