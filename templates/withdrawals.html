@@ -2,103 +2,195 @@
 
 {% block content %}
 
-<h3 class="mb-3">Withdrawal History</h3>
+<style>
 
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
 
+/* SEARCH BOX */
+.search-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+}
 
-<!-- SEARCH -->
-<form method="GET"
-      id="searchForm"
-      action="{{ url_for('withdrawals') }}">
+.search-card input {
+    border-radius: 8px;
+    padding: 10px 12px;
+}
 
-    <div class="row mb-3">
+/* TABLE CARD */
+.table-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
 
-        <div class="col-md-10">
+/* TABLE STYLE */
+.table thead {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    padding: 14px;
+    font-size: 14px;
+}
+
+.table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #f4f8ff;
+}
+
+/* BADGES */
+.badge-qty {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.badge-low {
+    background: #ff4d4d;
+    color: white;
+}
+
+.badge-ok {
+    background: #2ecc71;
+    color: white;
+}
+
+/* PAGINATION */
+.pagination {
+    margin-top: 20px;
+}
+
+.page-link {
+    border-radius: 6px;
+    margin: 0 3px;
+    color: #1e3c72;
+}
+
+.page-item.active .page-link {
+    background: #1e3c72;
+    border-color: #1e3c72;
+    color: white;
+}
+
+</style>
+
+<div class="container">
+
+    <div class="page-title">📦 Withdrawal History</div>
+
+    <!-- SEARCH -->
+    <div class="search-card">
+        <form method="GET"
+              action="{{ url_for('withdrawals') }}"
+              class="d-flex gap-2">
 
             <input type="text"
-                   id="searchInput"
                    name="search"
                    value="{{ search }}"
                    class="form-control"
-                   placeholder="Search Withdrawal">
+                   placeholder="Search withdrawals...">
 
-        </div>
-
+            <button class="btn btn-primary">
+                Search
+            </button>
+        </form>
     </div>
 
-</form>
+    <!-- TABLE -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
 
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item Code</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Project</th>
+                        <th>Withdrawn By</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
 
+                <tbody>
 
+                    {% for w in data %}
+                    <tr>
+                        <td><strong>{{ loop.index + ((page - 1) * 10) }}</strong></td>
+                        <td>{{ w.item_code }}</td>
+                        <td>{{ w.description }}</td>
 
+                        <td>
+                            {% if w.qty <= 5 %}
+                                <span class="badge-qty badge-low">{{ w.qty }}</span>
+                            {% else %}
+                                <span class="badge-qty badge-ok">{{ w.qty }}</span>
+                            {% endif %}
+                        </td>
 
-<table class="table table-bordered table-striped">
+                        <td>{{ w.project }}</td>
+                        <td>{{ w.withdrawn_by }}</td>
+                        <td>{{ w.action_date }}</td>
+                    </tr>
+                    {% endfor %}
 
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Item Code</th>
-            <th>Description</th>
-            <th>Qty</th>
-            <th>Project</th>
-            <th>Withdrawn By</th>
-            <th>Date</th>
-        </tr>
-    </thead>
+                </tbody>
 
-    <tbody>
+            </table>
+        </div>
+    </div>
 
-        {% for w in data %}
+    <!-- PAGINATION -->
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
 
-        <tr>
-            <td>{{ w.id }}</td>
-            <td>{{ w.item_code }}</td>
-            <td>{{ w.description }}</td>
-            <td>{{ w.qty }}</td>
-            <td>{{ w.project }}</td>
-            <td>{{ w.withdrawn_by }}</td>
-            <td>{{ w.action_date }}</td>
-        </tr>
+            {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('withdrawals', page=page-1, search=search) }}">
+                    Prev
+                </a>
+            </li>
+            {% endif %}
 
-        {% endfor %}
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('withdrawals', page=p, search=search) }}">
+                    {{ p }}
+                </a>
+            </li>
+            {% endfor %}
 
-    </tbody>
-</table>
+            {% if page < total_pages %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('withdrawals', page=page+1, search=search) }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
 
+        </ul>
+    </nav>
 
- <nav>
-    <ul class="pagination justify-content-center">
-
-        {% if page > 1 %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('withdrawals', page=page-1, search=search) }}">
-               Previous
-            </a>
-        </li>
-        {% endif %}
-
-        {% for p in range(1, total_pages + 1) %}
-        <li class="page-item {% if p == page %}active{% endif %}">
-            <a class="page-link"
-               href="{{ url_for('withdrawals', page=p, search=search) }}">
-               {{ p }}
-            </a>
-        </li>
-        {% endfor %}
-
-        {% if page < total_pages %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('withdrawals', page=page+1, search=search) }}">
-               Next
-            </a>
-        </li>
-        {% endif %}
-
-    </ul>
-</nav>
-
-
+</div>
 
 {% endblock %}
