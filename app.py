@@ -1713,7 +1713,7 @@ def upload_image():
         
         return redirect(url_for('upload_list'))
         flash("Record saved successfully", "success")
-    return render_template('upload_list.html')
+    return render_template('upload_image.html')
 # =========================
 # UPLOAD LIST ROUTE
 # =========================
