@@ -1710,10 +1710,10 @@ def upload_image():
         cursor.close()
         conn.close()
 
+        
+        return redirect(url_for('upload_list'))
         flash("Record saved successfully", "success")
-        return redirect(url_for('upload_image'))
-
-    return render_template('upload_image.html')
+    return render_template('upload_list.html')
 # =========================
 # UPLOAD LIST ROUTE
 # =========================
