@@ -1860,10 +1860,10 @@ def add_marble():
 
     if request.method == 'POST':
 
-        description = request.form['description']
-        qty = request.form['qty']
-        product = request.form['product']
-        remark = request.form['remark']
+        description = request.form.get('description')
+        qty = request.form.get('qty')
+        product = request.form.get('product')  # or project
+        remark = request.form.get('remark')
 
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -1877,7 +1877,7 @@ def add_marble():
             qty,
             product,
             remark,
-            session['user']
+            session.get('user')
         ))
 
         conn.commit()
