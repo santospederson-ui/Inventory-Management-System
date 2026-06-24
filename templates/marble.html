@@ -3,351 +3,193 @@
 {% block content %}
 
 <style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .page-header h1 {
-        color: #1e3c72;
-        font-weight: 700;
-        font-size: 2rem;
-        margin: 0;
-    }
-
-    .page-header .badge {
-        font-size: 1rem;
-        padding: 10px 15px;
-    }
-
-    .search-box {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .search-box .form-control {
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-    }
-
-    .search-box .form-control:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
-    }
-
-    .data-table-wrapper {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .data-table-wrapper table {
-        margin-bottom: 0;
-    }
-
-    .data-table-wrapper thead {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-    }
-
-    .data-table-wrapper thead th {
-        padding: 15px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .data-table-wrapper tbody tr {
-        border-bottom: 1px solid #e0e0e0;
-        transition: all 0.3s ease;
-    }
-
-    .data-table-wrapper tbody tr:hover {
-        background-color: #f5f9ff;
-    }
-
-    .data-table-wrapper tbody td {
-        padding: 12px 15px;
-        vertical-align: middle;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-
-    .action-buttons .btn {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        border: none;
-    }
-
-    .action-buttons .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-        color: white;
-    }
-
-    .btn-delete {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-        color: white;
-    }
-
-    .btn-withdraw {
-        background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
-        color: white;
-    }
-
-    .btn-return {
-        background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
-        color: white;
-    }
-
-    .btn-stock {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-    }
-
-    .pagination {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-top: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .pagination .page-link {
-        color: #1e3c72;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        margin: 0 3px;
-    }
-
-    .pagination .page-link:hover {
-        background-color: #f5f9ff;
-        color: #ffc107;
-    }
-
-    .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-        border-color: #ffc107;
-        color: white;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    .empty-state i {
-        font-size: 4rem;
-        color: #ddd;
-        margin-bottom: 20px;
-    }
-
-
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
 }
 
-table {
-    min-width: 1200px;
+.search-box{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    margin-bottom:20px;
 }
 
-@media (max-width: 768px) {
-
-    .page-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .page-header h1 {
-        font-size: 1.5rem;
-        text-align: center;
-    }
-
-    .search-box form {
-        flex-direction: column;
-    }
-
-    .search-box button {
-        width: 100%;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-
-    .action-buttons .btn {
-        width: 100%;
-        margin-bottom: 3px;
-    }
+.data-table-wrapper{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
+.data-table-wrapper thead{
+    background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);
+    color:#fff;
+}
 
+.data-table-wrapper th,
+.data-table-wrapper td{
+    padding:15px;
+    vertical-align:middle;
+}
 
+.data-table-wrapper tbody tr:hover{
+    background:#f5f9ff;
+}
+
+.pagination-wrapper{
+    margin-top:20px;
+}
+
+.pagination .page-link{
+    color:#1e3c72;
+}
+
+.pagination .active .page-link{
+    background:#ffc107;
+    border-color:#ffc107;
+    color:white;
+}
+
+.qty-low{
+    background:#dc3545;
+    color:white;
+    padding:5px 10px;
+    border-radius:6px;
+}
+
+.qty-ok{
+    background:#28a745;
+    color:white;
+    padding:5px 10px;
+    border-radius:6px;
+}
+
+.empty-state{
+    text-align:center;
+    padding:60px;
+}
+
+@media(max-width:768px){
+    .table-responsive{
+        overflow-x:auto;
+    }
+}
 </style>
 
-<!-- Page Header -->
 <div class="page-header">
-    <h1><i class="fas fa-boxes" style="color: #ffc107; margin-right: 10px;"></i> Inventory Management</h1>
-    {% if session.get('role') == 'admin' %}
-    <a href="{{ url_for('add_item') }}" class="btn" style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600;">
-        <i class="fas fa-plus-circle"></i> Add New Item
-    </a>
-    {% endif %}
+    <h2>
+        <i class="fas fa-gem text-warning"></i>
+        Marble & Stone Inventory
+    </h2>
 </div>
 
-<!-- Search Box -->
 <div class="search-box">
-    <form method="GET" id="searchForm" action="{{ url_for('inventory') }}" class="d-flex gap-2">
-        <div class="flex-grow-1">
-            <input type="text"
-                   id="searchInput"
-                   name="search"
-                   value="{{ search }}"
-                   class="form-control"
-                   placeholder="🔍 Search by item code, description, or brand...">
-        </div>
-
+    <form method="GET" action="{{ url_for('marble') }}">
+        <input type="text"
+               class="form-control"
+               name="search"
+               value="{{ search }}"
+               placeholder="Search marble description...">
     </form>
 </div>
 
-<!-- Items Table -->
 {% if items %}
+
 <div class="data-table-wrapper">
     <div class="table-responsive">
-        <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th><i class="fas fa-barcode"></i> Item Code</th>
-                <th><i class="fas fa-info-circle"></i> Description</th>
-                <th><i class="fas fa-tag"></i> Brand</th>
-                <th><i class="fas fa-weight"></i> Qty</th>
-                <th><i class="fas fa-file-pdf"></i> Datasheet</th>
-                <th><i class="fas fa-sticky-note"></i> Remark</th>
-                <th><i class="fas fa-calendar-alt"></i> Date Added</th>
-                {% if session.get('role') == 'admin' %}
-                <th><i class="fas fa-cogs"></i> Actions</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
+
+        <table class="table table-hover mb-0">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Remark</th>
+                    <th>Created By</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
             {% for item in items %}
-            <tr>
-                <td><strong>#{{ loop.index + ((page - 1) * 10) }}</strong></td>
-                <td><strong>{{ item.item_code }}</strong></td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.brand }}</td>
-                <td>
-                    {% if item.qty <= 5 %}
-                    <span class="badge" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%); color: white;">
-                        <i class="fas fa-exclamation-circle"></i> {{ item.qty }}
-                    </span>
-                    {% else %}
-                    <span class="badge" style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%); color: white;">{{ item.qty }}</span>
-                    {% endif %}
-                </td>
+                <tr>
+                    <td>{{ item.id }}</td>
 
-               <td>
-                    {% if item.item_code %}
-                    <a href="{{ url_for('static', filename='datasheet/' + item.item_code + '.pdf') }}"
-                       target="_blank"
-                       class="btn btn-info btn-sm">
-                       <i class="fas fa-file-pdf"></i> View Datasheet
-                    </a>
-                    {% endif %}
-                </td>
+                    <td>
+                        <strong>{{ item.description }}</strong>
+                    </td>
 
-                <td>{{ item.remark or '-' }}</td>
-                <td>{{ item.created_at or 'N/A' }}</td>
+                    <td>
+                        {% if item.qty <= 5 %}
+                            <span class="qty-low">{{ item.qty }}</span>
+                        {% else %}
+                            <span class="qty-ok">{{ item.qty }}</span>
+                        {% endif %}
+                    </td>
 
-                {% if session.get('role') == 'admin' %}
-                <td>
-                    <div class="action-buttons">
-                        <a href="{{ url_for('edit_item', id=item.id) }}" class="btn btn-edit" title="Edit">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <a href="{{ url_for('delete_item', id=item.id) }}"
-                           class="btn btn-delete"
-                           onclick="return confirm('Delete Item?')"
-                           title="Delete">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
-                        <a href="{{ url_for('withdraw', id=item.id) }}" class="btn btn-withdraw" title="Withdraw">
-                            <i class="fas fa-arrow-alt-circle-out"></i> Withdraw
-                        </a>
-                        <a href="{{ url_for('return_item', id=item.id) }}" class="btn btn-return" title="Return">
-                            <i class="fas fa-arrow-alt-circle-in"></i> Return
-                        </a>
-                        <a href="{{ url_for('add_stock', id=item.id) }}" class="btn btn-stock" title="Add Stock">
-                            <i class="fas fa-plus-square"></i> Stock
-                        </a>
-                    </div>
-                </td>
-                {% endif %}
-            </tr>
+                    <td>
+                        {{ item.remark or '-' }}
+                    </td>
+
+                    <td>
+                        {{ item.created_by }}
+                    </td>
+                </tr>
             {% endfor %}
-        </tbody>
-     </table>
+
+            </tbody>
+
+        </table>
+
     </div>
 </div>
-<!-- Pagination -->
-<nav class="pagination">
-    <ul class="pagination" style="margin-bottom: 0;">
+
+<div class="pagination-wrapper">
+    <ul class="pagination">
+
         {% if page > 1 %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('inventory', page=page-1, search=search) }}">
-                <i class="fas fa-chevron-left"></i> Previous
+            <a class="page-link"
+               href="{{ url_for('marble', page=page-1, search=search) }}">
+                Previous
             </a>
         </li>
         {% endif %}
 
         {% for p in range(1, total_pages + 1) %}
         <li class="page-item {% if p == page %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('inventory', page=p, search=search) }}">{{ p }}</a>
+            <a class="page-link"
+               href="{{ url_for('marble', page=p, search=search) }}">
+                {{ p }}
+            </a>
         </li>
         {% endfor %}
 
         {% if page < total_pages %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('inventory', page=page+1, search=search) }}">
-                Next <i class="fas fa-chevron-right"></i>
+            <a class="page-link"
+               href="{{ url_for('marble', page=page+1, search=search) }}">
+                Next
             </a>
         </li>
         {% endif %}
+
     </ul>
-</nav>
+</div>
 
 {% else %}
+
 <div class="empty-state">
-    <i class="fas fa-inbox"></i>
-    <h4 style="color: #333;">No Items Found</h4>
-    <p>Start by adding your first inventory item</p>
-    {% if session.get('role') == 'admin' %}
-    <a href="{{ url_for('add_item') }}" class="btn" style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; margin-top: 15px;">
-        <i class="fas fa-plus-circle"></i> Add New Item
-    </a>
-    {% endif %}
+    <i class="fas fa-gem fa-4x text-secondary"></i>
+    <h4 class="mt-3">No Marble Records Found</h4>
+    <p>There are currently no marble items in the inventory.</p>
 </div>
+
 {% endif %}
 
 {% endblock %}
