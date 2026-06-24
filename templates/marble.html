@@ -81,20 +81,20 @@
 </style>
 
 <div class="page-header">
+
     <h2>
         <i class="fas fa-gem text-warning"></i>
         Marble & Stone Inventory
     </h2>
-</div>
 
-<div class="search-box">
-    <form method="GET" action="{{ url_for('marble') }}">
-        <input type="text"
-               class="form-control"
-               name="search"
-               value="{{ search }}"
-               placeholder="Search marble description...">
-    </form>
+    {% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('add_marble') }}"
+       class="btn btn-success">
+        <i class="fas fa-plus-circle"></i>
+        Add Marble
+    </a>
+    {% endif %}
+
 </div>
 
 {% if items %}
