@@ -97,7 +97,6 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>ID</th>
                         <th>Tile Size</th>
                         <th>Description</th>
                         <th>Qty</th>
@@ -112,7 +111,6 @@
                     {% for w in data %}
                     <tr>
                         <td><strong>{{ loop.index + ((page - 1) * 10) }}</strong></td>
-                        <td>{{ w.id }}</td>
                         <td>{{ w.size }}</td>
                         <td>{{ w.description }}</td>
                         <td>{{ w.qty }}</td>
