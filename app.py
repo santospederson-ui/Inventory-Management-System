@@ -1798,29 +1798,19 @@ def marble():
 
         cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM inventory_table
-            WHERE item_code LIKE %s
-               OR description LIKE %s
-               OR brand LIKE %s
-        """, (
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%"
-        ))
+            FROM marble_table
+            WHERE description LIKE %s
+        """, (f"%{search}%",))
 
         total = cursor.fetchone()['total']
 
         cursor.execute("""
             SELECT *
-            FROM inventory_table
-            WHERE item_code LIKE %s
-               OR description LIKE %s
-               OR brand LIKE %s
+            FROM marble_table
+            WHERE description LIKE %s
             ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (
-            f"%{search}%",
-            f"%{search}%",
             f"%{search}%",
             per_page,
             offset
@@ -1828,17 +1818,22 @@ def marble():
 
     else:
 
-        cursor.execute(
-            "SELECT COUNT(*) AS total FROM inventory_table"
-        )
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM marble_table
+        """)
+
         total = cursor.fetchone()['total']
 
         cursor.execute("""
             SELECT *
-            FROM inventory_table
+            FROM marble_table
             ORDER BY id DESC
             LIMIT %s OFFSET %s
-        """, (per_page, offset))
+        """, (
+            per_page,
+            offset
+        ))
 
     items = cursor.fetchall()
 
@@ -1854,7 +1849,6 @@ def marble():
         total_pages=total_pages,
         search=search
     )
-
 
 
 
