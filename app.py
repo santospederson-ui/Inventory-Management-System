@@ -1851,6 +1851,42 @@ def marble():
     )
 
 
+# =========================
+# ADD MARBLE ROUTE APP
+# =========================
+
+@app.route('/add_marble', methods=['GET', 'POST'])
+def add_marble():
+
+    if request.method == 'POST':
+
+        description = request.form['description']
+        qty = request.form['qty']
+        remark = request.form['remark']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO marble_table
+            (description, qty, remark, created_by)
+            VALUES (%s, %s, %s, %s)
+        """, (
+            description,
+            qty,
+            remark,
+            session['user']
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash('Marble item added successfully', 'success')
+        return redirect(url_for('marble'))
+
+    return render_template('add_marble.html')
+
 
 
 
