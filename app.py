@@ -1779,8 +1779,8 @@ def upload_list():
 # MARBLE LIST ROUTE
 # =========================
 
-@app.route('/inventory')
-def inventory():
+@app.route('/marble')
+def marble():
 
     if 'user' not in session:
         return redirect(url_for('login'))
@@ -1848,7 +1848,7 @@ def inventory():
     total_pages = (total + per_page - 1) // per_page
 
     return render_template(
-        'inventory.html',
+        'marble.html',
         items=items,
         page=page,
         total_pages=total_pages,
