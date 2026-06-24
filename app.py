@@ -1862,6 +1862,7 @@ def add_marble():
 
         description = request.form['description']
         qty = request.form['qty']
+        product = request.form['product']
         remark = request.form['remark']
 
         conn = get_db_connection()
@@ -1869,11 +1870,12 @@ def add_marble():
 
         cursor.execute("""
             INSERT INTO marble_table
-            (description, qty, remark, created_by)
-            VALUES (%s, %s, %s, %s)
+            (description, qty, product, remark, created_by)
+            VALUES (%s, %s, %s, %s, %s)
         """, (
             description,
             qty,
+            product,
             remark,
             session['user']
         ))
