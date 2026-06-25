@@ -1860,31 +1860,41 @@ def add_marble():
 
     if request.method == 'POST':
 
-        description = request.form.get('description')
-        qty = request.form.get('qty')
-        project = request.form.get('project')
-        remark = request.form.get('remark')
+        try:
+            description = request.form.get('description')
+            qty = request.form.get('qty')
+            project = request.form.get('project')
+            remark = request.form.get('remark')
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
-        cursor.execute("""
-            INSERT INTO marble_table
-            (description, qty, project, remark)
-            VALUES (%s, %s, %s, %s)
-        """, (
-            description,
-            qty,
-            project,
-            remark
-        ))
+            cursor.execute("""
+                INSERT INTO marble_table
+                (description, qty, project, remark)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                description,
+                qty,
+                project,
+                remark
+            ))
 
-        conn.commit()
-        cursor.close()
-        conn.close()
+            conn.commit()
 
-        flash('Marble item added successfully', 'success')
-        return redirect(url_for('marble'))
+            flash('Marble item added successfully', 'success')
+            return redirect(url_for('marble'))
+
+        except Exception as e:
+            print("ERROR:", e)
+            flash(f'Error: {e}', 'danger')
+
+        finally:
+            try:
+                cursor.close()
+                conn.close()
+            except:
+                pass
 
     return render_template('add_marble.html')
 
