@@ -1870,14 +1870,13 @@ def add_marble():
 
         cursor.execute("""
             INSERT INTO marble_table
-            (description, qty, project, remark, created_by)
-            VALUES (%s, %s, %s, %s, %s)
+            (description, qty, project, remark)
+            VALUES (%s, %s, %s, %s)
         """, (
             description,
             qty,
             project,
-            remark,
-            session.get('user')
+            remark
         ))
 
         conn.commit()
