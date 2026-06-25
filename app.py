@@ -1805,7 +1805,7 @@ def marble():
         total = cursor.fetchone()['total']
 
         cursor.execute("""
-            SELECT *
+            SELECT id, description, qty, project, remark, created_at
             FROM marble_table
             WHERE description LIKE %s
             ORDER BY id DESC
@@ -1826,7 +1826,7 @@ def marble():
         total = cursor.fetchone()['total']
 
         cursor.execute("""
-            SELECT *
+            SELECT id, description, qty, project, remark, created_at
             FROM marble_table
             ORDER BY id DESC
             LIMIT %s OFFSET %s
@@ -1844,7 +1844,7 @@ def marble():
 
     return render_template(
         'marble.html',
-        items=items,
+        marbles=items,   
         page=page,
         total_pages=total_pages,
         search=search
