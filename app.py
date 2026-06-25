@@ -1844,7 +1844,7 @@ def marble():
 
     return render_template(
         'marble.html',
-        marbles=items,   
+        marbles=items,   # ✅ FIXED
         page=page,
         total_pages=total_pages,
         search=search
