@@ -1862,7 +1862,7 @@ def add_marble():
 
         description = request.form.get('description')
         qty = request.form.get('qty')
-        product = request.form.get('project')  # or project
+        project = request.form.get('project')
         remark = request.form.get('remark')
 
         conn = get_db_connection()
@@ -1888,7 +1888,6 @@ def add_marble():
         return redirect(url_for('marble'))
 
     return render_template('add_marble.html')
-
 
 
 
