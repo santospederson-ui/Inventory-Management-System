@@ -46,13 +46,6 @@
         background-color: #f5f9ff;
     }
 
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    /* Same styling as Inventory page */
     .action-buttons {
         display: flex;
         gap: 5px;
@@ -65,6 +58,7 @@
         border-radius: 6px;
         transition: all 0.3s ease;
         border: none;
+        color: white;
     }
 
     .action-buttons .btn:hover {
@@ -73,15 +67,24 @@
 
     .btn-edit {
         background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-        color: white;
+    }
+
+    .btn-withdraw {
+        background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
     }
 </style>
 
-<!-- PAGE HEADER -->
+<!-- HEADER -->
 <div class="page-header">
 
     <h1>
-        <i class="fas fa-gem" style="color:#ffc107; margin-right:10px;"></i>
+        <i class="fas fa-gem" style="color:#ffc107;margin-right:10px;"></i>
         Marble Inventory
     </h1>
 
@@ -111,7 +114,7 @@
                 <th>Project</th>
                 <th>Remark</th>
                 <th>Created At</th>
-                <th><i class="fas fa-cogs"></i> Actions</th>
+                <th>Actions</th>
             </tr>
         </thead>
 
@@ -137,26 +140,20 @@
                     {% endif %}
                 </td>
 
+                <!-- ACTIONS -->
                 <td>
                     <div class="action-buttons">
 
-                         <!-- EDIT -->
-
+                        <!-- EDIT -->
                         <a href="{{ url_for('edit_marble', id=item.id) }}"
-                           class="btn btn-edit"
-                           title="Edit">
+                           class="btn btn-edit">
                             <i class="fas fa-edit"></i> Edit
                         </a>
 
-
-                         <!-- WITHDRAW -->
+                        <!-- WITHDRAW -->
                         <a href="{{ url_for('withdraw_marble', id=item.id) }}"
-                           class="btn btn-withdraw-modern"
-                           title="Withdraw Stock">
-                        
-                            <i class="fas fa-arrow-down"></i>
-                        
-                            <span>Withdraw</span>
+                           class="btn btn-withdraw">
+                            <i class="fas fa-arrow-circle-down"></i> Withdraw
                         </a>
 
                     </div>
