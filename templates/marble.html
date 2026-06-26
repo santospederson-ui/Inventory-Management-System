@@ -140,10 +140,19 @@
                 <td>
                     <div class="action-buttons">
 
+                         <!-- EDIT -->
+
                         <a href="{{ url_for('edit_marble', id=item.id) }}"
                            class="btn btn-edit"
                            title="Edit">
                             <i class="fas fa-edit"></i> Edit
+                        </a>
+
+
+                         <!-- WITHDRAW -->
+                        <a href="{{ url_for('withdraw_marble', id=item.id) }}"
+                           class="btn btn-withdraw">
+                            <i class="fas fa-arrow-circle-down"></i> Withdraw
                         </a>
 
                     </div>
