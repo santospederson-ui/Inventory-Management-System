@@ -1968,17 +1968,42 @@ def withdraw_marble(id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # Get item
     cursor.execute("SELECT * FROM marble_table WHERE id=%s", (id,))
     item = cursor.fetchone()
 
+    if not item:
+        cursor.close()
+        conn.close()
+        flash("Item not found", "danger")
+        return redirect(url_for('marble'))
+
     if request.method == 'POST':
 
-        qty = float(request.form['qty'])
-        project = request.form['project']
+        # SAFE INPUT HANDLING (prevents 400 error)
+        qty_raw = request.form.get('qty')
+        project = request.form.get('project', '').strip()
+        remark = request.form.get('remark', '').strip()
 
+        # Validate qty
+        try:
+            qty = float(qty_raw)
+        except:
+            flash("Invalid quantity", "danger")
+            return redirect(url_for('withdraw_marble', id=id))
+
+        if qty <= 0:
+            flash("Quantity must be greater than 0", "danger")
+            return redirect(url_for('withdraw_marble', id=id))
+
+        if not project:
+            flash("Project is required", "danger")
+            return redirect(url_for('withdraw_marble', id=id))
+
+        # Stock check
         if qty > item['qty']:
             flash("Not enough stock", "danger")
-            return redirect(url_for('marble'))
+            return redirect(url_for('withdraw_marble', id=id))
 
         # Reduce stock
         cursor.execute("""
