@@ -1953,6 +1953,68 @@ def edit_marble(id):
 
     return render_template('edit_marble.html', item=item)
 
+# =========================
+# MARBLE WITHDRAW ROUTE
+# =========================
+
+
+@app.route('/withdraw_marble/<int:id>', methods=['GET', 'POST'])
+def withdraw_marble(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('marble'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM marble_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    if request.method == 'POST':
+
+        qty = float(request.form['qty'])
+        project = request.form['project']
+
+        if qty > item['qty']:
+            flash("Not enough stock", "danger")
+            return redirect(url_for('marble'))
+
+        # Reduce stock
+        cursor.execute("""
+            UPDATE marble_table
+            SET qty = qty - %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # Log withdrawal
+        cursor.execute("""
+            INSERT INTO marble_withdrawals_table
+            (marble_id, description, qty, project, withdrawn_by)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            id,
+            item['description'],
+            qty,
+            project,
+            session['user']
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Marble Withdrawn Successfully", "success")
+        return redirect(url_for('marble'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('withdraw_marble.html', item=item)
+
+
+
 
 
 
