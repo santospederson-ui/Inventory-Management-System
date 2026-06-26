@@ -1888,6 +1888,74 @@ def add_marble():
 
     return render_template('add_marble.html')
 
+
+
+# =========================
+# EDITH MARBLE
+# =========================
+
+
+
+@app.route('/edit_marble/<int:id>', methods=['GET', 'POST'])
+def edit_marble(id):
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+
+        description = request.form.get('description')
+        qty = request.form.get('qty')
+        project = request.form.get('project')
+        remark = request.form.get('remark')
+
+        cursor.execute("""
+            UPDATE marble_table
+            SET
+                description = %s,
+                qty = %s,
+                project = %s,
+                remark = %s
+            WHERE id = %s
+        """, (
+            description,
+            qty,
+            project,
+            remark,
+            id
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash('Marble item updated successfully.', 'success')
+        return redirect(url_for('marble'))
+
+    cursor.execute("""
+        SELECT id, description, qty, project, remark
+        FROM marble_table
+        WHERE id = %s
+    """, (id,))
+
+    item = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not item:
+        flash('Marble item not found.', 'danger')
+        return redirect(url_for('marble'))
+
+    return render_template('edit_marble.html', item=item)
+
+
+
+
 # =========================
 # RUN APP
 # =========================
