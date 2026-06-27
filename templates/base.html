@@ -375,36 +375,34 @@
         </li>
 
 
-  <!-- MARBLE & STONE -->
-        <li class="dropdown-submenu">
-            <a class="dropdown-item submenu-toggle" href="#">
-                <i class="fas fa-th-large"></i> Marble & Stones
+ <!-- MARBLE & STONE -->
+<li class="dropdown-submenu">
+    <a class="dropdown-item submenu-toggle" href="#">
+        <i class="fas fa-gem"></i> Marble & Stone
+    </a>
+
+    <ul class="dropdown-menu">
+
+        <li>
+            <a class="dropdown-item" href="{{ url_for('marble_withdrawals') }}">
+                <i class="fas fa-arrow-alt-circle-out"></i> Withdrawals
             </a>
-
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="dropdown-item"  href="{{ url_for('marble_withdrawals') }}">
-                        <i class="fas fa-arrow-alt-circle-out"></i> Withdrawals
-                    </a>
-                </li>
-
-                <li>
-                    <a class="dropdown-item"  href="{{ url_for('tile_returns') }}">
-                        <i class="fas fa-arrow-alt-circle-in"></i> Returns
-                    </a>
-                </li>
-
-                <li>
-                    <a class="dropdown-item" href="#">
-                        <i class="fas fa-plus-square"></i> Stock Additions
-                    </a>
-                </li>
-            </ul>
         </li>
- 
+
+        <li>
+            <a class="dropdown-item" href="{{ url_for('marble_returns') }}">
+                <i class="fas fa-arrow-alt-circle-in"></i> Returns
+            </a>
+        </li>
+
+        <li>
+            <a class="dropdown-item" href="{{ url_for('marble_stock_additions') }}">
+                <i class="fas fa-plus-square"></i> Stock Additions
+            </a>
+        </li>
+
+    </ul>
 </li>
-
-
 
               
    
