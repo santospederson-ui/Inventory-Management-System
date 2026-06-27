@@ -2114,7 +2114,36 @@ def return_marble(id):
         except:
             pass
 
+# =========================
+# DELETE MARBLE ROUTE
+# =========================
 
+
+@app.route('/delete_marble/<int:id>')
+def delete_marble(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('marble'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("DELETE FROM marble_table WHERE id=%s", (id,))
+        conn.commit()
+
+        flash("Marble item deleted successfully", "success")
+
+    except Exception as e:
+        print("DELETE ERROR:", e)
+        flash("Error deleting item", "danger")
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('marble'))
 
 
 # =========================
