@@ -2039,6 +2039,84 @@ def withdraw_marble(id):
     return render_template('withdraw_marble.html', item=item)
 
 
+# =========================
+# RETURN MARBLE ROUTE
+# =========================
+
+
+
+
+@app.route('/return_marble/<int:id>', methods=['GET', 'POST'])
+def return_marble(id):
+
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('marble'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+        "SELECT * FROM marble_table WHERE id=%s",
+        (id,)
+    )
+    item = cursor.fetchone()
+
+    if not item:
+        cursor.close()
+        conn.close()
+        flash("Marble item not found.", "danger")
+        return redirect(url_for('marble'))
+
+    if request.method == 'POST':
+
+        qty = float(request.form['qty'])
+        project = request.form['project']
+        remark = request.form['remark']
+
+        # Increase stock
+        cursor.execute("""
+            UPDATE marble_table
+            SET qty = qty + %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # Log the return
+        cursor.execute("""
+            INSERT INTO marble_return_table
+            (
+                marble_id,
+                description,
+                qty,
+                returned_by,
+                project,
+                remark,
+                action_date
+            )
+            VALUES
+            (%s, %s, %s, %s, %s, %s, NOW())
+        """, (
+            id,
+            item['description'],
+            qty,
+            session['user'],
+            project,
+            remark
+        ))
+
+        conn.commit()
+
+        flash("Marble Returned Successfully", "success")
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('marble'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('return_marble.html', item=item)
 
 
 
