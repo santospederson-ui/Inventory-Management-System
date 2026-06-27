@@ -2044,7 +2044,68 @@ def withdraw_marble(id):
 # =========================
 
 
+@app.route('/return_marble/<int:id>', methods=['GET', 'POST'])
+def return_marble(id):
 
+    if session.get('role') != 'admin':
+        flash("Access Denied", "danger")
+        return redirect(url_for('marble'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM marble_table WHERE id=%s", (id,))
+    item = cursor.fetchone()
+
+    if not item:
+        cursor.close()
+        conn.close()
+        flash("Marble item not found", "danger")
+        return redirect(url_for('marble'))
+
+    if request.method == 'POST':
+
+        qty = float(request.form.get('qty', 0))
+        project = request.form.get('project', '').strip()
+        remark = request.form.get('remark', '').strip()
+
+        if qty <= 0:
+            flash("Invalid quantity", "danger")
+            return redirect(url_for('return_marble', id=id))
+
+        # ADD BACK STOCK
+        cursor.execute("""
+            UPDATE marble_table
+            SET qty = qty + %s
+            WHERE id = %s
+        """, (qty, id))
+
+        # LOG RETURN
+        cursor.execute("""
+            INSERT INTO marble_return_table
+            (marble_id, description, qty, returned_by, project, remark, action_date)
+            VALUES (%s,%s,%s,%s,%s,%s,NOW())
+        """, (
+            id,
+            item['description'],
+            qty,
+            session['user'],
+            project,
+            remark
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Marble returned successfully", "success")
+        return redirect(url_for('marble'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('return_marble.html', item=item)
 
 
 
