@@ -2047,58 +2047,72 @@ def withdraw_marble(id):
 @app.route('/return_marble/<int:id>', methods=['GET', 'POST'])
 def return_marble(id):
 
-    if session.get('role') != 'admin':
-        flash("Access Denied", "danger")
-        return redirect(url_for('marble'))
+    try:
+        if session.get('role') != 'admin':
+            flash("Access Denied", "danger")
+            return redirect(url_for('marble'))
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM marble_table WHERE id=%s", (id,))
-    item = cursor.fetchone()
+        cursor.execute("SELECT * FROM marble_table WHERE id=%s", (id,))
+        item = cursor.fetchone()
 
-    if not item:
-        flash("Marble item not found", "danger")
-        return redirect(url_for('marble'))
+        if not item:
+            flash("Marble item not found", "danger")
+            return redirect(url_for('marble'))
 
-    if request.method == 'POST':
+        if request.method == 'POST':
 
-        qty = float(request.form.get('qty', 0))
-        project = request.form.get('project', '')
-        remark = request.form.get('remark', '')
+            print("FORM DATA:", request.form)  # 🔥 DEBUG LINE
 
-        # update stock
-        cursor.execute("""
-            UPDATE marble_table
-            SET qty = qty + %s
-            WHERE id = %s
-        """, (qty, id))
+            qty = request.form.get('qty')
+            project = request.form.get('project')
+            remark = request.form.get('remark')
 
-        # log return
-        cursor.execute("""
-            INSERT INTO marble_return_table
-            (marble_id, description, qty, returned_by, project, remark, action_date)
-            VALUES (%s, %s, %s, %s, %s, %s, NOW())
-        """, (
-            id,
-            item['description'],
-            qty,
-            session.get('user'),
-            project,
-            remark
-        ))
+            # safety check
+            if not qty or not project:
+                flash("Qty and Project are required", "danger")
+                return redirect(url_for('return_marble', id=id))
 
-        conn.commit()
-        cursor.close()
-        conn.close()
+            qty = float(qty)
 
-        flash("Marble Returned Successfully", "success")
-        return redirect(url_for('marble'))
+            cursor.execute("""
+                UPDATE marble_table
+                SET qty = qty + %s
+                WHERE id = %s
+            """, (qty, id))
 
-    cursor.close()
-    conn.close()
+            cursor.execute("""
+                INSERT INTO marble_return_table
+                (marble_id, description, qty, returned_by, project, remark, action_date)
+                VALUES (%s, %s, %s, %s, %s, %s, NOW())
+            """, (
+                id,
+                item['description'],
+                qty,
+                session.get('user'),
+                project,
+                remark
+            ))
 
-    return render_template('return_marble.html', item=item)
+            conn.commit()
+
+            flash("Marble Returned Successfully", "success")
+            return redirect(url_for('marble'))
+
+        return render_template('return_marble.html', item=item)
+
+    except Exception as e:
+        print("🔥 ERROR OCCURRED:", str(e))  # IMPORTANT
+        flash("Server error occurred. Check terminal.", "danger")
+
+    finally:
+        try:
+            cursor.close()
+            conn.close()
+        except:
+            pass
 
 
 
