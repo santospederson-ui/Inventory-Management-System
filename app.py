@@ -2131,6 +2131,83 @@ def delete_marble(id):
     return redirect(url_for('marble'))
 
 
+from flask import request, render_template
+import math
+
+
+
+# =========================
+# MARBLE WITHDRAWALS ROUTE
+# =========================
+
+
+
+@app.route('/marble_withdrawals')
+def marble_withdrawals():
+    search = request.args.get('search', '')
+
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = mysql.connection.cursor()
+
+    # SEARCH QUERY (filter by description, project, id)
+    if search:
+        query = """
+            SELECT id, description, qty, project, withdrawn_at
+            FROM marble_withdrawals_table
+            WHERE 
+                description LIKE %s
+                OR project LIKE %s
+                OR id LIKE %s
+            ORDER BY withdrawn_at DESC
+            LIMIT %s OFFSET %s
+        """
+
+        like = f"%{search}%"
+        conn.execute(query, (like, like, like, per_page, offset))
+
+        data = conn.fetchall()
+
+        # COUNT FOR PAGINATION
+        count_query = """
+            SELECT COUNT(*) 
+            FROM marble_withdrawals_table
+            WHERE 
+                description LIKE %s
+                OR project LIKE %s
+                OR id LIKE %s
+        """
+        conn.execute(count_query, (like, like, like))
+        total_records = conn.fetchone()[0]
+
+    else:
+        query = """
+            SELECT id, description, qty, project, withdrawn_at
+            FROM marble_withdrawals_table
+            ORDER BY withdrawn_at DESC
+            LIMIT %s OFFSET %s
+        """
+        conn.execute(query, (per_page, offset))
+        data = conn.fetchall()
+
+        conn.execute("SELECT COUNT(*) FROM marble_withdrawals_table")
+        total_records = conn.fetchone()[0]
+
+    conn.close()
+
+    total_pages = math.ceil(total_records / per_page)
+
+    return render_template(
+        "marble_withdrawals.html",
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
+
+
 # =========================
 # RUN APP
 # =========================
