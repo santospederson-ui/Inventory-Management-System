@@ -3,176 +3,121 @@
 {% block content %}
 
 <style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .page-header h1 {
-        color: #1e3c72;
-        font-weight: 700;
-        font-size: 2rem;
-        margin: 0;
-    }
-
-    .data-table-wrapper {
+    .form-card {
         background: white;
         border-radius: 12px;
-        overflow: hidden;
+        padding: 40px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        max-width: 700px;
+        margin: 0 auto;
     }
 
-    .data-table-wrapper thead {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
+    .form-card h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.8rem;
     }
 
-    .data-table-wrapper thead th {
-        padding: 15px;
+    .form-subtitle {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
         font-weight: 600;
-        border: none;
+        color: #1e3c72;
+        margin-bottom: 8px;
+        display: block;
     }
 
-    .data-table-wrapper tbody td {
+    .form-control {
+        width: 100%;
         padding: 12px 15px;
-        vertical-align: middle;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        margin-bottom: 20px;
     }
 
-    .data-table-wrapper tbody tr:hover {
-        background-color: #f5f9ff;
+    .form-control:focus {
+        border-color: #ffc107;
+        outline: none;
     }
 
-    .action-buttons {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-
-    .action-buttons .btn {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        border: none;
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
         color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
     }
 
-    .action-buttons .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-    }
-
-    .btn-withdraw {
-        background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(81, 207, 102, 0.4);
     }
 </style>
 
-<!-- HEADER -->
-<div class="page-header">
+<div class="form-card">
 
     <h1>
-        <i class="fas fa-gem" style="color:#ffc107;margin-right:10px;"></i>
-        Marble Inventory
+        <i class="fas fa-undo-alt" style="color:#40C057; margin-right:10px;"></i>
+        Return Marble
     </h1>
 
-    <a href="{{ url_for('add_marble') }}"
-       class="btn"
-       style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
-              color: white;
-              padding: 10px 20px;
-              border-radius: 8px;
-              font-weight: 600;">
-        <i class="fas fa-plus-circle"></i> Add Marble
-    </a>
+    <p class="form-subtitle">
+        Return marble back into inventory
+    </p>
 
-</div>
-
-<!-- TABLE -->
-{% if marbles %}
-<div class="data-table-wrapper">
-    <div class="table-responsive">
-        <table class="table">
-
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Project</th>
-                <th>Remark</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for item in marbles %}
-            <tr>
-
-                <td><strong>#{{ loop.index + ((page - 1) * 10) }}</strong></td>
-
-                <td>{{ item.description }}</td>
-
-                <td>{{ item.qty }}</td>
-
-                <td>{{ item.project }}</td>
-
-                <td>{{ item.remark or '-' }}</td>
-
-                <td>
-                    {% if item.created_at %}
-                        {{ item.created_at }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-
-                <!-- ACTIONS -->
-                <td>
-                    <div class="action-buttons">
-
-                        <!-- EDIT -->
-                        <a href="{{ url_for('edit_marble', id=item.id) }}"
-                           class="btn btn-edit">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-
-                        <!-- WITHDRAW -->
-                        <a href="{{ url_for('withdraw_marble', id=item.id) }}"
-                           class="btn btn-withdraw">
-                            <i class="fas fa-arrow-circle-down"></i> Withdraw
-                        </a>
-
-                    </div>
-                </td>
-
-            </tr>
-            {% endfor %}
-        </tbody>
-
-        </table>
+    <!-- ITEM INFO -->
+    <div style="background:#f5f9ff; padding:15px; border-radius:8px; margin-bottom:20px;">
+        <strong>Description:</strong> {{ item.description }} <br>
+        <strong>Current Qty:</strong> {{ item.qty }}
     </div>
-</div>
 
-{% else %}
-<div class="empty-state">
-    <i class="fas fa-inbox"></i>
-    <h4 style="color:#333;">No Marble Items Found</h4>
-    <p>Start by adding marble inventory</p>
+    <form method="POST">
+
+        <!-- RETURN QUANTITY -->
+        <div class="form-group">
+            <label>Return Quantity</label>
+            <input type="number"
+                   name="qty"
+                   class="form-control"
+                   min="0.01"
+                   step="0.01"
+                   required>
+        </div>
+
+        <!-- PROJECT -->
+        <div class="form-group">
+            <label>Project *</label>
+            <input type="text"
+                   name="project"
+                   class="form-control"
+                   placeholder="Enter project name"
+                   required>
+        </div>
+
+        <!-- REMARK -->
+        <div class="form-group">
+            <label>Remark</label>
+            <textarea name="remark"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Optional notes"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-undo-alt"></i> Return Marble
+        </button>
+
+    </form>
+
 </div>
-{% endif %}
 
 {% endblock %}
