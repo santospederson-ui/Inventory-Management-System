@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-card h1 {
+        color: #1e3c72;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        color: #1e3c72;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-control:focus {
+        border-color: #ffc107;
+        outline: none;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="form-card">
+
+    <h1><i class="fas fa-undo-alt" style="color:#ffc107;"></i> Return Marble</h1>
+
+    <p><strong>Description:</strong> {{ item.description }}</p>
+    <p><strong>Available Qty:</strong> {{ item.qty }}</p>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Quantity to Return *</label>
+            <input type="number" name="qty" step="0.01" min="0" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Project *</label>
+            <input type="text" name="project" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Remark</label>
+            <textarea name="remark" class="form-control"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-check"></i> Confirm Return
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
