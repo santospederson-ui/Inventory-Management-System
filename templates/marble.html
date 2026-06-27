@@ -1,164 +1,6 @@
-{% extends 'base.html' %}
-
-{% block content %}
-
-<style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .page-header h1 {
-        color: #1e3c72;
-        font-weight: 700;
-        font-size: 2rem;
-        margin: 0;
-    }
-
-    .data-table-wrapper {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .data-table-wrapper thead {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-    }
-
-    .data-table-wrapper thead th {
-        padding: 15px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .data-table-wrapper tbody td {
-        padding: 12px 15px;
-        vertical-align: middle;
-    }
-
-    .data-table-wrapper tbody tr:hover {
-        background-color: #f5f9ff;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .action-buttons .btn {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        border-radius: 8px;
-        transition: all 0.25s ease;
-        border: none;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-weight: 600;
-    }
-
-    .action-buttons .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-    }
-
-    .btn-withdraw {
-        background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
-    }
-
-    .btn-return {
-        background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
-        box-shadow: 0 3px 10px rgba(81, 207, 102, 0.25);
-    }
-
-    .btn-return:hover {
-        box-shadow: 0 6px 18px rgba(81, 207, 102, 0.35);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-.btn-delete {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-    color: white;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.btn-delete:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 71, 87, 0.3);
-}
-
-
-
- .pagination {
-    margin-top: 25px;
-}
-
-.page-link:hover {
-    opacity: 0.85;
-    transform: translateY(-1px);
-    transition: 0.2s;
-}   
-   
-</style>
-
-<!-- HEADER -->
-<div class="page-header">
-
-    <h1>
-        <i class="fas fa-gem" style="color:#ffc107;margin-right:10px;"></i>
-        Marble Inventory
-    </h1>
-
-    <a href="{{ url_for('add_marble') }}"
-       class="btn"
-       style="background: linear-gradient(135deg, #51CF66 0%, #40C057 100%);
-              color: white;
-              padding: 10px 20px;
-              border-radius: 8px;
-              font-weight: 600;">
-        <i class="fas fa-plus-circle"></i> Add Marble
-    </a>
-
-</div>
-
-
-<!-- ✅ PUT FLASH MESSAGE HERE -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
-<!-- SEARCH OR TABLE STARTS BELOW -->
-<div class="data-table-wrapper">
-
-
 <!-- TABLE -->
 {% if marbles %}
+
 <div class="data-table-wrapper">
     <div class="table-responsive">
         <table class="table">
@@ -178,7 +20,6 @@
         <tbody>
             {% for item in marbles %}
             <tr>
-
                 <td><strong>#{{ loop.index + ((page - 1) * 10) }}</strong></td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.qty }}</td>
@@ -186,40 +27,29 @@
                 <td>{{ item.remark or '-' }}</td>
                 <td>{{ item.created_at or 'N/A' }}</td>
 
-                <!-- ACTIONS -->
                 <td>
                     <div class="action-buttons">
 
-                        <!-- EDIT -->
-                        <a href="{{ url_for('edit_marble', id=item.id) }}"
-                           class="btn btn-edit">
+                        <a href="{{ url_for('edit_marble', id=item.id) }}" class="btn btn-edit">
                             <i class="fas fa-edit"></i> Edit
                         </a>
 
-                        <!-- WITHDRAW -->
-                        <a href="{{ url_for('withdraw_marble', id=item.id) }}"
-                           class="btn btn-withdraw">
+                        <a href="{{ url_for('withdraw_marble', id=item.id) }}" class="btn btn-withdraw">
                             <i class="fas fa-arrow-circle-down"></i> Withdraw
                         </a>
 
-                        <!-- RETURN (MODERN UI) -->
-                        <a href="{{ url_for('return_marble', id=item.id) }}"
-                           class="btn btn-return">
+                        <a href="{{ url_for('return_marble', id=item.id) }}" class="btn btn-return">
                             <i class="fas fa-undo-alt"></i> Return
                         </a>
 
-
-                        <!-- DELETE -->
                         <a href="{{ url_for('delete_marble', id=item.id) }}"
                            class="btn btn-delete"
-                           onclick="return confirm('Are you sure you want to delete this marble item?')"
-                           title="Delete Marble">
+                           onclick="return confirm('Are you sure you want to delete this marble item?')">
                             <i class="fas fa-trash"></i> Delete
                         </a>
 
                     </div>
                 </td>
-
             </tr>
             {% endfor %}
         </tbody>
@@ -229,62 +59,40 @@
 </div>
 
 {% else %}
+
 <div class="empty-state">
     <i class="fas fa-inbox"></i>
     <h4 style="color:#333;">No Marble Items Found</h4>
     <p>Start by adding marble inventory</p>
 </div>
 
+{% endif %}
 
-<!-- PAGINATION -->
+
+<!-- ✅ PAGINATION MUST BE OUTSIDE -->
 <nav class="pagination" style="margin-top: 20px; text-align: center;">
     <ul class="pagination" style="display: inline-flex; list-style: none; padding: 0; gap: 5px;">
 
         {% if page > 1 %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('marble', page=page-1, search=search) }}"
-               style="padding: 8px 12px; border-radius: 6px; background: #1e3c72; color: white; text-decoration: none;">
-                ‹ Prev
-            </a>
+        <li>
+            <a href="{{ url_for('marble', page=page-1, search=search) }}">‹ Prev</a>
         </li>
         {% endif %}
 
         {% for p in range(1, total_pages + 1) %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('marble', page=p, search=search) }}"
-               style="
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    text-decoration: none;
-                    {% if p == page %}
-                        background: #ffc107;
-                        color: black;
-                        font-weight: bold;
-                    {% else %}
-                        background: white;
-                        color: #1e3c72;
-                        border: 1px solid #ddd;
-                    {% endif %}
-               ">
+        <li>
+            <a href="{{ url_for('marble', page=p, search=search) }}"
+               style="{% if p == page %}font-weight:bold;background:#ffc107;color:black;{% endif %}">
                 {{ p }}
             </a>
         </li>
         {% endfor %}
 
         {% if page < total_pages %}
-        <li class="page-item">
-            <a class="page-link"
-               href="{{ url_for('marble', page=page+1, search=search) }}"
-               style="padding: 8px 12px; border-radius: 6px; background: #1e3c72; color: white; text-decoration: none;">
-                Next ›
-            </a>
+        <li>
+            <a href="{{ url_for('marble', page=page+1, search=search) }}">Next ›</a>
         </li>
         {% endif %}
 
     </ul>
 </nav>
-    
-{% endif %}
-{% endblock %}
