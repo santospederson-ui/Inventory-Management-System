@@ -1782,9 +1782,6 @@ def upload_list():
 @app.route('/marble')
 def marble():
 
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
     search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
 
@@ -1801,39 +1798,27 @@ def marble():
             FROM marble_table
             WHERE description LIKE %s
         """, (f"%{search}%",))
-
         total = cursor.fetchone()['total']
 
         cursor.execute("""
-            SELECT id, description, qty, project, remark, created_at
+            SELECT *
             FROM marble_table
             WHERE description LIKE %s
             ORDER BY id DESC
             LIMIT %s OFFSET %s
-        """, (
-            f"%{search}%",
-            per_page,
-            offset
-        ))
+        """, (f"%{search}%", per_page, offset))
 
     else:
 
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM marble_table
-        """)
-
+        cursor.execute("SELECT COUNT(*) AS total FROM marble_table")
         total = cursor.fetchone()['total']
 
         cursor.execute("""
-            SELECT id, description, qty, project, remark, created_at
+            SELECT *
             FROM marble_table
             ORDER BY id DESC
             LIMIT %s OFFSET %s
-        """, (
-            per_page,
-            offset
-        ))
+        """, (per_page, offset))
 
     items = cursor.fetchall()
 
@@ -1844,7 +1829,7 @@ def marble():
 
     return render_template(
         'marble.html',
-        marbles=items,   # ✅ FIXED
+        marbles=items,   # or items depending on your HTML
         page=page,
         total_pages=total_pages,
         search=search
