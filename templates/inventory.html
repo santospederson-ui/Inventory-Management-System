@@ -215,6 +215,21 @@ table {
     {% endif %}
 </div>
 
+
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
 <!-- Search Box -->
 <div class="search-box">
     <form method="GET" id="searchForm" action="{{ url_for('inventory') }}" class="d-flex gap-2">
