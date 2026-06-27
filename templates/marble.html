@@ -123,6 +123,42 @@
         color: black;
         border: none;
     }
+
+
+
+/* SEARCH BAR */
+.search-container{
+    margin-bottom:20px;
+    position:relative;
+    max-width:420px;
+}
+
+.search-container input{
+    width:100%;
+    padding:12px 45px 12px 15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    outline:none;
+    transition:.3s;
+    font-size:15px;
+    background:#fff;
+}
+
+.search-container input:focus{
+    border-color:#2a5298;
+    box-shadow:0 0 0 3px rgba(42,82,152,.15);
+}
+
+.search-container i{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#888;
+}
+
+
+    
 </style>
 
 <!-- HEADER -->
@@ -156,6 +192,18 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
+
+<!-- SEARCH -->
+<div class="search-container">
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search description, project, remark..."
+        value="{{ search or '' }}"
+    >
+    <i class="fas fa-search"></i>
+</div>
+
 
 <!-- TABLE -->
 {% if marbles %}
@@ -258,5 +306,35 @@
 
 </div>
 {% endif %}
+
+
+<script>
+
+let timer;
+
+const searchBox = document.getElementById("searchInput");
+
+searchBox.addEventListener("keyup", function(){
+
+    clearTimeout(timer);
+
+    timer = setTimeout(function(){
+
+        const keyword = searchBox.value.trim();
+
+        const url = new URL(window.location.href);
+
+        url.searchParams.set("search", keyword);
+
+        url.searchParams.set("page", 1);
+
+        window.location.href = url.toString();
+
+    },300);
+
+});
+
+</script>
+
 
 {% endblock %}
