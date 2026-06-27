@@ -223,6 +223,57 @@
     <h4 style="color:#333;">No Marble Items Found</h4>
     <p>Start by adding marble inventory</p>
 </div>
-{% endif %}
 
+
+<!-- PAGINATION -->
+<nav class="pagination" style="margin-top: 20px; text-align: center;">
+    <ul class="pagination" style="display: inline-flex; list-style: none; padding: 0; gap: 5px;">
+
+        {% if page > 1 %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('marble', page=page-1, search=search) }}"
+               style="padding: 8px 12px; border-radius: 6px; background: #1e3c72; color: white; text-decoration: none;">
+                ‹ Prev
+            </a>
+        </li>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('marble', page=p, search=search) }}"
+               style="
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    text-decoration: none;
+                    {% if p == page %}
+                        background: #ffc107;
+                        color: black;
+                        font-weight: bold;
+                    {% else %}
+                        background: white;
+                        color: #1e3c72;
+                        border: 1px solid #ddd;
+                    {% endif %}
+               ">
+                {{ p }}
+            </a>
+        </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('marble', page=page+1, search=search) }}"
+               style="padding: 8px 12px; border-radius: 6px; background: #1e3c72; color: white; text-decoration: none;">
+                Next ›
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+    
+{% endif %}
 {% endblock %}
