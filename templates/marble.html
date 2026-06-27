@@ -194,15 +194,23 @@
 {% endwith %}
 
 <!-- SEARCH -->
-<div class="search-container">
-    <input
-        type="text"
-        id="searchInput"
-        placeholder="Search description, project, remark..."
-        value="{{ search or '' }}"
-    >
-    <i class="fas fa-search"></i>
-</div>
+<form id="searchForm" method="GET" action="{{ url_for('marble') }}">
+    <div class="search-container">
+        <input
+            type="text"
+            id="searchInput"
+            name="search"
+            placeholder="Search description, project, remark..."
+            value="{{ search or '' }}"
+            autocomplete="off"
+        >
+
+        <i class="fas fa-search"></i>
+
+        <!-- Keep pagination at page 1 when searching -->
+        <input type="hidden" name="page" value="1">
+    </div>
+</form>
 
 
 <!-- TABLE -->
