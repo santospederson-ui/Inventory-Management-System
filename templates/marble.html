@@ -308,33 +308,6 @@
 {% endif %}
 
 
-<script>
-
-let timer;
-
-const searchBox = document.getElementById("searchInput");
-
-searchBox.addEventListener("keyup", function(){
-
-    clearTimeout(timer);
-
-    timer = setTimeout(function(){
-
-        const keyword = searchBox.value.trim();
-
-        const url = new URL(window.location.href);
-
-        url.searchParams.set("search", keyword);
-
-        url.searchParams.set("page", 1);
-
-        window.location.href = url.toString();
-
-    },300);
-
-});
-
-</script>
 
 
 {% endblock %}
