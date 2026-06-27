@@ -82,7 +82,7 @@
     <!-- SEARCH -->
     <div class="search-card">
         <form method="GET"
-              action="{{ url_for('withdrawals') }}"
+              action="{{ url_for('marble_withdrawals') }}"
               id="searchForm"
               class="d-flex gap-2">
 
@@ -146,7 +146,7 @@
             {% if page > 1 %}
             <li class="page-item">
                 <a class="page-link"
-                   href="{{ url_for('withdrawals', page=page-1, search=search) }}">
+                   href="{{ url_for('marble_withdrawals', page=page-1, search=search) }}">
                     Prev
                 </a>
             </li>
@@ -155,7 +155,7 @@
             {% for p in range(1, total_pages + 1) %}
             <li class="page-item {% if p == page %}active{% endif %}">
                 <a class="page-link"
-                   href="{{ url_for('withdrawals', page=p, search=search) }}">
+                   href="{{ url_for('marble_withdrawals', page=p, search=search) }}">
                     {{ p }}
                 </a>
             </li>
@@ -164,7 +164,7 @@
             {% if page < total_pages %}
             <li class="page-item">
                 <a class="page-link"
-                   href="{{ url_for('withdrawals', page=page+1, search=search) }}">
+                   href="{{ url_for('marble_withdrawals', page=page+1, search=search) }}">
                     Next
                 </a>
             </li>
