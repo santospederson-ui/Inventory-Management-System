@@ -2247,15 +2247,6 @@ def marble_withdrawals():
 # MARBLE RETURN HISTORY
 # =========================
 
-
-# =========================
-# MARBLE RETURN HISTORY (FIXED)
-# =========================
-
-# =========================
-# MARBLE RETURN HISTORY
-# =========================
-
 @app.route('/marble_return_item')
 def marble_return_item():
 
@@ -2274,7 +2265,7 @@ def marble_return_item():
     like = f"%{search}%"
 
     # -------------------------
-    # COUNT QUERY
+    # COUNT QUERY (SAFE)
     # -------------------------
     if search:
         cursor.execute("""
@@ -2291,7 +2282,8 @@ def marble_return_item():
             FROM marble_returns_table
         """)
 
-    total_records = cursor.fetchone()[0]
+    count_result = cursor.fetchone()
+    total_records = count_result[0] if count_result else 0
 
     # -------------------------
     # DATA QUERY
@@ -2333,13 +2325,13 @@ def marble_return_item():
     conn.close()
 
     # -------------------------
-    # FORMAT FOR TEMPLATE
+    # FORMAT SAFE OUTPUT
     # -------------------------
     data = [
         {
             "action_date": r[0],
             "description": r[1],
-            "qty": r[2],
+            "qty": float(r[2]) if r[2] else 0.00,
             "returned_by": r[3],
             "project": r[4],
             "remark": r[5],
@@ -2356,6 +2348,11 @@ def marble_return_item():
         total_pages=total_pages,
         search=search
     )
+    
+
+
+
+
 
 
 
