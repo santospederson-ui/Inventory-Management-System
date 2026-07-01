@@ -2252,8 +2252,12 @@ def marble_withdrawals():
 # MARBLE RETURN HISTORY (FIXED)
 # =========================
 
-@app.route('/marble_returns_item')
-def marble_returns_item():
+# =========================
+# MARBLE RETURN HISTORY
+# =========================
+
+@app.route('/marble_return_item')
+def marble_return_item():
 
     if 'user' not in session:
         return redirect(url_for('login'))
@@ -2329,19 +2333,19 @@ def marble_returns_item():
     conn.close()
 
     # -------------------------
-    # FORMAT DATA FOR TEMPLATE
-    # (convert tuples → dict so your HTML works)
+    # FORMAT FOR TEMPLATE
     # -------------------------
-    data = []
-    for r in rows:
-        data.append({
+    data = [
+        {
             "action_date": r[0],
             "description": r[1],
             "qty": r[2],
             "returned_by": r[3],
             "project": r[4],
             "remark": r[5],
-        })
+        }
+        for r in rows
+    ]
 
     total_pages = max(1, (total_records + per_page - 1) // per_page)
 
@@ -2352,7 +2356,6 @@ def marble_returns_item():
         total_pages=total_pages,
         search=search
     )
-
 
 
 
