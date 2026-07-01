@@ -2265,7 +2265,7 @@ def marble_return_item():
     like = f"%{search}%"
 
     # -------------------------
-    # COUNT QUERY (SAFE)
+    # COUNT (SAFE FIX)
     # -------------------------
     if search:
         cursor.execute("""
@@ -2283,41 +2283,28 @@ def marble_return_item():
         """)
 
     count_result = cursor.fetchone()
-    total_records = count_result[0] if count_result else 0
+
+    if isinstance(count_result, dict):
+        total_records = list(count_result.values())[0]
+    else:
+        total_records = count_result[0] if count_result else 0
 
     # -------------------------
-    # DATA QUERY
+    # DATA
     # -------------------------
-    if search:
-        cursor.execute("""
-            SELECT 
-                action_date,
-                description,
-                qty,
-                returned_by,
-                project,
-                remark
-            FROM marble_returns_table
-            WHERE description LIKE %s
-               OR project LIKE %s
-               OR returned_by LIKE %s
-               OR remark LIKE %s
-            ORDER BY action_date DESC
-            LIMIT %s OFFSET %s
-        """, (like, like, like, like, per_page, offset))
-    else:
-        cursor.execute("""
-            SELECT 
-                action_date,
-                description,
-                qty,
-                returned_by,
-                project,
-                remark
-            FROM marble_returns_table
-            ORDER BY action_date DESC
-            LIMIT %s OFFSET %s
-        """, (per_page, offset))
+    cursor.execute("""
+        SELECT 
+            action_date,
+            description,
+            qty,
+            returned_by,
+            project,
+            remark
+        FROM marble_returns_table
+        WHERE (%s = '' OR description LIKE %s OR project LIKE %s OR returned_by LIKE %s OR remark LIKE %s)
+        ORDER BY action_date DESC
+        LIMIT %s OFFSET %s
+    """, (search, like, like, like, like, per_page, offset))
 
     rows = cursor.fetchall()
 
@@ -2325,19 +2312,18 @@ def marble_return_item():
     conn.close()
 
     # -------------------------
-    # FORMAT SAFE OUTPUT
+    # FORMAT SAFE
     # -------------------------
-    data = [
-        {
+    data = []
+    for r in rows:
+        data.append({
             "action_date": r[0],
             "description": r[1],
             "qty": float(r[2]) if r[2] else 0.00,
             "returned_by": r[3],
             "project": r[4],
             "remark": r[5],
-        }
-        for r in rows
-    ]
+        })
 
     total_pages = max(1, (total_records + per_page - 1) // per_page)
 
