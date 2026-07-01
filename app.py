@@ -2264,29 +2264,18 @@ def marble_return_item():
 
     like = f"%{search}%"
 
-    # =========================
-    # COUNT QUERY (SAFE)
-    # =========================
-    if search:
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM marble_returns_table
-            WHERE description LIKE %s
-               OR project LIKE %s
-               OR returned_by LIKE %s
-               OR remark LIKE %s
-        """, (like, like, like, like))
-    else:
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM marble_returns_table
-        """)
-
+    # ======================
+    # SAFE COUNT
+    # ======================
+    cursor.execute("""
+        SELECT COUNT(*) 
+        FROM marble_returns_table
+    """)
     total_records = cursor.fetchone()[0]
 
-    # =========================
-    # DATA QUERY (FIXED)
-    # =========================
+    # ======================
+    # SAFE DATA QUERY
+    # ======================
     if search:
         cursor.execute("""
             SELECT 
@@ -2301,7 +2290,7 @@ def marble_return_item():
                OR project LIKE %s
                OR returned_by LIKE %s
                OR remark LIKE %s
-            ORDER BY action_date DESC
+            ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (like, like, like, like, per_page, offset))
     else:
@@ -2314,7 +2303,7 @@ def marble_return_item():
                 project,
                 remark
             FROM marble_returns_table
-            ORDER BY action_date DESC
+            ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (per_page, offset))
 
@@ -2323,20 +2312,19 @@ def marble_return_item():
     cursor.close()
     conn.close()
 
-    # =========================
-    # FORMAT DATA (SAFE)
-    # =========================
-    data = [
-        {
+    # ======================
+    # SAFE FORMAT (NO CRASH)
+    # ======================
+    data = []
+    for r in rows:
+        data.append({
             "action_date": r[0],
             "description": r[1],
-            "qty": float(r[2]) if r[2] not in [None, ""] else 0.00,
+            "qty": float(r[2]) if r[2] not in [None, "", " "] else 0.00,
             "returned_by": r[3],
             "project": r[4],
             "remark": r[5],
-        }
-        for r in rows
-    ]
+        })
 
     total_pages = max(1, (total_records + per_page - 1) // per_page)
 
