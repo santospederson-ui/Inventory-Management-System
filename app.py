@@ -2265,16 +2265,27 @@ def marble_return_item():
     like = f"%{search}%"
 
     # ======================
-    # SAFE COUNT
+    # COUNT
     # ======================
-    cursor.execute("""
-        SELECT COUNT(*) 
-        FROM marble_returns_table
-    """)
+    if search:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM marble_return_table
+            WHERE description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+        """, (like, like, like, like))
+    else:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM marble_return_table
+        """)
+
     total_records = cursor.fetchone()[0]
 
     # ======================
-    # SAFE DATA QUERY
+    # DATA
     # ======================
     if search:
         cursor.execute("""
@@ -2285,7 +2296,7 @@ def marble_return_item():
                 returned_by,
                 project,
                 remark
-            FROM marble_returns_table
+            FROM marble_return_table
             WHERE description LIKE %s
                OR project LIKE %s
                OR returned_by LIKE %s
@@ -2302,7 +2313,7 @@ def marble_return_item():
                 returned_by,
                 project,
                 remark
-            FROM marble_returns_table
+            FROM marble_return_table
             ORDER BY id DESC
             LIMIT %s OFFSET %s
         """, (per_page, offset))
@@ -2312,15 +2323,12 @@ def marble_return_item():
     cursor.close()
     conn.close()
 
-    # ======================
-    # SAFE FORMAT (NO CRASH)
-    # ======================
     data = []
     for r in rows:
         data.append({
             "action_date": r[0],
             "description": r[1],
-            "qty": float(r[2]) if r[2] not in [None, "", " "] else 0.00,
+            "qty": float(r[2]) if r[2] not in [None, ""] else 0.00,
             "returned_by": r[3],
             "project": r[4],
             "remark": r[5],
@@ -2335,7 +2343,6 @@ def marble_return_item():
         total_pages=total_pages,
         search=search
     )
-
 
 
 
