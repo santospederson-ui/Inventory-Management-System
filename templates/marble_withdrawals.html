@@ -104,7 +104,6 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>ID</th>
                         <th>Description</th>
                         <th>Qty</th>
                         <th>Project</th>
@@ -117,7 +116,6 @@
                     {% for w in data %}
                     <tr>
                         <td><strong>{{ loop.index + ((page - 1) * 10) }}</strong></td>
-                        <td>{{ w.id }}</td>
                         <td>{{ w.description }}</td>
 
                         <td>
