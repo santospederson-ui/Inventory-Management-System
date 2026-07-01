@@ -98,7 +98,7 @@
     <!-- SEARCH -->
     <div class="search-card">
         <form method="GET"
-              action="{{ url_for('marble_returns') }}"
+              action="{{ url_for('marble_return_item') }}"
               id="searchForm"
               class="d-flex gap-2">
 
@@ -147,7 +147,7 @@
                         <td>{{ row.description }}</td>
 
                         <td>
-                            {% if row.qty <= 5 %}
+                            {% if row.qty|float <= 5 %}
                                 <span class="badge-qty badge-low">{{ row.qty }}</span>
                             {% else %}
                                 <span class="badge-qty badge-ok">{{ row.qty }}</span>
@@ -182,10 +182,8 @@
             <li class="page-item">
 
                 <a class="page-link"
-                   href="{{ url_for('marble_returns', page=page-1, search=search) }}">
-
+                   href="{{ url_for('marble_return_item', page=page-1, search=search) }}">
                     Prev
-
                 </a>
 
             </li>
@@ -196,10 +194,8 @@
             <li class="page-item {% if p == page %}active{% endif %}">
 
                 <a class="page-link"
-                   href="{{ url_for('marble_returns', page=p, search=search) }}">
-
+                   href="{{ url_for('marble_return_item', page=p, search=search) }}">
                     {{ p }}
-
                 </a>
 
             </li>
@@ -210,10 +206,8 @@
             <li class="page-item">
 
                 <a class="page-link"
-                   href="{{ url_for('marble_returns', page=page+1, search=search) }}">
-
+                   href="{{ url_for('marble_return_item', page=page+1, search=search) }}">
                     Next
-
                 </a>
 
             </li>
@@ -245,9 +239,7 @@ input.addEventListener("keyup", function () {
 });
 
 input.addEventListener("keydown", function () {
-
     clearTimeout(typingTimer);
-
 });
 
 </script>
