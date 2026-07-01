@@ -2248,7 +2248,110 @@ def marble_withdrawals():
 # =========================
 
 
+# =========================
+# MARBLE RETURN HISTORY (FIXED)
+# =========================
 
+@app.route('/marble_returns')
+def marble_returns():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    like = f"%{search}%"
+
+    # -------------------------
+    # COUNT QUERY
+    # -------------------------
+    if search:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM marble_returns_table
+            WHERE description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+        """, (like, like, like, like))
+    else:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM marble_returns_table
+        """)
+
+    total_records = cursor.fetchone()[0]
+
+    # -------------------------
+    # DATA QUERY
+    # -------------------------
+    if search:
+        cursor.execute("""
+            SELECT 
+                action_date,
+                description,
+                qty,
+                returned_by,
+                project,
+                remark
+            FROM marble_returns_table
+            WHERE description LIKE %s
+               OR project LIKE %s
+               OR returned_by LIKE %s
+               OR remark LIKE %s
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (like, like, like, like, per_page, offset))
+    else:
+        cursor.execute("""
+            SELECT 
+                action_date,
+                description,
+                qty,
+                returned_by,
+                project,
+                remark
+            FROM marble_returns_table
+            ORDER BY action_date DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # -------------------------
+    # FORMAT DATA FOR TEMPLATE
+    # (convert tuples → dict so your HTML works)
+    # -------------------------
+    data = []
+    for r in rows:
+        data.append({
+            "action_date": r[0],
+            "description": r[1],
+            "qty": r[2],
+            "returned_by": r[3],
+            "project": r[4],
+            "remark": r[5],
+        })
+
+    total_pages = max(1, (total_records + per_page - 1) // per_page)
+
+    return render_template(
+        "marble_return_item.html",
+        data=data,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
 
 
 
