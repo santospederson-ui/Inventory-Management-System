@@ -2142,65 +2142,97 @@ import math
 
 
 
+# =========================
+# MARBLE WITHDRAWAL HISTORY
+# =========================
+
 @app.route('/marble_withdrawals')
 def marble_withdrawals():
-    search = request.args.get('search', '')
 
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
     page = request.args.get('page', 1, type=int)
+
     per_page = 10
     offset = (page - 1) * per_page
 
-    conn = mysql.connection.cursor()
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
-    # SEARCH QUERY (filter by description, project, id)
     if search:
-        query = """
-            SELECT id, description, qty, project, withdrawn_at
+
+        # Count filtered records
+        cursor.execute("""
+            SELECT COUNT(*) AS total
             FROM marble_withdrawals_table
-            WHERE 
-                description LIKE %s
-                OR project LIKE %s
-                OR id LIKE %s
+            WHERE description LIKE %s
+               OR project LIKE %s
+               OR CAST(id AS CHAR) LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        # Get filtered records
+        cursor.execute("""
+            SELECT
+                id,
+                description,
+                qty,
+                project,
+                withdrawn_at
+            FROM marble_withdrawals_table
+            WHERE description LIKE %s
+               OR project LIKE %s
+               OR CAST(id AS CHAR) LIKE %s
             ORDER BY withdrawn_at DESC
             LIMIT %s OFFSET %s
-        """
-
-        like = f"%{search}%"
-        conn.execute(query, (like, like, like, per_page, offset))
-
-        data = conn.fetchall()
-
-        # COUNT FOR PAGINATION
-        count_query = """
-            SELECT COUNT(*) 
-            FROM marble_withdrawals_table
-            WHERE 
-                description LIKE %s
-                OR project LIKE %s
-                OR id LIKE %s
-        """
-        conn.execute(count_query, (like, like, like))
-        total_records = conn.fetchone()[0]
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
 
     else:
-        query = """
-            SELECT id, description, qty, project, withdrawn_at
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM marble_withdrawals_table
+        """)
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT
+                id,
+                description,
+                qty,
+                project,
+                withdrawn_at
             FROM marble_withdrawals_table
             ORDER BY withdrawn_at DESC
             LIMIT %s OFFSET %s
-        """
-        conn.execute(query, (per_page, offset))
-        data = conn.fetchall()
+        """, (
+            per_page,
+            offset
+        ))
 
-        conn.execute("SELECT COUNT(*) FROM marble_withdrawals_table")
-        total_records = conn.fetchone()[0]
+    data = cursor.fetchall()
 
+    cursor.close()
     conn.close()
 
-    total_pages = math.ceil(total_records / per_page)
+    total_pages = (total + per_page - 1) // per_page
 
     return render_template(
-        "marble_withdrawals.html",
+        'marble_withdrawals.html',
         data=data,
         page=page,
         total_pages=total_pages,
