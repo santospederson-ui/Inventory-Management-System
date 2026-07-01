@@ -2252,8 +2252,8 @@ def marble_withdrawals():
 # MARBLE RETURN HISTORY (FIXED)
 # =========================
 
-@app.route('/marble_returns')
-def marble_returns():
+@app.route('/marble_returns_item')
+def marble_returns_item():
 
     if 'user' not in session:
         return redirect(url_for('login'))
