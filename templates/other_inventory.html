@@ -31,19 +31,12 @@
         border: 2px solid #e0e0e0;
         border-radius: 8px;
         padding: 12px 15px;
-        transition: all 0.3s ease;
-    }
-
-    .search-box .form-control:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 3px rgba(255,193,7,.15);
     }
 
     .data-table-wrapper {
         background: white;
         border-radius: 12px;
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
@@ -53,19 +46,8 @@
     }
 
     .data-table-wrapper thead {
-        background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);
+        background: linear-gradient(135deg,#1e3c72,#2a5298);
         color: white;
-    }
-
-    .data-table-wrapper thead th {
-        padding: 15px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .data-table-wrapper tbody tr {
-        border-bottom: 1px solid #e0e0e0;
-        transition: .3s;
     }
 
     .data-table-wrapper tbody tr:hover {
@@ -74,32 +56,7 @@
 
     .data-table-wrapper tbody td {
         padding:12px 15px;
-        vertical-align:middle;
     }
-
-    .action-buttons{
-        display:flex;
-        gap:5px;
-        flex-wrap:wrap;
-    }
-
-    .action-buttons .btn{
-        padding:6px 10px;
-        font-size:.85rem;
-        border-radius:6px;
-        border:none;
-        transition:.3s;
-    }
-
-    .action-buttons .btn:hover{
-        transform:translateY(-2px);
-    }
-
-    .btn-edit{background:linear-gradient(135deg,#FFA500,#FF8C00);color:white;}
-    .btn-delete{background:linear-gradient(135deg,#ff6b6b,#ff4757);color:white;}
-    .btn-withdraw{background:linear-gradient(135deg,#FF6B6B,#EE5A6F);color:white;}
-    .btn-return{background:linear-gradient(135deg,#51CF66,#40C057);color:white;}
-    .btn-stock{background:linear-gradient(135deg,#1e3c72,#2a5298);color:white;}
 
     .pagination{
         background:white;
@@ -116,15 +73,9 @@
         margin:0 3px;
     }
 
-    .pagination .page-link:hover{
-        background:#f5f9ff;
-        color:#ffc107;
-    }
-
     .pagination .page-item.active .page-link{
         background:linear-gradient(135deg,#ffc107,#ff9800);
         color:white;
-        border-color:#ffc107;
     }
 
     .empty-state{
@@ -132,14 +83,9 @@
         padding:60px 20px;
         color:#999;
     }
-
-    .empty-state i{
-        font-size:4rem;
-        color:#ddd;
-        margin-bottom:20px;
-    }
 </style>
 
+<!-- HEADER -->
 <div class="page-header">
 
     <h1>
@@ -147,10 +93,35 @@
         Other Inventory Management
     </h1>
 
+    <!-- SAFE ADD BUTTON -->
+    {% if session.get('role') == 'admin' %}
+        {% if 'other_add_item' in current_app.view_functions %}
+            <a href="{{ url_for('other_add_item') }}"
+               class="btn"
+               style="background:linear-gradient(135deg,#51CF66,#40C057);
+                      color:white;
+                      padding:10px 20px;
+                      border-radius:8px;">
+                Add New Item
+            </a>
+        {% else %}
+            <!-- fallback safe button -->
+            <a href="#"
+               class="btn"
+               style="background:gray;
+                      color:white;
+                      padding:10px 20px;
+                      border-radius:8px;
+                      pointer-events:none;">
+                Add New Item (Not Active)
+            </a>
+        {% endif %}
+    {% endif %}
+
 </div>
 
+<!-- SEARCH -->
 <div class="search-box">
-
 <form method="GET"
       action="{{ url_for('other_inventory') }}"
       class="d-flex gap-2">
@@ -162,9 +133,9 @@
            placeholder="Search by item name, description or category...">
 
 </form>
-
 </div>
 
+<!-- TABLE -->
 {% if items %}
 
 <div class="data-table-wrapper">
@@ -189,7 +160,6 @@
 <tr>
 
 <td>{{ loop.index + ((page-1)*10) }}</td>
-
 <td><strong>{{ item.item_name }}</strong></td>
 <td>{{ item.description }}</td>
 <td>{{ item.category }}</td>
@@ -214,6 +184,7 @@
 
 </div>
 
+<!-- PAGINATION -->
 <nav class="pagination">
 <ul class="pagination">
 
