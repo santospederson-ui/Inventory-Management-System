@@ -147,32 +147,19 @@
         Other Inventory Management
     </h1>
 
-    {% if session.get('role') == 'admin' %}
-    <a href="{{ url_for('other_add_item') }}"
-       class="btn"
-       style="background:linear-gradient(135deg,#51CF66,#40C057);
-              color:white;
-              padding:10px 20px;
-              border-radius:8px;">
-        Add New Item
-    </a>
-    {% endif %}
-
 </div>
 
 <div class="search-box">
 
 <form method="GET"
-      id="searchForm"
       action="{{ url_for('other_inventory') }}"
       class="d-flex gap-2">
 
-<input type="text"
-       name="search"
-       id="searchInput"
-       value="{{ search }}"
-       class="form-control"
-       placeholder="Search by item name, description or category...">
+    <input type="text"
+           name="search"
+           value="{{ search }}"
+           class="form-control"
+           placeholder="Search by item name, description or category...">
 
 </form>
 
@@ -193,10 +180,6 @@
 <th>Qty</th>
 <th>Remark</th>
 <th>Date</th>
-
-{% if session.get('role') == 'admin' %}
-<th>Actions</th>
-{% endif %}
 </tr>
 </thead>
 
@@ -206,6 +189,7 @@
 <tr>
 
 <td>{{ loop.index + ((page-1)*10) }}</td>
+
 <td><strong>{{ item.item_name }}</strong></td>
 <td>{{ item.description }}</td>
 <td>{{ item.category }}</td>
@@ -220,22 +204,6 @@
 
 <td>{{ item.remark or '-' }}</td>
 <td>{{ item.created_at or 'N/A' }}</td>
-
-{% if session.get('role') == 'admin' %}
-<td>
-
-<div class="action-buttons">
-
-<a href="{{ url_for('other_edit_item', id=item.id) }}" class="btn btn-edit">Edit</a>
-<a href="{{ url_for('delete_other', id=item.id) }}" class="btn btn-delete">Delete</a>
-<a href="{{ url_for('other_withdraw', id=item.id) }}" class="btn btn-withdraw">Withdraw</a>
-<a href="{{ url_for('other_return_item', id=item.id) }}" class="btn btn-return">Return</a>
-<a href="{{ url_for('other_add_stock', id=item.id) }}" class="btn btn-stock">Add Stock</a>
-
-</div>
-
-</td>
-{% endif %}
 
 </tr>
 {% endfor %}
