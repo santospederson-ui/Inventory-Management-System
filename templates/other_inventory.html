@@ -20,6 +20,7 @@
     margin: 0;
 }
 
+/* TABLE */
 .data-table-wrapper {
     background: white;
     border-radius: 12px;
@@ -47,37 +48,7 @@
     background-color: #f5f9ff;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.action-buttons .btn {
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    border-radius: 8px;
-    transition: all 0.25s ease;
-    border: none;
-    color: white;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.action-buttons .btn:hover {
-    transform: translateY(-2px);
-}
-
-.btn-edit {
-    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-}
-
-.btn-delete {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-}
-
+/* EMPTY STATE */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -202,7 +173,6 @@
                     <th>Project</th>
                     <th>Remark</th>
                     <th>Created At</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -215,23 +185,6 @@
                     <td>{{ item.project }}</td>
                     <td>{{ item.remark or '-' }}</td>
                     <td>{{ item.created_at or 'N/A' }}</td>
-
-                    <td>
-                        <div class="action-buttons">
-
-                            <a href="{{ url_for('edit_other_item', id=item.id) }}" class="btn btn-edit">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-
-                            <a href="{{ url_for('delete_other_item', id=item.id) }}"
-                               class="btn btn-delete"
-                               onclick="return confirm('Delete this item?')">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-
-                        </div>
-                    </td>
-
                 </tr>
                 {% endfor %}
             </tbody>
