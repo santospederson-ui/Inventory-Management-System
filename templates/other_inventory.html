@@ -191,7 +191,7 @@
                id="searchInput"
                value="{{ search }}"
                class="form-control"
-               placeholder="Search by description, category, or brand...">
+               placeholder="Search by description or project...">
     </form>
 </div>
 
@@ -204,9 +204,8 @@
             <tr>
                 <th>#</th>
                 <th>Description</th>
-                <th>Category</th>
-                <th>Brand</th>
                 <th>Qty</th>
+                <th>Project</th>
                 <th>Remark</th>
                 <th>Date</th>
 
@@ -223,8 +222,6 @@
             <td>{{ loop.index + ((page - 1) * 10) }}</td>
 
             <td><strong>{{ item.description }}</strong></td>
-            <td>{{ item.category }}</td>
-            <td>{{ item.brand }}</td>
 
             <td>
                 {% if item.qty <= 5 %}
@@ -234,6 +231,7 @@
                 {% endif %}
             </td>
 
+            <td>{{ item.project }}</td>
             <td>{{ item.remark or '-' }}</td>
             <td>{{ item.created_at or 'N/A' }}</td>
 
