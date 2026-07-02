@@ -93,35 +93,22 @@
         Other Inventory Management
     </h1>
 
-    <!-- SAFE ADD BUTTON -->
     {% if session.get('role') == 'admin' %}
-        {% if 'other_add_item' in current_app.view_functions %}
-            <a href="{{ url_for('other_add_item') }}"
-               class="btn"
-               style="background:linear-gradient(135deg,#51CF66,#40C057);
-                      color:white;
-                      padding:10px 20px;
-                      border-radius:8px;">
-                Add New Item
-            </a>
-        {% else %}
-            <!-- fallback safe button -->
-            <a href="#"
-               class="btn"
-               style="background:gray;
-                      color:white;
-                      padding:10px 20px;
-                      border-radius:8px;
-                      pointer-events:none;">
-                Add New Item (Not Active)
-            </a>
-        {% endif %}
+    <a href="{{ url_for('other_add_item') }}"
+       class="btn"
+       style="background:linear-gradient(135deg,#51CF66,#40C057);
+              color:white;
+              padding:10px 20px;
+              border-radius:8px;">
+        Add New Item
+    </a>
     {% endif %}
 
 </div>
 
 <!-- SEARCH -->
 <div class="search-box">
+
 <form method="GET"
       action="{{ url_for('other_inventory') }}"
       class="d-flex gap-2">
@@ -133,6 +120,7 @@
            placeholder="Search by item name, description or category...">
 
 </form>
+
 </div>
 
 <!-- TABLE -->
