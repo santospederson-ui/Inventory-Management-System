@@ -2345,7 +2345,90 @@ def marble_return_item():
     )
 
 
+# =========================
+# OTHER ITEM INVENTORY ROUTE
+# =========================
 
+
+@app.route('/other_inventory')
+def other_inventory():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if search:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM other_inventory_table
+            WHERE item_name LIKE %s
+               OR description LIKE %s
+               OR category LIKE %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ))
+
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM other_inventory_table
+            WHERE item_name LIKE %s
+               OR description LIKE %s
+               OR category LIKE %s
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+        """, (
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            per_page,
+            offset
+        ))
+
+    else:
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM other_inventory_table
+        """)
+        total = cursor.fetchone()['total']
+
+        cursor.execute("""
+            SELECT *
+            FROM other_inventory_table
+            ORDER BY id DESC
+            LIMIT %s OFFSET %s
+        """, (
+            per_page,
+            offset
+        ))
+
+    items = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'other_inventory.html',
+        items=items,
+        page=page,
+        total_pages=total_pages,
+        search=search
+    )
 
 
 
