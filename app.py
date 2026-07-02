@@ -2357,7 +2357,7 @@ def other_inventory():
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    search = request.args.get('search', '')
+    search = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
 
     per_page = 10
@@ -2366,7 +2366,10 @@ def other_inventory():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # ================= SEARCH MODE =================
     if search:
+
+        query_like = f"%{search}%"
 
         cursor.execute("""
             SELECT COUNT(*) AS total
@@ -2374,7 +2377,7 @@ def other_inventory():
             WHERE item_name LIKE %s
                OR description LIKE %s
                OR category LIKE %s
-        """, (f"%{search}%", f"%{search}%", f"%{search}%"))
+        """, (query_like, query_like, query_like))
 
         total = cursor.fetchone()['total']
 
@@ -2386,14 +2389,12 @@ def other_inventory():
                OR category LIKE %s
             ORDER BY id DESC
             LIMIT %s OFFSET %s
-        """, (f"%{search}%", f"%{search}%", f"%{search}%", per_page, offset))
+        """, (query_like, query_like, query_like, per_page, offset))
 
+    # ================= NORMAL MODE =================
     else:
 
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM other_inventory_table
-        """)
+        cursor.execute("SELECT COUNT(*) AS total FROM other_inventory_table")
         total = cursor.fetchone()['total']
 
         cursor.execute("""
@@ -2408,7 +2409,7 @@ def other_inventory():
     cursor.close()
     conn.close()
 
-    total_pages = (total + per_page - 1) // per_page
+    total_pages = max((total + per_page - 1) // per_page, 1)
 
     return render_template(
         'other_inventory.html',
@@ -2417,7 +2418,6 @@ def other_inventory():
         total_pages=total_pages,
         search=search
     )
-
 
 # =========================
 # RUN APP
