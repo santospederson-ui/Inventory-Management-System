@@ -2350,9 +2350,7 @@ def marble_return_item():
 # =========================
 
 
-# =========================
-# OTHER INVENTORY LIST PAGE
-# =========================
+
 @app.route('/other_inventory')
 def other_inventory():
 
@@ -2421,43 +2419,6 @@ def other_inventory():
     )
 
 
-# =========================
-# ADD ITEM PAGE (FIXED)
-# =========================
-@app.route('/other_add_item', methods=['GET', 'POST'])
-def other_add_item():
-
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    if request.method == 'POST':
-
-        item_name = request.form['item_name']
-        description = request.form['description']
-        category = request.form['category']
-        qty = request.form['qty']
-        remark = request.form.get('remark', '')
-
-        cursor.execute("""
-            INSERT INTO other_inventory_table
-            (item_name, description, category, qty, remark)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (item_name, description, category, qty, remark))
-
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-        return redirect(url_for('other_inventory'))
-
-    cursor.close()
-    conn.close()
-
-    return render_template('other_add_item.html')
 # =========================
 # RUN APP
 # =========================
