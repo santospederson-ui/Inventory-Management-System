@@ -2350,6 +2350,9 @@ def marble_return_item():
 # =========================
 
 
+# =========================
+# OTHER INVENTORY LIST PAGE
+# =========================
 @app.route('/other_inventory')
 def other_inventory():
 
@@ -2365,7 +2368,6 @@ def other_inventory():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # ===== SEARCH MODE =====
     if search:
 
         cursor.execute("""
@@ -2374,11 +2376,7 @@ def other_inventory():
             WHERE item_name LIKE %s
                OR description LIKE %s
                OR category LIKE %s
-        """, (
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%"
-        ))
+        """, (f"%{search}%", f"%{search}%", f"%{search}%"))
 
         total = cursor.fetchone()['total']
 
@@ -2390,15 +2388,8 @@ def other_inventory():
                OR category LIKE %s
             ORDER BY id DESC
             LIMIT %s OFFSET %s
-        """, (
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            per_page,
-            offset
-        ))
+        """, (f"%{search}%", f"%{search}%", f"%{search}%", per_page, offset))
 
-    # ===== NORMAL MODE =====
     else:
 
         cursor.execute("""
@@ -2412,10 +2403,7 @@ def other_inventory():
             FROM other_inventory_table
             ORDER BY id DESC
             LIMIT %s OFFSET %s
-        """, (
-            per_page,
-            offset
-        ))
+        """, (per_page, offset))
 
     items = cursor.fetchall()
 
@@ -2431,6 +2419,45 @@ def other_inventory():
         total_pages=total_pages,
         search=search
     )
+
+
+# =========================
+# ADD ITEM PAGE (FIXED)
+# =========================
+@app.route('/other_add_item', methods=['GET', 'POST'])
+def other_add_item():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+
+        item_name = request.form['item_name']
+        description = request.form['description']
+        category = request.form['category']
+        qty = request.form['qty']
+        remark = request.form.get('remark', '')
+
+        cursor.execute("""
+            INSERT INTO other_inventory_table
+            (item_name, description, category, qty, remark)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (item_name, description, category, qty, remark))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('other_inventory'))
+
+    cursor.close()
+    conn.close()
+
+    return render_template('other_add_item.html')
 # =========================
 # RUN APP
 # =========================
