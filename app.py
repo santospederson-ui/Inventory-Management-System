@@ -2354,70 +2354,25 @@ def marble_return_item():
 @app.route('/other_inventory')
 def other_inventory():
 
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    try:
+        print(">>> ROUTE ENTERED")
 
-    search = request.args.get('search', '').strip()
-    page = request.args.get('page', 1, type=int)
+        conn = get_db_connection()
+        print(">>> DB CONNECTED")
 
-    per_page = 10
-    offset = (page - 1) * per_page
+        cursor = conn.cursor(dictionary=True)
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM other_inventory_table LIMIT 5")
+        items = cursor.fetchall()
 
-    # ================= SEARCH MODE =================
-    if search:
+        cursor.close()
+        conn.close()
 
-        query_like = f"%{search}%"
+        return str(items)
 
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM other_inventory_table
-            WHERE item_name LIKE %s
-               OR description LIKE %s
-               OR category LIKE %s
-        """, (query_like, query_like, query_like))
-
-        total = cursor.fetchone()['total']
-
-        cursor.execute("""
-            SELECT *
-            FROM other_inventory_table
-            WHERE item_name LIKE %s
-               OR description LIKE %s
-               OR category LIKE %s
-            ORDER BY id DESC
-            LIMIT %s OFFSET %s
-        """, (query_like, query_like, query_like, per_page, offset))
-
-    # ================= NORMAL MODE =================
-    else:
-
-        cursor.execute("SELECT COUNT(*) AS total FROM other_inventory_table")
-        total = cursor.fetchone()['total']
-
-        cursor.execute("""
-            SELECT *
-            FROM other_inventory_table
-            ORDER BY id DESC
-            LIMIT %s OFFSET %s
-        """, (per_page, offset))
-
-    items = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    total_pages = max((total + per_page - 1) // per_page, 1)
-
-    return render_template(
-        'other_inventory.html',
-        items=items,
-        page=page,
-        total_pages=total_pages,
-        search=search
-    )
+    except Exception as e:
+        print(">>> ERROR OCCURED:", e)
+        return f"ERROR: {e}"
 
 # =========================
 # RUN APP
