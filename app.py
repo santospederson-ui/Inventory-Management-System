@@ -2345,34 +2345,7 @@ def marble_return_item():
     )
 
 
-# =========================
-# OTHER ITEM INVENTORY ROUTE
-# =========================
 
-
-
-@app.route('/other_inventory')
-def other_inventory():
-
-    try:
-        print(">>> ROUTE ENTERED")
-
-        conn = get_db_connection()
-        print(">>> DB CONNECTED")
-
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT * FROM other_inventory_table LIMIT 5")
-        items = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return str(items)
-
-    except Exception as e:
-        print(">>> ERROR OCCURED:", e)
-        return f"ERROR: {e}"
 
 # =========================
 # RUN APP
