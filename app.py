@@ -2430,8 +2430,6 @@ def other_inventory():
         search=search
     )
 
-
-
 # =========================
 # RUN APP
 # =========================
