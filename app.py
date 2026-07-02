@@ -2361,6 +2361,7 @@ def other_inventory():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # 🔍 SEARCH MODE
     if search:
 
         cursor.execute("""
@@ -2383,6 +2384,7 @@ def other_inventory():
             LIMIT %s OFFSET %s
         """, (f"%{search}%", f"%{search}%", f"%{search}%", per_page, offset))
 
+    # 📦 NORMAL MODE
     else:
 
         cursor.execute("SELECT COUNT(*) AS total FROM other_inventory")
@@ -2409,7 +2411,6 @@ def other_inventory():
         total_pages=total_pages,
         search=search
     )
-
 
 
 # =========================
