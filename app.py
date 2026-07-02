@@ -2345,7 +2345,9 @@ def marble_return_item():
     )
 
 
-
+# =========================
+# OTHER INVENTORY ROUTE
+# =========================
 
 @app.route('/other_inventory')
 def other_inventory():
@@ -2368,7 +2370,7 @@ def other_inventory():
                OR project LIKE %s
                OR remark LIKE %s
         """, (f"%{search}%", f"%{search}%", f"%{search}%"))
-        
+
         total = cursor.fetchone()['total']
 
         cursor.execute("""
@@ -2407,7 +2409,6 @@ def other_inventory():
         total_pages=total_pages,
         search=search
     )
-
 
 
 
