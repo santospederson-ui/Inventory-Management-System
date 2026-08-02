@@ -7,14 +7,6 @@ app = Flask(__name__)
 app.secret_key = "inventory_secret_key"
 
 
-import cloudinary
-import cloudinary.uploader
-
-cloudinary.config(
-    cloud_name="da8y4zqz5",
-    api_key="551545451643298",
-    api_secret="CtN8D84Db81NFkhUwGUm8W2cvEU"
-)
 
 
 # =========================
